@@ -73,7 +73,7 @@
           <% if flash[k] %>
             <div class="fade in alert <%=v%> alert-dismissable">
               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-              <%= flash[k].html_safe %>
+              <%= flash[k] %>
             </div>
           <% end %>        
         <% } %>       

@@ -7,7 +7,7 @@
 <div class="row">
   <div class="col-md-6">
     <p>
-      <%= page_entries_info(@resources, :model => model.to_s).html_safe %>
+      <%= page_entries_info(@resources, :model => model.to_s) %>
       <a class="btn btn-default" title="Download results as csv" target="_blank" href="<%=url(:index, params.merge(:model => model.to_s, :format => :csv))%>"><i class="fa fa-download"></i></a>
     </p>    
   </div>

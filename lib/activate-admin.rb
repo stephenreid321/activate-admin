@@ -14,3 +14,4 @@ module ActivateAdmin
 end
 
 SimpleNavigation::config_file_paths << "#{ActivateAdmin.root}/lib"
+String.send(:define_method, :html_safe?){ true }

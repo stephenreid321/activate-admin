@@ -11,8 +11,7 @@
       <div class="form-group <%= 'has-error' if !f.error_message_on(fieldname).blank? %>">
         <label class="control-label col-md-3"><%= model.human_attribute_name(fieldname) %></label>
         <div class="col-md-6">      
-          <% case fieldtype %>
-          <% when :datetime %>
+          <% case fieldtype; when :datetime %>
             <%= datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :value => @resource.send(fieldname)) %>
           <% when :check_box %>
             <%= f.check_box fieldname %>            

@@ -16,7 +16,7 @@ module ActivateAdmin
       s << ':'
       s << select_tag(:"#{name}[min]", :options => (0..59).to_a.map { |x| [x < 10 ? "0#{x}" : x.to_s,x] }, :selected => v.min )
       s << '</span>'
-      s.join(' ').html_safe
+      s.join(' ')
     end    
   
     def compact_time_ago(t)

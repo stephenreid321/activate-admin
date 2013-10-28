@@ -51,7 +51,7 @@ module ActivateAdmin
       @resources = @resources.order_by(@o.to_sym.send(@d)) if @o and @d
       case content_type
       when :html
-        @resources = @resources.per_page(1).page(params[:page])
+        @resources = @resources.per_page(25).page(params[:page])
         instance_variable_set("@#{model.to_s.underscore.pluralize}", @resources)
         erb :index
       when :csv
