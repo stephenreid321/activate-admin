@@ -1,0 +1,120 @@
+
+<div class="page-header"> 
+  <h1><%= @resource.new_record? ? "New #{human_model_name(model).downcase}" : "Edit #{human_model_name(model).downcase}"%></h1>
+  <% unless params[:popup] %><a href="<%=url(:index, :model => model.to_s)%>" class="btn btn-default"><i class="fa fa-backward"></i>&nbsp;Back</a><% end %>
+</div>
+
+<% form_for model.to_s.underscore.to_sym, (@resource.new_record? ? url(:new, :model => model.to_s) : url(:edit, :model => model.to_s, :id => @resource.id)), :multipart => true, :class => 'form-horizontal' do |f| %>
+
+  <% model.fields_for_form.each { |fieldname, fieldtype| %> 
+    <% unless fieldtype == :collection and @resource.new_record? %>
+      <div class="form-group <%= 'has-error' if !f.error_message_on(fieldname).blank? %>">
+        <label class="control-label col-md-3"><%= model.human_attribute_name(fieldname) %></label>
+        <div class="col-md-6">      
+          <% case fieldtype %>
+          <% when :datetime %>
+            <%= datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :value => @resource.send(fieldname)) %>
+          <% when :check_box %>
+            <%= f.check_box fieldname %>            
+          <% when :file %>        
+            <% if !@resource.persisted? or !@resource.send(fieldname) %>
+              <%= f.file_field fieldname %>  
+            <% else %>            
+              <div class="row">
+                <div class="col-md-2">Download</div>
+                <div class="col-md-6"><a target="_blank" href="<%= @resource.send(fieldname).url%>"><%= @resource.send(fieldname).url%></a></div>
+              </div>          
+              <div class="row">
+                <div class="col-md-2">Replace</div>
+                <div class="col-md-6"><%= f.file_field fieldname %></div>
+              </div>          
+              <div class="row">
+                <div class="col-md-2">Remove</div>
+                <div class="col-md-6"><%= f.check_box :"remove_#{fieldname}" %></div>
+              </div>           
+            <% end %>
+          <% when :slug %>
+            <%= f.text_field fieldname, :class => 'form-control' %>
+            <% if @resource.new_record?; slug_id = "#{model.to_s.underscore}_#{fieldname}"; title_id = "#{model.to_s.underscore}_#{model.fields_for_form.keys[model.fields_for_form.keys.index(fieldname)-1]}"; %>
+              <script>
+                $(function() {
+                  $('#<%=slug_id%>').focus(function() {
+                    $(this).data('focus', true);
+                  });
+                  $('#<%=title_id%>').keyup(function() {             
+                    if($('#<%=slug_id%>').data('focus') != true)
+                    $('#<%=slug_id%>')[0].value = this.value.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, '')
+                  });
+                });
+              </script>        
+            <% end %>
+          <% when :image %>        
+            <% if !@resource.persisted? or !@resource.send(fieldname) %>
+              <%= f.file_field fieldname %>  
+            <% else %>            
+              <a target="_blank" href="<%= @resource.send(fieldname).url%>"><img style="display: block; max-height: 200px; margin-bottom: 1em" src="<%= @resource.send(fieldname).url%>"></a>
+              <div class="row">
+                <div class="col-md-2">Replace</div>
+                <div class="col-md-6"><%= f.file_field fieldname %></div>
+              </div>
+              <% if @resource.respond_to?(:"rotate_#{fieldname}_by") %>
+                <div class="row">
+                  <div class="col-md-2">Rotate by</div>
+                  <div class="col-md-3">
+                    <div class="input-group">              
+                      <%= f.select :"rotate_#{fieldname}_by", :options => ['','90','180','270'], :class => 'form-control' %>
+                      <span class="input-group-addon">&deg;</span>
+                    </div>               
+                  </div>
+                </div>
+              <% end %>
+              <div class="row">
+                <div class="col-md-2">Remove</div>
+                <div class="col-md-6"><%= f.check_box :"remove_#{fieldname}" %></div>
+              </div>              
+            <% end %>
+          <% when :wysiwyg %>            
+            <script>$(function() { $('#<%=model.to_s.underscore%>_<%=fieldname%>').wysihtml5({html: true}); });</script>
+            <%= f.text_area fieldname, :class => 'form-control', :rows => 10 %>
+          <% when :text_area %>
+            <%= f.text_area fieldname, :class => 'form-control', :rows => 10 %>
+          <% when :password %>          
+            <%= f.password_field fieldname, :class => 'form-control' %>
+          <% when :select %>
+            <%= f.select fieldname, :class => 'form-control', :options => model.send(fieldname.to_s.pluralize) %>
+          <% when :lookup %>
+            <%= f.select fieldname, :class => 'form-control', :options => ['']+(assoc_name = model.fields[fieldname.to_s].metadata.class_name).constantize.all.map { |x| [x.send(assoc_name.constantize.send(:lookup)), x.id] }, :selected => (params[fieldname] || @resource.send(fieldname)) %> 
+          <% when :collection %>
+            <ul class="list-unstyled">
+              <% @resource.send(fieldname).each { |x| %>
+                <li><a class="popup" href="<%=url(:edit, :popup => true, :model => (assoc_name = fieldname.to_s.singularize.camelize), :id => x.id)%>"><%=x.send(assoc_name.constantize.send(:lookup))%></a></li>
+              <% } %>
+              <li><a class="btn btn-default popup" href="<%=url(:new, :popup => true, :model => (assoc_name = fieldname.to_s.singularize.camelize), :"#{model.to_s.underscore}_id" => @resource.id)%>"><i class="fa fa-pencil"></i> New <%=fieldname.to_s.singularize.humanize.downcase%></a></li>
+            </ul>          
+          <% else %>
+            <%= f.text_field fieldname, :class => 'form-control' %>
+          <% end %>
+          <% if @resource.new_record? and model.respond_to?(:new_hints) and model.new_hints[fieldname] %>
+            <p class="hint help-block"><%= model.new_hints[fieldname] %></p>
+          <% elsif !@resource.new_record? and model.respond_to?(:edit_hints) and model.edit_hints[fieldname] %>
+            <p class="hint help-block"><%= model.edit_hints[fieldname] %></p>
+          <% end %>
+          <% if !f.error_message_on(fieldname).blank? %>
+            <p class="help-block"><%= f.error_message_on fieldname, :prepend => model.human_attribute_name(fieldname) %></p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% } %>
+
+  <div class="form-group">
+    <div class="col-md-offset-3 col-md-6">
+      <button class="btn btn-primary" type="submit">Save changes</button>
+      <%= hidden_field_tag :popup, :value => true if params[:popup] %>
+      <% if !@resource.new_record? %>
+        <a class="btn btn-danger" data-confirm="Are you sure you want to delete this <%=human_model_name(model).downcase%>?" href="<%=url(:destroy, :popup => params[:popup], :model => model.to_s, :id => @resource.id)%>">Delete</a>
+      <% end %>
+    </div>
+  </div> 
+
+<% end %>

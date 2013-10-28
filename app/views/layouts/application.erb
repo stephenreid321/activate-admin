@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ActivateAdmin</title> 
+
+    <%
+    [
+      'bootstrap.min.css',
+      'bootstrap-theme.min.css',
+      'font-awesome.min.css',
+      'bootstrap-wysihtml5-0.0.3.css'    
+    ].each { |file| %> 
+      <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/stylesheets/<%=file%>" />    
+    <% } %>
+
+    <% [
+      'jquery-1.9.1.min.js',
+      'jquery-migrate-1.1.1.js',
+      'jquery-ujs.js',
+      'bootstrap.min.js',
+      'wysihtml5-0.3.0.js',
+      'bootstrap-wysihtml5-0.0.3.js',
+      'jquery.ba-bbq.min.js',
+      'jquery.popupWindow.js'
+    ].each { |file| %>
+      <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
+    <% } %>
+
+    <style>
+      body { padding: 60px 0; }
+      .page-header { margin-top: 0; padding-bottom: 10px }
+      .page-header h1 { display: inline }
+      .page-header a { margin-left: 10px; position: relative; top: -6px }
+    </style>
+
+  </head>
+  <body>
+
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" style="font-family: Monaco, Menlo, Consolas, 'Courier New', monospace;" href="<%=url(:home)%>">ActivateAdmin</a>
+      </div>
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> <b class="caret"></b></a>
+            <%= render_navigation :context => :activate_admin, :items => models.sort_by { |model| model.to_s }.map { |model|
+              {:key => :left, :name => human_model_name(model).pluralize, :url => url(:index, :model => model.to_s), :options => {:container_class => 'dropdown-menu'}}
+            }
+          %>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="<%=url(:logout)%>">Sign out</a></li>
+        </ul>
+      </div>
+    </nav>    
+
+
+    <div class="container">
+
+      <div style="z-index: 1040; width: 40%; margin-left: -20%; left: 50%; position: absolute; margin-top: -40px">
+        <% {:error => 'alert-danger', :warning => 'alert-warning', :notice => 'alert-info'}.each { |k,v| %>
+          <% if flash[k] %>
+            <div class="fade in alert <%=v%> alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <%= flash[k].html_safe %>
+            </div>
+          <% end %>        
+        <% } %>       
+      </div>
+      <script>
+        $(function() {
+          $(".alert").alert()
+          window.setTimeout(function() { $(".alert").alert('close'); }, 3000);
+        });
+      </script>
+
+      <%= yield %>
+
+    </div>
+
+  </body>
+</html>
+
