@@ -12,6 +12,10 @@ module WillPaginate
           tag(:li, link(page, '#'), :class => 'active')
         end
       end
+      
+      def gap
+        tag(:li, link('&hellip;', '#'), :class => 'disabled')
+      end        
 
       def next_page
         num = @collection.current_page < total_pages && @collection.current_page + 1
