@@ -12,9 +12,9 @@ module ActivateAdmin
     set :public_folder,  ActivateAdmin.root('app', 'assets')
        
     before do
-      redirect url(:login) unless [url(:login), url(:logout)].any? { |p| p == request.path } or ['stylesheets','javascripts','fonts'].any? { |p| request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}" } or (current_account and current_account.role == 'admin')
-      fix_params!    
+      redirect url(:login) unless [url(:login), url(:logout)].any? { |p| p == request.path } or ['stylesheets','javascripts','fonts'].any? { |p| request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}" } or (current_account and current_account.role == 'admin')      
       Time.zone = current_account.time_zone if current_account and current_account.time_zone     
+      fix_params!
     end 
             
     get :home, :map => '/' do

@@ -2,7 +2,8 @@ module ActivateAdmin
   module ParamHelpers
 
     def fix_params!
-      datetime_hashes_to_datetimes!(params)
+      datetime_hashes_to_datetimes!(params)      
+      date_hashes_to_dates!(params)      
       file_hashes_to_files!(params)
       blanks_to_nils!(params)    
     end
@@ -13,6 +14,16 @@ module ActivateAdmin
           hash[k] = Time.zone.local(v[:year].to_i, v[:month].to_i, v[:day].to_i, v[:hour].to_i, v[:min].to_i)
         elsif v.is_a?(Hash)
           datetime_hashes_to_datetimes!(v)
+        end
+      }
+    end
+    
+    def date_hashes_to_dates!(hash)
+      hash.each { |k,v|
+        if v.is_a?(Hash) and [:year, :month, :day].all? { |x| v.has_key?(x.to_s) }
+          hash[k] = Date.new(v[:year].to_i, v[:month].to_i, v[:day].to_i)
+        elsif v.is_a?(Hash)
+          date_hashes_to_dates!(v)
         end
       }
     end
