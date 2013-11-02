@@ -4,8 +4,8 @@ module ActivateAdmin
     register Padrino::Helpers
     register Sinatra::SimpleNavigation
     register WillPaginate::Sinatra    
-    helpers ActivateAdmin::DatetimeHelpers
-    helpers ActivateAdmin::ParamHelpers  
+    helpers Activate::DatetimeHelpers
+    helpers Activate::ParamHelpers
       
     enable :sessions
     set :show_exceptions, true

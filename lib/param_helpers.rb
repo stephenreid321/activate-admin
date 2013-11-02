@@ -1,4 +1,4 @@
-module ActivateAdmin
+module Activate
   module ParamHelpers
 
     def fix_params!

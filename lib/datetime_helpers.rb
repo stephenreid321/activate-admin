@@ -1,4 +1,4 @@
-module ActivateAdmin
+module Activate
   module DatetimeHelpers
       
     def datetime_select_tags(name, options={})
