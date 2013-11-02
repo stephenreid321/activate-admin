@@ -9,6 +9,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   
   gem.add_dependency 'padrino', '0.11.1'
-  gem.add_dependency 'sinatra-simple-navigation'  
   gem.add_dependency 'will_paginate'
 end

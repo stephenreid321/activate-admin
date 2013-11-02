@@ -54,8 +54,8 @@
         <ul class="nav navbar-nav">
           <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> <b class="caret"></b></a>
-            <%= render_navigation :context => :activate_admin, :items => models.sort_by { |model| model.to_s }.map { |model|
-              {:key => :left, :name => human_model_name(model).pluralize, :url => url(:index, :model => model.to_s), :options => {:container_class => 'dropdown-menu'}}
+            <%= ul_nav 'dropdown-menu', models.sort_by { |model| model.to_s }.map { |model|
+              [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
             }
           %>
         </ul>

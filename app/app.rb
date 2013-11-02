@@ -2,10 +2,10 @@ module ActivateAdmin
   class App < Padrino::Application
     register Padrino::Rendering
     register Padrino::Helpers
-    register Sinatra::SimpleNavigation
     register WillPaginate::Sinatra    
     helpers Activate::DatetimeHelpers
     helpers Activate::ParamHelpers
+    helpers Activate::NavigationHelpers
       
     enable :sessions
     set :show_exceptions, true
