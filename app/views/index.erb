@@ -31,7 +31,7 @@
 </style>
 <script>
   $(function() {
-    var params = $.deparam(location.href.split('?')[1])
+    var params = $.deparam(location.href.split('?')[1] || '');
     $('th').hover(function() { $('a.fn, a.odn', this).css('visibility','visible') }, function() { $('a.fn, a.odn', this).css('visibility','hidden') });
     $('a.od').click(function() {
       params['o'] = $(this).closest('th').data('fieldname')
