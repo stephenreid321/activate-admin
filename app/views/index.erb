@@ -31,7 +31,7 @@
 </style>
 <script>
   $(function() {
-    var params = $.deparam.querystring();
+    var params = $.deparam(window.location.href.split('?')[1])
     $('th').hover(function() { $('a.fn, a.odn', this).css('visibility','visible') }, function() { $('a.fn, a.odn', this).css('visibility','hidden') });
     $('a.od').click(function() {
       params['o'] = $(this).closest('th').data('fieldname')
@@ -91,6 +91,8 @@
               <a href="<%=url(:edit, :model => assoc_name, :id => resource.send(fieldname))%>"><%= assoc_name.constantize.find(resource.send(fieldname)).send(assoc_name.constantize.send(:lookup)) %></a>
             <% elsif fieldname.to_s.ends_with?('_url') %>
               <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
+            <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
+              <%= resource.send(fieldname).to_s(:db) %>
             <% else %>
               <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
             <% end %>
