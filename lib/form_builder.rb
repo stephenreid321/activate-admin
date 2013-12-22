@@ -33,11 +33,12 @@ module Padrino
         # Selects and checkboxes
 
         def check_box_block(fieldname)
-          check_box fieldname
+          content = check_box(fieldname)
+          block_layout(fieldname, content)
         end
                         
-        def select_block(fieldname)
-          content = select(fieldname, :class => 'form-control', :options => model.send(fieldname.to_s.pluralize))
+        def select_block(fieldname, options: model.send(fieldname.to_s.pluralize))
+          content = select(fieldname, :class => 'form-control', :options => options)
           block_layout(fieldname, content)
         end        
         

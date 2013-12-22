@@ -4,7 +4,7 @@
   <% unless params[:popup] %><a href="<%=url(:index, :model => model.to_s)%>" class="btn btn-default"><i class="fa fa-backward"></i>&nbsp;Back</a><% end %>
 </div>
 
-<% form_for model.to_s.underscore.to_sym, (@resource.new_record? ? url(:new, :model => model.to_s) : url(:edit, :model => model.to_s, :id => @resource.id)), :multipart => true, :class => 'form-horizontal', :builder => 'ActivateFormBuilder' do |f| %>
+<% form_for model.to_s.underscore.to_sym, (@resource.new_record? ? url(:new, :model => model.to_s) : url(:edit, :model => model.to_s, :id => @resource.id)), :multipart => true, :class => 'form-horizontal' do |f| %>
 
   <%= hidden_field_tag :popup, :value => true if params[:popup] %>
 
