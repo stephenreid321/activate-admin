@@ -10,6 +10,7 @@ module ActivateAdmin
     enable :sessions
     set :show_exceptions, true
     set :public_folder,  ActivateAdmin.root('app', 'assets')
+    set :default_builder, 'ActivateFormBuilder'
        
     before do
       redirect url(:login) unless [url(:login), url(:logout)].any? { |p| p == request.path } or ['stylesheets','javascripts','fonts'].any? { |p| request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}" } or (current_account and current_account.role == 'admin')      
