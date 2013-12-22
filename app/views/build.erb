@@ -14,6 +14,6 @@
     <% end %>
   <% } %>
 
-  <%= f.submit_block(destroy_url: url(:destroy, :model => model.to_s, :id => object.id)) %>
+  <%= f.submit_block(destroy_url: url(:destroy, :model => model.to_s, :id => @resource.id)) %>
 
 <% end %>
