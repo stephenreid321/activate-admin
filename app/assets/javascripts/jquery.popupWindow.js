@@ -8,14 +8,14 @@
         $.fn.popupWindow.defaultSettings = {
           centerBrowser:0, // center window over browser window? {1 (YES) or 0 (NO)}. overrides top and left
           centerScreen:0, // center window over entire screen? {1 (YES) or 0 (NO)}. overrides top and left
-          height:500, // sets the height in pixels of the window.
+          height:436, // sets the height in pixels of the window.
           left:100, // left position when the window appears.
           location:0, // determines whether the address bar is displayed {1 (YES) or 0 (NO)}.
           menubar:0, // determines whether the menu bar is displayed {1 (YES) or 0 (NO)}.
           resizable:1, // whether the window can be resized {1 (YES) or 0 (NO)}. Can also be overloaded using resizable.
           scrollbars:1, // determines whether scrollbars appear on the window {1 (YES) or 0 (NO)}.
           status:0, // whether a status line appears at the bottom of the window {1 (YES) or 0 (NO)}.
-          width:500, // sets the width in pixels of the window.
+          width:626, // sets the width in pixels of the window.
           windowName:null, // name of window set from the name attribute of the element that invokes the click
           windowURL:null, // url used for the popup
           top:100, // top position when the window appears.
