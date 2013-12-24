@@ -52,13 +52,30 @@
               slug.val(title.val().toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, ''));
           });
         });
-
       });
     </script>    
 
   </head>
   <body>
 
+    <div style="z-index: 1040; width: 40%; margin-left: -20%; left: 50%; position: absolute; margin-top: -40px">
+      <% {:error => 'alert-danger', :warning => 'alert-warning', :notice => 'alert-info'}.each { |k,v| %>
+        <% if flash[k] %>
+          <div id="top-alert" class="fade in alert <%=v%> alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <%= flash[k] %>
+          </div>
+        <% end %>        
+      <% } %>       
+    </div>
+    <script>
+      $(function() {
+        $(".alert").alert()
+        window.setTimeout(function() {
+          $("#top-alert").alert('close');
+        }, 3000);
+      });
+    </script>
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="navbar-header">
@@ -86,25 +103,6 @@
         </div>
       </div>
     </nav>    
-
-    <div style="z-index: 1040; width: 40%; margin-left: -20%; left: 50%; position: absolute; margin-top: -40px">
-      <% {:error => 'alert-danger', :warning => 'alert-warning', :notice => 'alert-info'}.each { |k,v| %>
-        <% if flash[k] %>
-          <div id="top-alert" class="fade in alert <%=v%> alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <%= flash[k] %>
-          </div>
-        <% end %>        
-      <% } %>       
-    </div>
-    <script>
-      $(function() {
-        $(".alert").alert()
-        window.setTimeout(function() {
-          $("#top-alert").alert('close');
-        }, 3000);
-      });
-    </script>
 
     <%= yield %>
 

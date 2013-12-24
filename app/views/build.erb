@@ -10,10 +10,14 @@
 
   <% model.fields_for_form.each { |fieldname, fieldtype| %> 
     <% unless @resource.new_record? and fieldtype == :collection %>
-      <%= f.send("#{fieldtype}_block", fieldname) %>
+      <% case fieldtype; when :lookup %>
+        <%= f.lookup_block(fieldname, selected: params[fieldname]) %>
+      <% else %>
+        <%= f.send("#{fieldtype}_block", fieldname) %>
+      <% end %>
     <% end %>
   <% } %>
 
-  <%= f.submit_block(destroy_url: url(:destroy, :model => model.to_s, :id => @resource.id)) %>
+  <%= f.submit_block(destroy_url: url(:destroy, :popup => params[:popup], :model => model.to_s, :id => @resource.id)) %>
 
 <% end %>

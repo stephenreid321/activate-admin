@@ -10,6 +10,11 @@ module Padrino
           block_layout(fieldname, content)
         end
         
+        def disabled_text_block(fieldname)
+          content = text_field(fieldname, :class => 'form-control', :disabled => true)
+          block_layout(fieldname, content)
+        end        
+        
         def password_block(fieldname)
           content = password_field(fieldname, :class => 'form-control')
           block_layout(fieldname, content)          
@@ -24,6 +29,11 @@ module Padrino
           content = text_area(fieldname, :class => 'form-control', :rows => 10)
           block_layout(fieldname, content)
         end
+        
+        def disabled_text_area_block(fieldname)
+          content = text_area(fieldname, :class => 'form-control', :rows => 10, :disabled => true)
+          block_layout(fieldname, content)
+        end         
         
         def wysiwyg(fieldname)
           content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => 10)
@@ -58,8 +68,7 @@ module Padrino
                 <div class="col-md-8">#{file_field fieldname}</div>
               </div>          
               <div class="row">
-                <div class="col-md-2">Remove</div>
-                <div class="col-md-6">#{check_box :"remove_#{fieldname}"}</div>
+                <div class="col-md-8">Remove #{check_box :"remove_#{fieldname}"}</div>
               </div>
             }
           end          
@@ -92,8 +101,7 @@ module Padrino
             end
             content << %Q{
               <div class="row">
-                <div class="col-md-2">Remove</div>
-                <div class="col-md-6">#{check_box :"remove_#{fieldname}"}</div>
+                <div class="col-md-8">Remove #{check_box :"remove_#{fieldname}"}</div>
               </div>
             }       
           end    
@@ -101,6 +109,11 @@ module Padrino
         end         
         
         # Dates and times
+        
+        def time_block(fieldname)
+          content = @template.time_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
+          block_layout(fieldname, content)
+        end
         
         def date_block(fieldname)
           content = @template.date_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
@@ -112,15 +125,10 @@ module Padrino
           block_layout(fieldname, content)
         end        
         
-        def time_block(fieldname)
-          content = @template.time_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
-          block_layout(fieldname, content)
-        end
-        
         # Lookups and collections
                                     
-        def lookup_block(fieldname)
-          content = select(fieldname, :class => 'form-control', :options => ['']+(assoc_name = model.fields[fieldname.to_s].metadata.class_name).constantize.all.map { |x| [x.send(assoc_name.constantize.send(:lookup)), x.id] }, :selected => object.send(fieldname))
+        def lookup_block(fieldname, selected: nil)
+          content = select(fieldname, :class => 'form-control', :options => ['']+(assoc_name = model.fields[fieldname.to_s].metadata.try(:class_name)).constantize.all.map { |x| [x.send(assoc_name.constantize.send(:lookup)), x.id] }, :selected => (selected || object.send(fieldname)))
           block_layout(fieldname, content)          
         end        
         
@@ -168,7 +176,7 @@ module Padrino
           content = %Q{
             <div class="form-group">
               <div class="col-md-offset-3 col-md-6">
-                <button class="btn btn-primary" type="submit">Save changes</button>}
+                <button class="btn btn-primary" type="submit">Save changes</button> }
           if !object.new_record? and destroy_url
             content << %Q{<a class="btn btn-danger" data-confirm="Are you sure you want to delete this #{model.to_s.underscore.humanize.downcase}?" href="#{destroy_url}">Delete</a>}
           end

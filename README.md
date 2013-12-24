@@ -15,20 +15,22 @@ fields_for_form
 ``` ruby
 def self.fields_for_form
   {
-    :field => :date,
-    :field => :time,
-    :field => :datetime,
-    :field => :check_box,
-    :field => :file,
-    :field => :slug,
-    :field => :image, # define self#rotate_fieldname_by for rotation    
-    :field => :wysiwyg, 
-    :field => :text_area,
+    :field => :text,
+    :field => :disabled_text,
     :field => :password,
+    :field => :slug,
+    :field => :text_area,
+    :field => :disabled_text_area,
+    :field => :wysiwyg, 
+    :field => :check_box,
     :field => :select, # define self.options
-    :field => :lookup, # define self.lookup
-    :field => :collection, # define self.lookup
-    :field => :text # default
+    :field => :file,
+    :field => :image, # define self#rotate_fieldname_by for rotation  
+    :field => :time,
+    :field => :date,
+    :field => :datetime,
+    :field => :lookup, # define self.lookup on associated model (belongs_to)
+    :field => :collection, # define self.lookup on associated model (has_many)
   }
 end
 ```

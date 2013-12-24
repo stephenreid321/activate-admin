@@ -36,7 +36,7 @@ module ActivateAdmin
         model.fields.each { |fieldstring, fieldobj|
           if fieldobj.type == String and !fieldstring.starts_with?('_')          
             q << {fieldstring.to_sym => /#{@q}/i }
-          elsif fieldstring.ends_with?('_id') && fieldstring != '_id' && Object.const_defined?((assoc_name = model.fields[fieldstring].metadata.class_name))          
+          elsif fieldstring.ends_with?('_id') && (assoc_name = model.fields[fieldstring].metadata.try(:class_name))          
             q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{@q}/i).only(:_id).map(&:_id) }
           end          
         }
@@ -45,7 +45,7 @@ module ActivateAdmin
       @f.each { |k,v|      
         if model.fields[k].type == String
           @resources = @resources.where(k.to_sym => /#{v}/i)
-        elsif k.ends_with?('_id') && Object.const_defined?((assoc_name = model.fields[k].metadata.class_name))
+        elsif k.ends_with?('_id') && (assoc_name = model.fields[k].metadata.try(:class_name))
           @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{v}/i).only(:_id).map(&:_id) })
         end
       } if @f

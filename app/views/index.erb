@@ -71,7 +71,7 @@
 
           <% if @f and @f[fieldname] %>
             <a title="Searching for '<%=@f[fieldname]%>'; click to search again" href="javascript:;" class="f"><i class="fa fa-search"></i></a>
-          <% elsif (fieldobj = model.fields[fieldname.to_s]) and fieldobj.type == String or (fieldname.to_s.ends_with?('_id') && Object.const_defined?((assoc_name = model.fields[fieldname.to_s].metadata.class_name))) %>
+          <% elsif (fieldobj = model.fields[fieldname.to_s]) and fieldobj.type == String or (fieldname.to_s.ends_with?('_id') && (assoc_name = model.fields[fieldname.to_s].metadata.try(:class_name))) %>
             <a title="Search in <%=fieldname%>" href="javascript:;" class="f fn"><i class="fa fa-search"></i></a>
           <% end %>
         </th>
@@ -87,7 +87,7 @@
         </td>
         <% model.fields_for_index.each { |fieldname|  %>
           <td>
-            <% if fieldname.to_s.ends_with?('_id') && Object.const_defined?((assoc_name = model.fields[fieldname.to_s].metadata.class_name)) && resource.send(fieldname) %>
+            <% if fieldname.to_s.ends_with?('_id') && (assoc_name = model.fields[fieldname.to_s].metadata.try(:class_name)) && resource.send(fieldname) %>
               <a href="<%=url(:edit, :model => assoc_name, :id => resource.send(fieldname))%>"><%= assoc_name.constantize.find(resource.send(fieldname)).send(assoc_name.constantize.send(:lookup)) %></a>
             <% elsif fieldname.to_s.ends_with?('_url') %>
               <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
