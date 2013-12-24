@@ -25,18 +25,18 @@ module Padrino
           block_layout(fieldname, content)
         end        
         
-        def text_area_block(fieldname)
-          content = text_area(fieldname, :class => 'form-control', :rows => 10)
+        def text_area_block(fieldname, rows: 10)
+          content = text_area(fieldname, :class => 'form-control', :rows => rows)
           block_layout(fieldname, content)
         end
         
-        def disabled_text_area_block(fieldname)
-          content = text_area(fieldname, :class => 'form-control', :rows => 10, :disabled => true)
+        def disabled_text_area_block(fieldname, rows: 10)
+          content = text_area(fieldname, :class => 'form-control', :rows => rows, :disabled => true)
           block_layout(fieldname, content)
         end         
         
-        def wysiwyg(fieldname)
-          content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => 10)
+        def wysiwyg(fieldname, rows: 10)
+          content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => rows)
           block_layout(fieldname, content)
         end    
         
