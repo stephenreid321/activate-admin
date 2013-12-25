@@ -35,7 +35,7 @@ module Padrino
           block_layout(fieldname, content)
         end         
         
-        def wysiwyg(fieldname, rows: 10)
+        def wysiwyg_block(fieldname, rows: 10)
           content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => rows)
           block_layout(fieldname, content)
         end    
