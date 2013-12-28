@@ -1,16 +1,39 @@
 activate-admin
 =================
 
-fields_for_index
------
+A powerful, lightweight admin gem for Padrino/Mongoid with support for a variety of different field types
 
+Setup
+---
+
+In the Gemfile of your application:
+```
+gem 'will_paginate', github: 'mislav/will_paginate'
+gem 'activate-admin', github: 'wordsandwriting/activate-admin'
+```
+
+In config/apps.rb:
+``` ruby
+Padrino.mount('ActivateAdmin::App', :app_file => ActivateAdmin.root('app/app.rb')).to('/admin')
+```
+
+Say you have a model User with the fields User#name and User#birthday. Then in the model:
 ``` ruby
 def self.fields_for_index
-  [:field1, :field3]
+  [:name, :birthday]
+end
+
+def self.fields_for_form
+  {
+    :name => :text,
+    :birthday => :date
+  }
 end
 ```
 
-fields_for_form
+Start your app and navigate to /admin. Voila!
+
+Available field types
 -----
 ``` ruby
 def self.fields_for_form
@@ -29,8 +52,8 @@ def self.fields_for_form
     :field => :time,
     :field => :date,
     :field => :datetime,
-    :field => :lookup, # define self.lookup on associated model (belongs_to)
-    :field => :collection, # define self.lookup on associated model (has_many)
+    :field => :lookup, # for belongs_to relationships; define self.lookup on associated model
+    :field => :collection, # for has_many relationships; define self.lookup on associated model
   }
 end
 ```

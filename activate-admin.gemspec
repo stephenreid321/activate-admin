@@ -8,6 +8,6 @@ Gem::Specification.new do |gem|
   gem.email         = ["postscript07@gmail.com"]    
   gem.require_paths = ["lib"]
   
-  gem.add_dependency 'padrino', '0.11.1'
+  gem.add_dependency 'padrino'
   gem.add_dependency 'will_paginate'
 end
