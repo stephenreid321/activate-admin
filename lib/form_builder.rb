@@ -60,15 +60,14 @@ module Padrino
             content << file_field(fieldname)
           else         
             content << %Q{
-              <div class="row">
-                <div class="col-md-2">Download</div>
-                <div class="col-md-6"><a target="_blank" href="#{object.send(fieldname).url}">#{object.send(fieldname).url}</a></div>
+              <div>
+                <i class="fa fa-download"></i> <a target="_blank" href="#{object.send(fieldname).url}">#{object.send(fieldname).url}</a>
               </div>          
-              <div class="row">
-                <div class="col-md-8">#{file_field fieldname}</div>
-              </div>          
-              <div class="row">
-                <div class="col-md-8">Remove #{check_box :"remove_#{fieldname}"}</div>
+              <div>
+                #{file_field fieldname}
+              </div>      
+              <div>
+                Remove #{check_box :"remove_#{fieldname}"}
               </div>
             }
           end          
@@ -81,27 +80,25 @@ module Padrino
             content << file_field(fieldname)
           else          
             content << %Q{
-              <a target="_blank" href="#{object.send(fieldname).url}"><img style="display: block; max-height: 200px; margin-bottom: 1em" src="#{object.send(fieldname).url}"></a>
-            <div class="row">
-              <div class="col-md-8">#{file_field fieldname}</div>
+            <div style="margin-bottom: 1em">
+              <a target="_blank" href="#{object.send(fieldname).url}"><img style="max-height: 200px" src="#{object.send(fieldname).url}"></a>
+            </div>
+            <div>
+              #{file_field fieldname}
             </div>
             }
             if object.respond_to?(:"rotate_#{fieldname}_by") and rotate
-              content << %Q{
-                <div class="row">
-                  <div class="col-md-2">Rotate by</div>
-                <div class="col-md-3">
-                  <div class="input-group">              
-                    #{select :"rotate_#{fieldname}_by", :options => ['','90','180','270'], :class => 'form-control'}
+              content << %Q{                  
+                <div class="input-group" style="width: 13em">              
+                  <span style="display: table-cell">Rotate by</span>
+                  #{select :"rotate_#{fieldname}_by", :options => ['','90','180','270'], :class => 'form-control'}
                   <span class="input-group-addon">&deg;</span>
-                    </div>               
-                      </div>
-                </div>
+                </div>               
               }
             end
             content << %Q{
-              <div class="row">
-                <div class="col-md-8">Remove #{check_box :"remove_#{fieldname}"}</div>
+              <div>
+                Remove #{check_box :"remove_#{fieldname}"}
               </div>
             }       
           end    
@@ -138,10 +135,10 @@ module Padrino
             content << %Q{<li><a class="popup" href="#{@template.url(:edit, :popup => true, :model => (assoc_name = fieldname.to_s.singularize.camelize), :id => x.id)}">#{x.send(assoc_name.constantize.send(:lookup))}</a></li>}
           }
           content << %Q{<li><a class="btn btn-default popup" href="#{@template.url(:new, :popup => true, :model => (assoc_name = fieldname.to_s.singularize.camelize), :"#{model.to_s.underscore}_id" => object.id)}"><i class="fa fa-pencil"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>}
-          content << %Q{</ul>}
-          block_layout(fieldname, content)
+          content << %Q{</ul>} 
+          block_layout(fieldname, content)                            
         end        
-                        
+                                
         def block_layout(fieldname, content)
           block = %Q{
             <div class="form-group #{'has-error' if !error_message_on(fieldname).blank?}">
