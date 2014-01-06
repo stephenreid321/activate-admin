@@ -142,7 +142,7 @@ module Padrino
         def block_layout(fieldname, content)
           block = %Q{
             <div class="form-group #{'has-error' if !error_message_on(fieldname).blank?}">
-              <label class="control-label col-md-3">#{model.human_attribute_name(fieldname)}</label>
+              <label for="#{model.to_s.underscore}_#{fieldname}" class="control-label col-md-3">#{model.human_attribute_name(fieldname)}</label>
               <div class="col-md-6">
                 #{content}
           }
