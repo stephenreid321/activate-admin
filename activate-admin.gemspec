@@ -10,4 +10,5 @@ Gem::Specification.new do |gem|
   
   gem.add_dependency 'padrino'
   gem.add_dependency 'will_paginate'
+  gem.add_dependency 'heroku-api'
 end

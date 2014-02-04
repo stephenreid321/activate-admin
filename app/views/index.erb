@@ -99,7 +99,7 @@
           </td>
         <% } %>
         <td>
-          <a class="btn btn-danger" data-confirm="Are you sure you want to delete this <%=human_model_name(model).downcase%>?" href="<%=url(:destroy, :model => model.to_s, :id => resource.id)%>"><i class="fa fa-trash"></i>&nbsp;Delete</a>
+          <a class="btn btn-danger" data-confirm="Are you sure you want to delete this <%=human_model_name(model).downcase%>?" href="<%=url(:destroy, :model => model.to_s, :id => resource.id)%>"><i class="fa fa-trash-o"></i>&nbsp;Delete</a>
         </td>
       </tr>
     <% } %>

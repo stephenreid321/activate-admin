@@ -21,6 +21,24 @@ module ActivateAdmin
     get :home, :map => '/' do
       erb :home
     end  
+    
+    get :config, :map => '/config' do
+      erb :config
+    end
+    
+    post :config, :map => '/config' do
+      heroku = Heroku::API.new
+      params[:options].each { |k,v|
+        case v
+        when 'edit'
+          heroku.put_config_vars(ENV['HEROKU_APP_NAME'], k => params[k])
+        when 'delete'
+          heroku.delete_config_var(ENV['HEROKU_APP_NAME'], k)
+        end
+      }
+      flash[:notice] = "<strong>Sweet.</strong> Your config vars were updated."
+      redirect url(:config)
+    end
   
     get :index, :map => '/index/:model', :provides => [:html, :csv] do
       if model.respond_to?(:filter_options)
