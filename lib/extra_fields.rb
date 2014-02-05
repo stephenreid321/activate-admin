@@ -14,6 +14,7 @@ class ExtraFields
         model.field fieldname, :type => String        
       when :file
         model.field "#{fieldname}_uid".to_sym, :type => String
+        model.field "#{fieldname}_name".to_sym, :type => String
         model.send(:dragonfly_accessor, fieldname, :app => :files) # assumes Dragonfly app named :files
       end
     }
