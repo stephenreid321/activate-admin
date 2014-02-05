@@ -58,7 +58,7 @@ def self.fields_for_form
 end
 ```
 
-Hints
+Hints and tips
 -----
 
 ``` ruby
@@ -74,6 +74,8 @@ def self.edit_hints
   }
 end 
 ```
+
+Same for `self.new_tips` and `self.edit_tips`
 
 filter_options
 -----

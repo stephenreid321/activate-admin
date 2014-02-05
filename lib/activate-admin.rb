@@ -8,6 +8,7 @@ require 'heroku-api'
 require 'datetime_helpers'
 require 'param_helpers'
 require 'navigation_helpers'
+require 'extra_fields'
 
 module ActivateAdmin
   extend Padrino::Module

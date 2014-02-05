@@ -31,7 +31,9 @@ module Activate
     def file_hashes_to_files!(hash)
       hash.each { |k, v|
         if v.is_a?(Hash) and v[:tempfile]
-          hash[k] = v[:tempfile]
+          tempfile = v[:tempfile]
+          tempfile.original_filename = v[:filename]
+          hash[k] = tempfile
         elsif v.is_a?(Hash)
           file_hashes_to_files!(v)
         end
@@ -51,4 +53,8 @@ module Activate
     end
 
   end
+end
+
+class Tempfile  
+  attr_accessor :original_filename
 end

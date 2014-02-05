@@ -5,63 +5,63 @@ module Padrino
                         
         # Text
                 
-        def text_block(fieldname)
-          content = text_field(fieldname, :class => 'form-control')
-          block_layout(fieldname, content)
+        def text_block(fieldname, placeholder: nil, tip: nil, hint: nil)
+          content = text_field(fieldname, :class => 'form-control', :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end
         
-        def disabled_text_block(fieldname)
-          content = text_field(fieldname, :class => 'form-control', :disabled => true)
-          block_layout(fieldname, content)
+        def disabled_text_block(fieldname, placeholder: nil, tip: nil, hint: nil)
+          content = text_field(fieldname, :class => 'form-control', :disabled => true, :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end        
         
-        def password_block(fieldname)
-          content = password_field(fieldname, :class => 'form-control')
-          block_layout(fieldname, content)          
+        def password_block(fieldname, placeholder: nil, tip: nil, hint: nil)
+          content = password_field(fieldname, :class => 'form-control', :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)     
         end        
         
-        def slug_block(fieldname)
-          content = text_field(fieldname, :class => 'form-control slug')
-          block_layout(fieldname, content)
+        def slug_block(fieldname, placeholder: nil, tip: nil, hint: nil)
+          content = text_field(fieldname, :class => 'form-control slug', :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end        
         
-        def text_area_block(fieldname, rows: 10)
-          content = text_area(fieldname, :class => 'form-control', :rows => rows)
-          block_layout(fieldname, content)
+        def text_area_block(fieldname, rows: 10, placeholder: nil, tip: nil, hint: nil)
+          content = text_area(fieldname, :class => 'form-control', :rows => rows, :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end
         
-        def disabled_text_area_block(fieldname, rows: 10)
-          content = text_area(fieldname, :class => 'form-control', :rows => rows, :disabled => true)
-          block_layout(fieldname, content)
+        def disabled_text_area_block(fieldname, rows: 10, placeholder: nil, tip: nil, hint: nil)
+          content = text_area(fieldname, :class => 'form-control', :rows => rows, :disabled => true, :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end         
         
-        def wysiwyg_block(fieldname, rows: 10)
-          content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => rows)
-          block_layout(fieldname, content)
+        def wysiwyg_block(fieldname, rows: 10, placeholder: nil, tip: nil, hint: nil)
+          content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => rows, :placeholder => placeholder)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end    
         
         # Selects and checkboxes
 
-        def check_box_block(fieldname)
+        def check_box_block(fieldname, tip: nil, hint: nil)
           content = check_box(fieldname)
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end
                         
-        def select_block(fieldname, options: model.send(fieldname.to_s.pluralize))
+        def select_block(fieldname, options: model.send(fieldname.to_s.pluralize), tip: nil, hint: nil)
           content = select(fieldname, :class => 'form-control', :options => options)
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end        
         
         # Files and images
         
-        def file_block(fieldname)
+        def file_block(fieldname, tip: nil, hint: nil)
           content = ''
           if !object.persisted? or !object.send(fieldname)
             content << file_field(fieldname)
           else         
             content << %Q{
               <div>
-                <i class="fa fa-download"></i> <a target="_blank" href="#{object.send(fieldname).url}">#{object.send(fieldname).url}</a>
+                <i class="fa fa-download"></i> <a target="_blank" href="#{object.send(fieldname).url}">#{object.send(fieldname).name}</a>
               </div>          
               <div>
                 #{file_field fieldname}
@@ -71,10 +71,10 @@ module Padrino
               </div>
             }
           end          
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end
         
-        def image_block(fieldname, rotate: true)
+        def image_block(fieldname, rotate: true, tip: nil, hint: nil)
           content = ''
           if !object.persisted? or !object.send(fieldname)
             content << file_field(fieldname)
@@ -102,57 +102,84 @@ module Padrino
               </div>
             }       
           end    
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end         
         
         # Dates and times
         
-        def time_block(fieldname)
+        def time_block(fieldname, tip: nil, hint: nil)
           content = @template.time_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end
         
-        def date_block(fieldname)
+        def date_block(fieldname, tip: nil, hint: nil)
           content = @template.date_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end
         
-        def datetime_block(fieldname)
+        def datetime_block(fieldname, tip: nil, hint: nil)
           content = @template.datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
-          block_layout(fieldname, content)
+          block_layout(fieldname, content, tip: tip, hint: hint)
         end        
         
         # Lookups and collections
                                     
-        def lookup_block(fieldname, selected: nil)
+        def lookup_block(fieldname, selected: nil, tip: nil, hint: nil)
           content = select(fieldname, :class => 'form-control', :options => ['']+(assoc_name = model.fields[fieldname.to_s].metadata.try(:class_name)).constantize.all.map { |x| [x.send(assoc_name.constantize.send(:lookup)), x.id] }, :selected => (selected || object.send(fieldname)))
-          block_layout(fieldname, content)          
+          block_layout(fieldname, content, tip: tip, hint: hint)    
         end        
         
-        def collection_block(fieldname)
+        def collection_block(fieldname, tip: nil, hint: nil)
           content = %Q{<ul class="list-unstyled">}
           object.send(fieldname).each { |x|
             content << %Q{<li><a class="popup" href="#{@template.url(:edit, :popup => true, :model => (assoc_name = fieldname.to_s.singularize.camelize), :id => x.id)}">#{x.send(assoc_name.constantize.send(:lookup))}</a></li>}
           }
           content << %Q{<li><a class="btn btn-default popup" href="#{@template.url(:new, :popup => true, :model => (assoc_name = fieldname.to_s.singularize.camelize), :"#{model.to_s.underscore}_id" => object.id)}"><i class="fa fa-pencil"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>}
           content << %Q{</ul>} 
-          block_layout(fieldname, content)                            
+          block_layout(fieldname, content, tip: tip, hint: hint)                           
         end        
                                 
-        def block_layout(fieldname, content)
+        def block_layout(fieldname, content, tip: nil, hint: nil)
+          
+          tip = if tip
+            tip
+          elsif object.new_record? and model.respond_to?(:new_tips) and model.new_tips[fieldname]
+            model.new_tips[fieldname]
+          elsif !object.new_record? and model.respond_to?(:edit_tips) and model.edit_tips[fieldname]
+            model.edit_tips[fieldname]
+          end
+          
+          hint = if hint
+            hint
+          elsif object.new_record? and model.respond_to?(:new_hints) and model.new_hints[fieldname]
+            model.new_hints[fieldname]
+          elsif !object.new_record? and model.respond_to?(:edit_hints) and model.edit_hints[fieldname]
+            model.edit_hints[fieldname]
+          end          
+                                  
           block = %Q{
             <div class="form-group #{'has-error' if !error_message_on(fieldname).blank?}">
-              <label for="#{model.to_s.underscore}_#{fieldname}" class="control-label col-md-3">#{model.human_attribute_name(fieldname)}</label>
+              <label for="#{model.to_s.underscore}_#{fieldname}" class="control-label col-md-3">
+                #{model.human_attribute_name(fieldname)}
+          }          
+          if tip
+            block << "
+            <i id=\"tip-#{fieldname}\" class=\"fa fa-question-circle\" title=\"#{tip}\"></i>
+            <script>
+              $(function() {
+                $('#tip-#{fieldname}').tooltip({placement: 'right'});
+            });
+            </script>
+            " 
+          end
+          block << %Q{
+              </label>
               <div class="col-md-6">
                 #{content}
           }
-          if object.new_record? and model.respond_to?(:new_hints) and model.new_hints[fieldname]        
+          if hint
             block << %Q{
-                <p class="hint help-block">#{model.new_hints[fieldname]}</p>
-            }
-          elsif !object.new_record? and model.respond_to?(:edit_hints) and model.edit_hints[fieldname]
-            block << %Q{
-                <p class="hint help-block">#{model.edit_hints[fieldname]}</p>
+                <p class="hint help-block">#{hint}</p>
             }
           end
           if !error_message_on(fieldname).blank?
