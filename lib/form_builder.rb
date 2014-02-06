@@ -106,19 +106,14 @@ module Padrino
         end         
         
         # Dates and times
-        
-        def time_block(fieldname, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = @template.time_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
-          block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
-        end
-        
+                
         def date_block(fieldname, tip: nil, hint: nil, label_class: nil, div_class: nil)
           content = @template.date_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
         
-        def datetime_block(fieldname, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = @template.datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
+        def datetime_block(fieldname, fives: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = @template.datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname), :fives => fives)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end        
         
