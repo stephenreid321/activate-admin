@@ -90,14 +90,14 @@
       <div class="collapse navbar-collapse navbar-top-collapse">
         <ul class="nav navbar-nav">
           <li class="dropdown">
-            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i>&nbsp;&nbsp;Models<b class="caret"></b></a>
+            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> Models<b class="caret"></b></a>
             <%= ul_nav 'dropdown-menu', models.sort_by { |model| model.to_s }.map { |model|
               [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
               }
           %>
             <% if ENV['HEROKU_APP_NAME'] %>
             <li>
-              <a href="<%=url(:config)%>"><i class="fa fa-cog"></i>&nbsp;&nbsp;Configuration variables</a>
+              <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
             </li>
           <% end %>
         </ul>
