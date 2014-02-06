@@ -213,7 +213,7 @@ module Padrino
           content = %Q{
             <div class="form-group">
               <div class="#{div_class || 'col-md-offset-3 col-md-6'}">
-                <button class="btn btn-primary" type="submit">Save changes</button> }
+                <button class="btn btn-primary" type="submit">#{object.new_record? ? "Create #{model.to_s.underscore.humanize.downcase}" : "Update #{model.to_s.underscore.humanize.downcase}"}</button> }
           if !object.new_record? and destroy_url
             content << %Q{<a class="btn btn-danger" data-confirm="Are you sure you want to delete this #{model.to_s.underscore.humanize.downcase}?" href="#{destroy_url}">Delete</a>}
           end
