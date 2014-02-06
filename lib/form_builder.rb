@@ -50,7 +50,25 @@ module Padrino
         def select_block(fieldname, options: model.send(fieldname.to_s.pluralize), tip: nil, hint: nil, label_class: nil, div_class: nil)
           content = select(fieldname, :class => 'form-control', :options => options)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
-        end        
+        end       
+        
+        def radio_block(fieldname, options: model.send(fieldname.to_s.pluralize), tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = ''          
+          options = Hash[*options.map { |x| [x,x] }.flatten] if options.is_a? Array
+          options.each { |k,v|
+            content << %Q{
+              <div class="radio">
+                <label>
+            }
+            content << radio_button(fieldname, :value => v, :checked => (v == object.send(fieldname)))
+            content << %Q{
+                #{k}
+              </label>
+            </div>
+            }
+          }
+          block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
+        end
         
         # Files and images
         
