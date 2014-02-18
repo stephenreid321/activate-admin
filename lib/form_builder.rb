@@ -5,54 +5,44 @@ module Padrino
                         
         # Text
                 
-        def text_block(fieldname, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = text_field(fieldname, :class => 'form-control', :placeholder => placeholder)
+        def text_block(fieldname, placeholder: nil, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = text_field(fieldname, :class => 'form-control', :disabled => disabled, :placeholder => placeholder)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
-        
-        def disabled_text_block(fieldname, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = text_field(fieldname, :class => 'form-control', :disabled => true, :placeholder => placeholder)
+                    
+        def password_block(fieldname, placeholder: nil, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = password_field(fieldname, :class => 'form-control', :disabled => disabled, :placeholder => placeholder)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end        
         
-        def password_block(fieldname, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = password_field(fieldname, :class => 'form-control', :placeholder => placeholder)
+        def slug_block(fieldname, placeholder: nil, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = text_field(fieldname, :class => 'form-control slug', :disabled => disabled, :placeholder => placeholder)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end        
         
-        def slug_block(fieldname, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = text_field(fieldname, :class => 'form-control slug', :placeholder => placeholder)
-          block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
-        end        
-        
-        def text_area_block(fieldname, rows: 10, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = text_area(fieldname, :class => 'form-control', :rows => rows, :placeholder => placeholder)
+        def text_area_block(fieldname, rows: 10, placeholder: nil, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = text_area(fieldname, :class => 'form-control', :rows => rows, :disabled => disabled, :placeholder => placeholder)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
-        
-        def disabled_text_area_block(fieldname, rows: 10, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = text_area(fieldname, :class => 'form-control', :rows => rows, :disabled => true, :placeholder => placeholder)
-          block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
-        end         
-        
-        def wysiwyg_block(fieldname, rows: 10, placeholder: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => rows, :placeholder => placeholder)
+                
+        def wysiwyg_block(fieldname, rows: 10, placeholder: nil, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = text_area(fieldname, :class => 'form-control wysiwyg', :rows => rows, :disabled => disabled, :placeholder => placeholder)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end    
         
         # Selects and checkboxes
 
-        def check_box_block(fieldname, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = check_box(fieldname)
+        def check_box_block(fieldname, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = check_box(fieldname, :disabled => disabled)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
                         
-        def select_block(fieldname, options: model.send(fieldname.to_s.pluralize), tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = select(fieldname, :class => 'form-control', :options => options)
+        def select_block(fieldname, options: model.send(fieldname.to_s.pluralize), disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = select(fieldname, :class => 'form-control', :options => options, :disabled => disabled)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end       
         
-        def radio_block(fieldname, options: model.send(fieldname.to_s.pluralize), tip: nil, hint: nil, label_class: nil, div_class: nil)
+        def radio_block(fieldname, options: model.send(fieldname.to_s.pluralize), disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
           content = ''          
           options = Hash[*options.map { |x| [x,x] }.flatten] if options.is_a? Array
           options.each { |k,v|
@@ -60,7 +50,7 @@ module Padrino
               <div class="radio">
                 <label>
             }
-            content << radio_button(fieldname, :value => v, :checked => (v == object.send(fieldname)))
+            content << radio_button(fieldname, :value => v, :checked => (v == object.send(fieldname)), :disabled => disabled)
             content << %Q{
                 #{k}
               </label>
@@ -72,7 +62,7 @@ module Padrino
         
         # Files and images
         
-        def file_block(fieldname, tip: nil, hint: nil, label_class: nil, div_class: nil)
+        def file_block(fieldname, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
           content = ''
           if !object.persisted? or !object.send(fieldname)
             content << file_field(fieldname)
@@ -82,17 +72,17 @@ module Padrino
                 <i class="fa fa-download"></i> <a target="_blank" href="#{object.send(fieldname).url}">#{object.send(fieldname).name}</a>
               </div>          
               <div>
-                #{file_field fieldname}
+                #{file_field(fieldname, :disabled => disabled)}
               </div>      
               <div>
-                Remove #{check_box :"remove_#{fieldname}"}
+                Remove #{check_box(:"remove_#{fieldname}", :disabled => disabled)}
               </div>
             }
           end          
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
         
-        def image_block(fieldname, rotate: true, tip: nil, hint: nil, label_class: nil, div_class: nil)
+        def image_block(fieldname, rotate: true, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
           content = ''
           if !object.persisted? or !object.send(fieldname)
             content << file_field(fieldname)
@@ -102,21 +92,21 @@ module Padrino
               <a target="_blank" href="#{object.send(fieldname).url}"><img style="max-height: 200px" src="#{object.send(fieldname).url}"></a>
             </div>
             <div>
-              #{file_field fieldname}
+              #{file_field(fieldname, :disabled => disabled)}
             </div>
             }
             if object.respond_to?(:"rotate_#{fieldname}_by") and rotate
               content << %Q{                  
                 <div class="input-group" style="width: 13em">              
                   <span style="display: table-cell">Rotate by</span>
-                  #{select :"rotate_#{fieldname}_by", :options => ['','90','180','270'], :class => 'form-control'}
+                  #{select(:"rotate_#{fieldname}_by", :options => ['','90','180','270'], :class => 'form-control', :disabled => disabled)}
                   <span class="input-group-addon">&deg;</span>
                 </div>               
               }
             end
             content << %Q{
               <div>
-                Remove #{check_box :"remove_#{fieldname}"}
+                Remove #{check_box(:"remove_#{fieldname}", :disabled => disabled)}
               </div>
             }       
           end    
@@ -125,20 +115,20 @@ module Padrino
         
         # Dates and times
                 
-        def date_block(fieldname, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = @template.date_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname))
+        def date_block(fieldname, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = @template.date_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname), :disabled => disabled)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
         
-        def datetime_block(fieldname, fives: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = @template.datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname), :fives => fives)
+        def datetime_block(fieldname, fives: false, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = @template.datetime_select_tags("#{model.to_s.underscore}[#{fieldname}]", :class => 'form-control', :value => object.send(fieldname), :disabled => disabled, :fives => fives)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end        
         
         # Lookups and collections
                                     
-        def lookup_block(fieldname, selected: nil, tip: nil, hint: nil, label_class: nil, div_class: nil)
-          content = select(fieldname, :class => 'form-control', :options => ['']+(assoc_name = model.fields[fieldname.to_s].metadata.try(:class_name)).constantize.all.map { |x| [x.send(assoc_name.constantize.send(:lookup)), x.id] }, :selected => (selected || object.send(fieldname)))
+        def lookup_block(fieldname, selected: nil, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = select(fieldname, :class => 'form-control', :options => ['']+(assoc_name = model.fields[fieldname.to_s].metadata.try(:class_name)).constantize.all.map { |x| [x.send(assoc_name.constantize.send(:lookup)), x.id] }, :selected => (selected || object.send(fieldname)), :disabled => disabled)
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end        
         

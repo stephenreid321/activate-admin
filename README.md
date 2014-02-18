@@ -39,11 +39,9 @@ Available field types
 def self.fields_for_form
   {
     :field => :text,
-    :field => :disabled_text,
     :field => :password,
     :field => :slug,
     :field => :text_area,
-    :field => :disabled_text_area,
     :field => :wysiwyg, 
     :field => :check_box,
     :field => :select, # define self.options
