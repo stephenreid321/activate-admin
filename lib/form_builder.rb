@@ -60,6 +60,24 @@ module Padrino
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
         end
         
+        def check_boxes_block(fieldname, checked: [], options: model.send(fieldname.to_s.pluralize), disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = ''          
+          options = Hash[*options.map { |x| [x,x] }.flatten] if options.is_a? Array
+          options.each { |k,v|
+            content << %Q{
+              <div class="checkbox">
+                <label>
+            }                       
+            content << %Q{<input type="checkbox" name="#{model.to_s.underscore}[#{fieldname}][]" value="#{v}" #{'checked="checked"' if checked.include?(v)} #{'disabled="disabled"' if disabled}>}
+            content << %Q{
+                #{k}
+              </label>
+            </div>
+            }
+          }
+          block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
+        end        
+        
         # Files and images
         
         def file_block(fieldname, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
