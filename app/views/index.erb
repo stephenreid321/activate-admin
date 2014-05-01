@@ -92,7 +92,7 @@
             <% elsif fieldname.to_s.ends_with?('_url') %>
               <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
             <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
-              <%= resource.send(fieldname).to_s(:db) %>
+              <%= resource.send(fieldname) %>
             <% else %>
               <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
             <% end %>
