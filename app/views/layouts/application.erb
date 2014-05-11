@@ -10,7 +10,7 @@
     [
       'bootstrap.min.css',
       'font-awesome.min.css',
-      'bootstrap-wysihtml5-0.0.3.css'    
+      'summernote.css'    
       ].each { |file| %> 
       <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/stylesheets/<%=file%>" />    
     <% } %>
@@ -18,8 +18,7 @@
     <% [
       'jquery-1.11.0.min.js',
       'bootstrap.min.js',
-      'wysihtml5-0.3.0.js',
-      'bootstrap-wysihtml5-0.0.3.js',
+      'summernote.min.js',
       'jquery.deparam.js',
       'jquery.confirm.js',
       'jquery.popupWindow.js'
@@ -37,7 +36,21 @@
 
     <script>
       $(function() {
-        $('textarea.wysiwyg').wysihtml5({html: true});
+        
+        $('textarea.wysiwyg').each(function() {
+          var textarea = this;
+          var summernote = $('<div class="summernote"></div>');
+          $(summernote).insertAfter(this);
+          $(summernote).summernote({height: 500});
+          $(summernote).code($(textarea).val());
+          $('.note-fontname, .note-help', summernote.next()).hide();
+          $('button[data-event=codeview]', summernote.next()).click();          
+          $(textarea).hide();
+          $(textarea.form).submit(function() {
+            $(textarea).val($(summernote).code());
+          });
+        });
+        
         $('input[type=text].slug').each(function() {
           var slug = $(this);
           var start_length = slug.val().length;
@@ -51,8 +64,8 @@
               slug.val(title.val().toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, ''));
           });
         });
-      });
-    </script>    
+        
+      });</script>    
 
   </head>
   <body>
@@ -94,7 +107,8 @@
               [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
               }
           %>
-            <% if ENV['HEROKU_APP_NAME'] %>
+          </li>
+          <% if ENV['HEROKU_APP_NAME'] %>
             <li>
               <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
             </li>
