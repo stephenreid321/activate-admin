@@ -93,6 +93,8 @@
               <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
             <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
               <%= resource.send(fieldname) %>
+            <% elsif resource.send(fieldname).is_a? Boolean %>
+              <%= case resource.send(fieldname); when true; '<i class="fa fa-check"></i>'; when false;  '<i class="fa fa-times"></i>'; end %>
             <% else %>
               <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
             <% end %>

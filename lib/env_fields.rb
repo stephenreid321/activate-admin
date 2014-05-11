@@ -1,7 +1,7 @@
-class ExtraFields
+class EnvFields
   
   def self.fields(model)    
-    varname = "EXTRA_FIELDS_#{model.to_s.upcase}"
+    varname = "ENV_FIELDS_#{model.to_s.upcase}"
     ENV[varname] ? Hash[*ENV[varname].split(',').map { |pair| pair.split(':').map { |x| x.to_sym } }.flatten(1)] : {}    
   end
   
