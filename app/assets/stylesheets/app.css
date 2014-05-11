@@ -1,0 +1,8 @@
+
+body { padding-top: 60px; }
+
+.page-header { margin-top: 0; padding-bottom: 10px }
+.page-header h1 { display: inline }
+.page-header a { margin-left: 10px; position: relative; top: -6px }
+
+select[name*=day], select[name*=month], select[name*=year], select[name*=hour], select[name*=min] { display:inline; width: auto } 

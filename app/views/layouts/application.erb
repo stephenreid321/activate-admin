@@ -10,7 +10,8 @@
     [
       'bootstrap.min.css',
       'font-awesome.min.css',
-      'summernote.css'    
+      'summernote.css',
+      'app.css'
       ].each { |file| %> 
       <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/stylesheets/<%=file%>" />    
     <% } %>
@@ -20,52 +21,10 @@
       'bootstrap.min.js',
       'summernote.min.js',
       'jquery.deparam.js',
-      'jquery.confirm.js',
-      'jquery.popupWindow.js'
+      'app.js'
       ].each { |file| %>
       <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
     <% } %>
-
-    <style>
-      body { padding: 60px 20px; }
-      .page-header { margin-top: 0; padding-bottom: 10px }
-      .page-header h1 { display: inline }
-      .page-header a { margin-left: 10px; position: relative; top: -6px }
-      select[name*=day], select[name*=month], select[name*=year], select[name*=hour], select[name*=min] { display:inline; width: auto } 
-    </style>
-
-    <script>
-      $(function() {
-        
-        $('textarea.wysiwyg').each(function() {
-          var textarea = this;
-          var summernote = $('<div class="summernote"></div>');
-          $(summernote).insertAfter(this);
-          $(summernote).summernote({height: 500});
-          $(summernote).code($(textarea).val());
-          $('.note-fontname, .note-help', summernote.next()).hide();
-          $('button[data-event=codeview]', summernote.next()).click();          
-          $(textarea).hide();
-          $(textarea.form).submit(function() {
-            $(textarea).val($(summernote).code());
-          });
-        });
-        
-        $('input[type=text].slug').each(function() {
-          var slug = $(this);
-          var start_length = slug.val().length;
-          var pos = $.inArray(this, $('input', this.form)) - 1;
-          var title = $($('input', this.form).get(pos));
-          slug.focus(function() {
-            slug.data('focus', true);
-          });
-          title.keyup(function() {
-            if (start_length == 0 && slug.data('focus') != true)
-              slug.val(title.val().toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, ''));
-          });
-        });
-        
-      });</script>    
 
   </head>
   <body>
@@ -89,40 +48,44 @@
       });
     </script>
 
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-top-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" style="font-family: Monaco, Menlo, Consolas, 'Courier New', monospace;" href="<%=url(:home)%>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
-      </div>
-      <div class="collapse navbar-collapse navbar-top-collapse">
-        <ul class="nav navbar-nav">
-          <li class="dropdown">
-            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> Models<b class="caret"></b></a>
-            <%= ul_nav 'dropdown-menu', models.sort_by { |model| model.to_s }.map { |model|
-              [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
-              }
-          %>
-          </li>
-          <% if ENV['HEROKU_APP_NAME'] %>
-            <li>
-              <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
-            </li>
-          <% end %>
-        </ul>
-        <div class="navbar-right">
-          <ul class="nav navbar-nav">
-            <li><a href="<%=url(:logout)%>">Sign out</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>    
+    <div class="container-fluid">
 
-    <%= yield %>
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-top-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="<%=url(:home)%>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
+        </div>
+        <div class="collapse navbar-collapse navbar-top-collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> Models<b class="caret"></b></a>
+              <%= ul_nav 'dropdown-menu', models.sort_by { |model| model.to_s }.map { |model|
+                [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
+                }
+            %>
+            </li>
+            <% if ENV['HEROKU_APP_NAME'] %>
+              <li>
+                <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
+              </li>
+            <% end %>
+          </ul>
+          <div class="navbar-right">
+            <ul class="nav navbar-nav">
+              <li><a href="<%=url(:logout)%>">Sign out</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>    
+
+      <%= yield %>
+
+    </div>
 
   </body>
 </html>
