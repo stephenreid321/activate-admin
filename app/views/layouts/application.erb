@@ -29,24 +29,7 @@
   </head>
   <body>
 
-    <div style="z-index: 1040; width: 40%; margin-left: -20%; left: 50%; position: absolute; margin-top: -40px">
-      <% {:error => 'alert-danger', :warning => 'alert-warning', :notice => 'alert-info'}.each { |k,v| %>
-        <% if flash[k] %>
-          <div id="top-alert" class="fade in alert <%=v%> alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <%= flash[k] %>
-          </div>
-        <% end %>        
-      <% } %>       
-    </div>
-    <script>
-      $(function() {
-        $(".alert").alert()
-        window.setTimeout(function() {
-          $("#top-alert").alert('close');
-        }, 3000);
-      });
-    </script>
+    <%= partial :alert %>
 
     <div class="container-fluid">
 
@@ -60,27 +43,31 @@
           </button>
           <a class="navbar-brand" href="<%=url(:home)%>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
         </div>
-        <div class="collapse navbar-collapse navbar-top-collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> Models<b class="caret"></b></a>
-              <%= ul_nav 'dropdown-menu', models.sort_by { |model| model.to_s }.map { |model|
-                [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
-                }
-            %>
-            </li>
-            <% if ENV['HEROKU_APP_NAME'] %>
-              <li>
-                <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
-              </li>
-            <% end %>
-          </ul>
-          <div class="navbar-right">
+
+        <% if (current_account and current_account.role == 'admin') %>
+          <div class="collapse navbar-collapse navbar-top-collapse">
             <ul class="nav navbar-nav">
-              <li><a href="<%=url(:logout)%>">Sign out</a></li>
+              <li class="dropdown">
+                <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;"><i class="fa fa-files-o"></i> Models<b class="caret"></b></a>
+                <%= ul_nav 'dropdown-menu', models.sort_by { |model| model.to_s }.map { |model|
+                  [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
+                  }
+              %>
+              </li>
+              <% if ENV['HEROKU_APP_NAME'] %>
+                <li>
+                  <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
+                </li>
+              <% end %>
             </ul>
+            <div class="navbar-right">
+              <ul class="nav navbar-nav">
+                <li><a href="<%=url(:logout)%>">Sign out</a></li>
+              </ul>
+            </div>
           </div>
-        </div>
+        <% end %>
+
       </nav>    
 
       <%= yield %>

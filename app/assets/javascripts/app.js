@@ -37,7 +37,7 @@ $(function() {
   });
 
   $(document).on('click', 'a.popup', function(e) {
-    window.open(this.href, null, 'width=600,height=300,left=150,top=150').focus();
+    window.open(this.href, null, 'scrollbars=yes,width=600,height=600,left=150,top=150').focus();
     return false;
   });
 
