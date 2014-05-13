@@ -89,15 +89,25 @@ module ActivateAdmin
       erb :build
     end
   
-    post :new, :map => '/new/:model' do
+    post :new, :map => '/new/:model', :provides => [:html, :json] do
       @resource = model.new(params[model.to_s.underscore])
       instance_variable_set("@#{model.to_s.underscore}", @resource)
       if @resource.save
-        flash[:notice] = "<strong>Awesome!</strong> The #{human_model_name(model).downcase} was created successfully."
-        params[:popup] ? refreshParent : redirect(url(:index, :model => model.to_s))
+        case content_type
+        when :html        
+          flash[:notice] = "<strong>Awesome!</strong> The #{human_model_name(model).downcase} was created successfully."
+          params[:popup] ? refreshParent : redirect(url(:index, :model => model.to_s))
+        when :json
+          {url: @resource.file.url}.to_json
+        end
       else
-        flash.now[:error] = "<strong>Oops.</strong> Some errors prevented the #{human_model_name(model).downcase} from being saved."
-        erb :build
+        case content_type
+        when :html              
+          flash.now[:error] = "<strong>Oops.</strong> Some errors prevented the #{human_model_name(model).downcase} from being saved."
+          erb :build
+        when :json
+          error
+        end
       end
     end
   
