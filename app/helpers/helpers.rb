@@ -5,7 +5,7 @@ ActivateAdmin::App.helpers do
   end
   
   def models
-    ENV['ACTIVATE_ADMIN_MODELS'] ? (ENV['ACTIVATE_ADMIN_MODELS'].split(',').map { |x| x.constantize }) : (Dir.entries("#{PADRINO_ROOT}/models").select { |filename| filename.ends_with?('.rb') }.map { |filename| filename.split('.rb').first.camelize.constantize })
+    ENV['ADMIN_MODELS'] ? (ENV['ADMIN_MODELS'].split(',').map { |x| x.constantize }) : (Dir.entries("#{PADRINO_ROOT}/models").select { |filename| filename.ends_with?('.rb') }.map { |filename| filename.split('.rb').first.camelize.constantize })
   end
   
   def model

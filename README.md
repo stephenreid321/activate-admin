@@ -30,8 +30,14 @@ def self.fields_for_form
   }
 end
 ```
-
 Start your app and navigate to /admin. Voila!
+
+Environment variables
+-----
+Include only certain models: `ENV['ADMIN_MODELS']`
+Set site name: `ENV['ADMIN_SITE_NAME']`
+Inline uploads: `ENV['INLINE_UPLOAD_MODEL']` and `ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']`
+Configuration variables: `ENV['HEROKU_API_KEY']` and `ENV['HEROKU_APP_NAME']`
 
 Available field types
 -----

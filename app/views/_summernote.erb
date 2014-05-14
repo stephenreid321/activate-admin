@@ -1,0 +1,45 @@
+<script>
+  $(function() {
+
+    $('textarea.wysiwyg').each(function() {
+      var textarea = this;
+      var summernote = $('<div class="summernote"></div>');
+      $(summernote).insertAfter(this);
+      $(summernote).summernote({
+      height: 500,
+<% if ENV['INLINE_UPLOAD_MODEL'] %>
+        onImageUpload: function(files, editor, welEditable) {
+          sendFile(files[0], editor, welEditable);
+        }
+<% end %>
+    });
+    $(summernote).code($(textarea).val());
+    $('.note-fontname, .note-help', summernote.next()).hide();
+    $('button[data-event=codeview]', summernote.next()).click();
+    $(textarea).hide();
+    $(textarea.form).submit(function() {
+      $(textarea).val($(summernote).code());
+    });
+    });
+<% if ENV['INLINE_UPLOAD_MODEL'] %>
+      function sendFile(file, editor, welEditable) {
+        var formData = new FormData();
+        formData.append('<%=ENV['INLINE_UPLOAD_MODEL'].underscore%>[<%=ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']%>]', file);
+
+        $.ajax({
+          data: formData,
+          type: "POST",
+          url: "<%=url(:new, :model => ENV['INLINE_UPLOAD_MODEL'])%>",
+          cache: false,
+          dataType: 'json',
+          processData: false, // Don't process the files
+          contentType: false, // Set content type to false as jQuery will tell the server its a query string request      
+          success: function(data) {
+            editor.insertImage(welEditable, data.url);
+          }
+        });
+      }
+<% end %>
+
+  });
+</script>

@@ -87,7 +87,7 @@ module Padrino
           else         
             content << %Q{
               <div>
-                <i class="fa fa-download"></i> <a target="_blank" href="#{object.send(fieldname).url}">#{object.send(fieldname).name}</a>
+                <i class="fa fa-download"></i> <a target="_blank" href="#{object.send(fieldname).remote_url}">#{object.send(fieldname).name}</a>
               </div>          
               <div>
                 #{file_field(fieldname, :disabled => disabled)}
@@ -107,7 +107,7 @@ module Padrino
           else          
             content << %Q{
             <div style="margin-bottom: 1em">
-              <a target="_blank" href="#{object.send(fieldname).url}"><img style="max-height: 200px" src="#{object.send(fieldname).url}"></a>
+              <a target="_blank" href="#{object.send(fieldname).remote_url}"><img style="max-height: 200px" src="#{object.send(fieldname).remote_url}"></a>
             </div>
             <div>
               #{file_field(fieldname, :disabled => disabled)}
