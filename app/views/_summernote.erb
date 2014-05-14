@@ -6,7 +6,17 @@
       var summernote = $('<div class="summernote"></div>');
       $(summernote).insertAfter(this);
       $(summernote).summernote({
-      height: 500,
+      toolbar: [
+              ['view', ['codeview', 'fullscreen']],        
+              ['style', ['style']],
+              ['font', ['bold', 'italic', 'underline', 'clear']],
+              ['color', ['color']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['height', ['height']],
+              ['table', ['table']],
+              ['insert', ['link', 'picture', 'video']],
+      ],
+              height: 500,
 <% if ENV['INLINE_UPLOAD_MODEL'] %>
         onImageUpload: function(files, editor, welEditable) {
           sendFile(files[0], editor, welEditable);
@@ -14,7 +24,6 @@
 <% end %>
     });
     $(summernote).code($(textarea).val());
-    $('.note-fontname, .note-help', summernote.next()).hide();
     $('button[data-event=codeview]', summernote.next()).click();
     $(textarea).hide();
     $(textarea.form).submit(function() {
