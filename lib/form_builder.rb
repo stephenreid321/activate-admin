@@ -161,7 +161,36 @@ module Padrino
           content << %Q{</ul>} 
           block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)                         
         end        
-                                
+                                        
+        # Geopicker
+        
+        def geopicker_block(fieldname, disabled: false, tip: nil, hint: nil, label_class: nil, div_class: nil)
+          content = %Q{<div class="geopicker">}
+          content << @template.hidden_field_tag("#{model.to_s.underscore}[#{fieldname}][lat]", :class => 'form-control', :disabled => disabled, :value => object.send("#{fieldname}_lat"))
+          content << ' '
+          content << @template.hidden_field_tag("#{model.to_s.underscore}[#{fieldname}][lng]", :class => 'form-control', :disabled => disabled, :value => object.send("#{fieldname}_lng"))
+          content << %Q{</div>}                   
+          block_layout(fieldname, content, tip: tip, hint: hint, label_class: label_class, div_class: div_class)
+        end      
+                
+        # Submission
+        
+        def submit_block(destroy_url: nil, div_class: nil)
+          content = %Q{
+            <div class="form-group">
+              <div class="#{div_class || 'col-md-offset-3 col-md-6'}">
+                <button class="btn btn-primary" type="submit">#{object.new_record? ? "Create #{model.to_s.underscore.humanize.downcase}" : "Update #{model.to_s.underscore.humanize.downcase}"}</button> }
+          if !object.new_record? and destroy_url
+            content << %Q{<a class="btn btn-danger" data-confirm="Are you sure you want to delete this #{model.to_s.underscore.humanize.downcase}?" href="#{destroy_url}">Delete</a>}
+          end
+          content << %Q{
+              </div>
+            </div>
+          }
+        end
+        
+        # Block layout
+        
         def block_layout(fieldname, content, tip: nil, hint: nil, label_class: nil, div_class: nil)
           
           tip = if tip
@@ -215,22 +244,6 @@ module Padrino
             </div>
           }
           block
-        end   
-        
-        # Submission
-        
-        def submit_block(destroy_url: nil, div_class: nil)
-          content = %Q{
-            <div class="form-group">
-              <div class="#{div_class || 'col-md-offset-3 col-md-6'}">
-                <button class="btn btn-primary" type="submit">#{object.new_record? ? "Create #{model.to_s.underscore.humanize.downcase}" : "Update #{model.to_s.underscore.humanize.downcase}"}</button> }
-          if !object.new_record? and destroy_url
-            content << %Q{<a class="btn btn-danger" data-confirm="Are you sure you want to delete this #{model.to_s.underscore.humanize.downcase}?" href="#{destroy_url}">Delete</a>}
-          end
-          content << %Q{
-              </div>
-            </div>
-          }
         end          
         
         protected

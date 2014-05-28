@@ -6,3 +6,4 @@ body { padding-top: 60px; }
 .page-header a { margin-left: 10px; position: relative; top: -6px }
 
 select[name$='[year]'], select[name$='[month]'], select[name$='[day]'], select[name$='[hour]'], select[name$='[min]'] { display:inline; width: auto } 
+input[name$='[lat]'], input[name$='[lng]'] { display:inline; width: auto } 

@@ -21,10 +21,13 @@
       'bootstrap.min.js',
       'summernote.min.js',
       'jquery.deparam.js',
+      'jquery.geopicker.js',
       'app.js'
       ].each { |file| %>
       <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
     <% } %>
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>      
 
     <%= partial :summernote %>
 

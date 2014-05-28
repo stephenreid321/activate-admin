@@ -5,6 +5,7 @@ module Activate
       datetime_hashes_to_datetimes!(params)      
       date_hashes_to_dates!(params)      
       file_hashes_to_files!(params)
+      coordinate_hashes_to_coordinates!(params)
       blanks_to_nils!(params)    
     end
   
@@ -39,6 +40,16 @@ module Activate
         end
       }
     end
+    
+    def coordinate_hashes_to_coordinates!(hash)
+      hash.each { |k,v|
+        if v.is_a?(Hash) and [:lat, :lng].all? { |x| v.has_key?(x.to_s) }
+          hash[k] = [v[:lng].to_f, v[:lat].to_f]
+        elsif v.is_a?(Hash)
+          coordinate_hashes_to_coordinates!(v)
+        end
+      }
+    end    
   
     def blanks_to_nils!(hash)   
       hash.each { |k,v|
