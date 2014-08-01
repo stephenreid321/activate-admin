@@ -24,7 +24,7 @@
 <% end %>
     });
     $(summernote).code($(textarea).val());
-    //$('button[data-event=codeview]', summernote.next()).click();
+    $('button[data-event=codeview]', summernote.next()).click();
     $(textarea).hide();
     $(textarea.form).submit(function() {
       $(textarea).val($(summernote).code());
