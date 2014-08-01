@@ -31,9 +31,9 @@ module ActivateAdmin
       params[:options].each { |k,v|
         case v
         when 'edit'
-          heroku.put_config_vars(ENV['HEROKU_APP_NAME'], k => params[k])
+          heroku.put_config_vars(ENV['APP_NAME'], k => params[k])
         when 'delete'
-          heroku.delete_config_var(ENV['HEROKU_APP_NAME'], k)
+          heroku.delete_config_var(ENV['APP_NAME'], k)
         end
       }
       flash[:notice] = "<strong>Sweet.</strong> Your config vars were updated."

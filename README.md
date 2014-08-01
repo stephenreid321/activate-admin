@@ -9,6 +9,7 @@ Setup
 In the Gemfile of your application:
 ```
 gem 'will_paginate', github: 'mislav/will_paginate'
+gem 'activate-tools', github: 'wordsandwriting/activate-tools'
 gem 'activate-admin', github: 'wordsandwriting/activate-admin'
 ```
 
@@ -37,7 +38,7 @@ Environment variables
 * Include only certain models: `ENV['ADMIN_MODELS']`
 * Set site name: `ENV['ADMIN_SITE_NAME']`
 * Inline uploads: `ENV['INLINE_UPLOAD_MODEL']` and `ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']`
-* Review and modify configuration variables: `ENV['HEROKU_API_KEY']` and `ENV['HEROKU_APP_NAME']`
+* Review and modify configuration variables: `ENV['HEROKU_API_KEY']` and `ENV['APP_NAME']`
 
 Available field types
 -----

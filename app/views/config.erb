@@ -12,7 +12,7 @@
 </script>
 
 <% form_tag url(:config), :class => 'form-horizontal' do %>
-  <% Heroku::API.new.get_config_vars(ENV['HEROKU_APP_NAME']).body.sort_by { |k,v| k }.each { |k,v| %>
+  <% Heroku::API.new.get_config_vars(ENV['APP_NAME']).body.sort_by { |k,v| k }.each { |k,v| %>
     <div class="form-group">
       <label class="control-label col-md-3">
         <%=k%>
