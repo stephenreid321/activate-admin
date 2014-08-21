@@ -8,5 +8,3 @@ module ActivateAdmin
   extend Padrino::Module
   gem! "activate-admin"
 end
-
-String.send(:define_method, :html_safe?){ true }

@@ -49,7 +49,7 @@
           <a class="navbar-brand" href="<%=url(:home)%>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
         </div>
 
-        <% if (current_account and current_account.role == 'admin') %>
+        <% if (current_account and current_account.admin?) %>
           <div class="collapse navbar-collapse navbar-top-collapse">
             <ul class="nav navbar-nav">
               <li class="dropdown">
