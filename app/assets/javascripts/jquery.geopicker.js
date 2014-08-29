@@ -8,8 +8,7 @@
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: false,
         scaleControl: true,
-        streetViewControl: false,    
-        maxZoom: 16
+        streetViewControl: false
       },
       getLatLng: function() {},
       getZoom: function() {},
