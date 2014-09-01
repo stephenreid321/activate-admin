@@ -98,7 +98,7 @@ module ActivateAdmin
           flash[:notice] = "<strong>Awesome!</strong> The #{human_model_name(model).downcase} was created successfully."
           params[:popup] ? refreshParent : redirect(url(:index, :model => model.to_s))
         when :json
-          {url: @resource.send(ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']).remote_url}.to_json
+          {url: @resource.send(ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']).url}.to_json
         end
       else
         case content_type
