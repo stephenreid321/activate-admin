@@ -27,15 +27,9 @@ module ActivateAdmin
     end
     
     post :config, :map => '/config' do
-      heroku = Heroku::API.new
-      params[:options].each { |k,v|
-        case v
-        when 'edit'
-          heroku.put_config_vars(ENV['APP_NAME'], k => params[k])
-        when 'delete'
-          heroku.delete_config_var(ENV['APP_NAME'], k)
-        end
-      }
+      heroku = PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN'])
+      heroku.config_var.update(ENV['APP_NAME'], Hash[heroku.config_var.info(ENV['APP_NAME']).map { |k,v| [k, params[k]] }])
+      sleep(1)
       flash[:notice] = "<strong>Sweet.</strong> Your config vars were updated."
       redirect url(:config)
     end

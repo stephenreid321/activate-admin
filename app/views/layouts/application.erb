@@ -59,7 +59,7 @@
                   }
               %>
               </li>
-              <% if ENV['HEROKU_API_KEY'] %>
+              <% if ENV['HEROKU_OAUTH_TOKEN'] %>
                 <li>
                   <a href="<%=url(:config)%>"><i class="fa fa-cog"></i> Configuration variables</a>
                 </li>

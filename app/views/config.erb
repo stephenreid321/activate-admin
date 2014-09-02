@@ -3,24 +3,14 @@
   <h1>Configuration variables</h1>
 </div>
 
-<script>
-  $(function() {
-    $('input[type=text]').focus(function() {
-      $('input[name="options[' + this.name + ']"][value=edit]').prop('checked', true);
-    });
-  });
-</script>
-
 <% form_tag url(:config), :class => 'form-horizontal' do %>
-  <% Heroku::API.new.get_config_vars(ENV['APP_NAME']).body.sort_by { |k,v| k }.each { |k,v| %>
+  <% PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN']).config_var.info(ENV['APP_NAME']).sort_by { |k,v| k }.each { |k,v| %>
     <div class="form-group">
       <label class="control-label col-md-3">
         <%=k%>
       </label>
       <div class="col-md-6">
-        <%= text_field_tag k, :value => v, :class => 'form-control', :style => 'width: 80%; display: inline-block; margin-right: 1%' %>
-        <i title="Edit" class="fa fa-edit"></i>  <%= radio_button_tag "options[#{k}]", :value => 'edit' %>
-        <i title="Delete" class="fa fa-trash-o"></i>  <%= radio_button_tag "options[#{k}]", :value => 'delete' %>                
+        <%= text_field_tag k, :value => v, :class => 'form-control' %>
       </div>
     </div>
   <% } %>
