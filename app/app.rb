@@ -29,8 +29,7 @@ module ActivateAdmin
     post :config, :map => '/config' do
       heroku = PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN'])
       heroku.config_var.update(ENV['APP_NAME'], Hash[heroku.config_var.info(ENV['APP_NAME']).map { |k,v| [k, params[k]] }])
-      sleep(1)
-      flash[:notice] = "<strong>Sweet.</strong> Your config vars were updated."
+      flash[:notice] = "Your config vars were updated. You may have to refresh the page for your changes to take effect."
       redirect url(:config)
     end
   
