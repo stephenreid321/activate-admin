@@ -45,7 +45,7 @@ module ActivateAdmin
       if @q
         q = []
         admin_fields(model).each { |fieldname, options|
-          if [:text, :text_area, :wysiwyg].include?(options[:type])
+          if string_types.include?(options[:type])
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
               q << ["#{fieldname} ilike ?", "%#{@q}%"]
             else # Mongoid
@@ -68,7 +68,7 @@ module ActivateAdmin
       end
       @f.each { |fieldname,q|      
         options = admin_fields(model)[fieldname.to_sym]
-        if [:text, :text_area, :wysiwyg].include?(options[:type])          
+        if string_types.include?(options[:type])          
           if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
             @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
           else # Mongoid

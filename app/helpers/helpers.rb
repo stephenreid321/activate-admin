@@ -36,6 +36,10 @@ ActivateAdmin::App.helpers do
     end
   end  
   
+  def string_types
+    [:text, :number, :slug, :text_area, :wysiwyg, :select]
+  end
+  
   def human_model_name(model)
     model.to_s.underscore.humanize
   end  

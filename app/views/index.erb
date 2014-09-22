@@ -71,7 +71,7 @@
 
           <% if @f and @f[fieldname] %>
             <a title="Searching for '<%=@f[fieldname]%>'; click to search again" href="javascript:;" class="f"><i class="fa fa-search"></i></a>
-        <% elsif persisted_field?(model, fieldname) and [:text, :text_area, :wysiwyg, :lookup].include?(options[:type]) %>
+        <% elsif persisted_field?(model, fieldname) and (string_types+[:lookup]).include?(options[:type]) %>
             <a title="Search in <%=fieldname%>" href="javascript:;" class="f fn"><i class="fa fa-search"></i></a>
   <% end %>
         </th>
