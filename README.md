@@ -20,11 +20,7 @@ Padrino.mount('ActivateAdmin::App', :app_file => ActivateAdmin.root('app/app.rb'
 
 Say you have a model User with the fields User#name and User#birthday. Then in the model:
 ``` ruby
-def self.fields_for_index
-  [:name, :birthday]
-end
-
-def self.fields_for_form
+def self.admin_fields
   {
     :name => :text,
     :birthday => :date
@@ -43,7 +39,7 @@ Environment variables
 Available field types
 -----
 ``` ruby
-def self.fields_for_form
+def self.admin_fields
   {
     :field => :text,
     :field => :password,
