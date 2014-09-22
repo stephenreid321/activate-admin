@@ -75,7 +75,7 @@ module ActivateAdmin
       @f.each { |fieldname,q|      
         if q
           options = admin_fields(model)[fieldname.to_sym]
-          if string_types.include?(options[:type])          
+          if string_types.include?(options[:type]) and persisted_field?(model, fieldname)
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
               @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
             else # Mongoid
@@ -97,10 +97,12 @@ module ActivateAdmin
           end
         end
       } if @f
-      if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-        @resources = @resources.order("#{@o} #{@d}")
-      else # Mongoid
-        @resources = @resources.order(@o.to_sym.send(@d)) if @o and @d
+      if @o and @d
+        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+          @resources = @resources.order("#{@o} #{@d}")
+        else # Mongoid
+          @resources = @resources.order(@o.to_sym.send(@d))
+        end
       end
       case content_type
       when :html
