@@ -10,10 +10,10 @@
 
   <% admin_fields(model).select { |fieldname, options| options[:edit] }.each { |fieldname, options| %> 
     <% unless @resource.new_record? and options[:type] == :collection %>
-      <% case options[:type]; when :lookup %>
-        <%= f.lookup_block(fieldname, selected: params[fieldname]) %>
+      <% case options[:type]; when :lookup %>          
+        <%= f.lookup_block(fieldname, selected: params[fieldname], tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
       <% else %>
-        <%= f.send("#{options[:type]}_block", fieldname) %>
+        <%= f.send("#{options[:type]}_block", fieldname, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
       <% end %>
     <% end %>
   <% } %>
