@@ -16,22 +16,37 @@ ActivateAdmin::App.helpers do
     admin_fields = model.admin_fields
     admin_fields[:created_at] = {:type => :datetime, :edit => false} if persisted_field?(model, :created_at)
     admin_fields[:updated_at] = {:type => :datetime, :edit => false} if persisted_field?(model, :updated_at)
-    Hash[admin_fields.map { |fieldname, options|
+    admin_fields = Hash[admin_fields.map { |fieldname, options|
         options = {:type => options} if options.is_a?(Symbol)
         options[:index] = true if !options.keys.include?(:index) and [:text, :number, :slug, :text_area, :wysiwyg, :check_box, :select, :radio_button, :date, :datetime, :lookup].include?(options[:type])
         options[:edit] = true if !options.keys.include?(:edit)
         [fieldname, options]
       }]
+    admin_fields[admin_fields.first.first][:lookup] = true if !admin_fields.find { |fieldname, options| options[:lookup] }
+    admin_fields
   end
   
+  def assoc(model, fieldname, relationship: :belongs_to)
+    case relationship
+    when :belongs_to
+      model.reflect_on_all_associations(:belongs_to).find { |assoc| assoc.foreign_key == fieldname.to_s }
+    when :has_many
+      model.reflect_on_all_associations(:has_many).find { |assoc| assoc.name == fieldname.to_sym }
+    end
+  end
+      
   def assoc_name(model, fieldname)
-    model.reflect_on_all_associations(:belongs_to).find { |assoc| assoc.foreign_key == fieldname.to_s }.class_name
+    assoc(model, fieldname).class_name
+  end
+  
+  def lookup_method(model)
+    admin_fields(model).find { |fieldname, options| options[:lookup] }.first
   end
   
   def persisted_field?(model, fieldname)
-    if model.respond_to?(:column_names)        
+    if model.respond_to?(:column_names)  # ActiveRecord/PostgreSQL     
       model.column_names.include?(fieldname.to_s)
-    else
+    else # Mongoid
       model.fields[fieldname.to_s]
     end
   end  

@@ -54,9 +54,9 @@ module ActivateAdmin
           elsif options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-              q << ["#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{assoc_name.constantize.send(:lookup)} ilike ?", "%#{@q}%"]).select(:id)]
+              q << ["#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{@q}%"]).select(:id)]
             else # Mongoid
-              q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{@q}/i).only(:id).map(&:id) }
+              q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{@q}/i).only(:id).map(&:id) }
             end                                   
           end          
         }
@@ -77,9 +77,9 @@ module ActivateAdmin
         elsif options[:type] == :lookup
           assoc_name = assoc_name(model, fieldname)
           if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-            @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{assoc_name.constantize.send(:lookup)} ilike ?", "%#{q}%"]).select(:id))
+            @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
           else # Mongoid
-            @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{q}/i).only(:id).map(&:id) })
+            @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
           end                       
         end
       } if @f

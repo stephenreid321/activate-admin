@@ -30,20 +30,24 @@
   a.fn, a.odn { visibility:hidden; }
 </style>
 <script>
-  $(function() {
+  $(function () {
     var params = $.deparam(location.href.split('?')[1] || '');
-    $('th').hover(function() { $('a.fn, a.odn', this).css('visibility','visible') }, function() { $('a.fn, a.odn', this).css('visibility','hidden') });
-    $('a.od').click(function() {
+    $('th').hover(function () {
+      $('a.fn, a.odn', this).css('visibility', 'visible')
+    }, function () {
+      $('a.fn, a.odn', this).css('visibility', 'hidden')
+    });
+    $('a.od').click(function () {
       params['o'] = $(this).closest('th').data('fieldname')
       params['d'] = params['d'] == 'asc' ? 'desc' : 'asc'
-      location.assign(location.pathname+'?'+$.param(params));                    
+      location.assign(location.pathname + '?' + $.param(params));
     });
-    $('a.f').click(function() {
+    $('a.f').click(function () {
       console.log(this);
       if (!params['f'])
         params['f'] = {}
       params['f'][$(this).closest('th').data('fieldname')] = prompt('Search for:');
-      location.assign(location.pathname+'?'+$.param(params));
+      location.assign(location.pathname + '?' + $.param(params));
     });
   });
 </script>
@@ -85,16 +89,16 @@
         <td>
           <a href="<%=url(:edit, :model => model.to_s, :id => resource.id)%>" class="btn btn-default"><i class="fa fa-edit"></i>&nbsp;Edit</a>
         </td>
-          <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
+  <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
           <td>
-            <% if options[:type] == :lookup && resource.send(fieldname) %>
-              <a href="<%=url(:edit, :model => (assoc_name = assoc_name(model, fieldname)), :id => resource.send(fieldname))%>"><%= assoc_name.constantize.find(resource.send(fieldname)).send(assoc_name.constantize.send(:lookup)) %></a>
+    <% if options[:type] == :lookup && resource.send(fieldname); assoc_name = assoc_name(model, fieldname) %>            
+              <a href="<%=url(:edit, :model => assoc_name, :id => resource.send(fieldname))%>"><%= assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize)) %></a>
             <% elsif fieldname.to_s.ends_with?('_url') %>
               <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
             <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
               <%= resource.send(fieldname) %>
             <% elsif options[:type] == :check_box %>
-              <%= case resource.send(fieldname); when true; '<i class="fa fa-check"></i>'; when false;  '<i class="fa fa-times"></i>'; end %>
+      <%= case resource.send(fieldname); when true; '<i class="fa fa-check"></i>'; when false;  '<i class="fa fa-times"></i>'; end %>
           <% else %>
       <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
     <% end %>
