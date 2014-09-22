@@ -83,7 +83,11 @@ module ActivateAdmin
           end                       
         end
       } if @f
-      @resources = @resources.order_by(@o.to_sym.send(@d)) if @o and @d
+      if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+        @resources = @resources.order("#{@o} #{@d}")
+      else # Mongoid
+        @resources = @resources.order(@o.to_sym.send(@d)) if @o and @d
+      end               
       case content_type
       when :html
         @resources = @resources.paginate(:page => params[:page], :per_page => 25)
