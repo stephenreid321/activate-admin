@@ -55,17 +55,17 @@
   <thead>
     <tr>
       <th style="width: 70px"></th>
-        <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
+      <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
         <th data-fieldname="<%=fieldname%>">
-            <%= model.human_attribute_name(fieldname) %>
+          <%= model.human_attribute_name(fieldname) %>
 
-            <% if @o == fieldname.to_sym %>
+          <% if @o == fieldname.to_sym %>
             <a title="Ordered by <%=fieldname%>; click to reverse" href="javascript:;" class="od">
               <% if @d == :asc %>
                 <i class="fa fa-caret-down"></i>
-            <% elsif @d == :desc %>
+              <% elsif @d == :desc %>
                 <i class="fa fa-caret-up"></i>
-    <% end %>
+              <% end %>
             </a>
           <% elsif persisted_field?(model, fieldname) %>     
             <a title="Order by <%=fieldname%>" href="javascript:;" class="od odn">
@@ -75,42 +75,46 @@
 
           <% if @f and @f[fieldname] %>
             <a title="Searching for '<%=@f[fieldname]%>'; click to search again" href="javascript:;" class="f"><i class="fa fa-search"></i></a>
-        <% elsif persisted_field?(model, fieldname) and (string_types+[:lookup]).include?(options[:type]) %>
+          <% elsif persisted_field?(model, fieldname) and (string_types+[:lookup]).include?(options[:type]) %>
             <a title="Search in <%=fieldname%>" href="javascript:;" class="f fn"><i class="fa fa-search"></i></a>
-  <% end %>
+          <% end %>
         </th>
-<% } %>
+      <% } %>
       <th style="width: 88px"></th>
     </tr>
   </thead>
   <tbody>
-<% @resources.each { |resource| %>
+    <% @resources.each { |resource| %>
       <tr>
         <td>
           <a href="<%=url(:edit, :model => model.to_s, :id => resource.id)%>" class="btn btn-default"><i class="fa fa-edit"></i>&nbsp;Edit</a>
         </td>
-  <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
+        <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
           <td>
-    <% if options[:type] == :lookup && resource.send(fieldname); assoc_name = assoc_name(model, fieldname) %>            
+            <% if options[:type] == :lookup && resource.send(fieldname); assoc_name = assoc_name(model, fieldname) %>            
               <a href="<%=url(:edit, :model => assoc_name, :id => resource.send(fieldname))%>"><%= assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize)) %></a>
             <% elsif fieldname.to_s.ends_with?('_url') %>
               <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
             <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
               <%= resource.send(fieldname) %>
             <% elsif options[:type] == :check_box %>
-      <%= case resource.send(fieldname); when true; '<i class="fa fa-check"></i>'; when false;  '<i class="fa fa-times"></i>'; end %>
-          <% else %>
-      <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
-    <% end %>
+              <%= case resource.send(fieldname); when true; '<i class="fa fa-check"></i>'; when false;  '<i class="fa fa-times"></i>'; end %>
+            <% else %>
+              <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
+            <% end %>
           </td>
-  <% } %>
+        <% } %>
         <td>
           <a class="btn btn-danger" data-confirm="Are you sure you want to delete this <%=human_model_name(model).downcase%>?" href="<%=url(:destroy, :model => model.to_s, :id => resource.id)%>"><i class="fa fa-trash-o"></i>&nbsp;Delete</a>
         </td>
       </tr>
-<% } %>
+    <% } %>
   </tbody>
 </table>
 
 <%= will_paginate @resources, :renderer => WillPaginate::ViewHelpers::BootstrapRenderer %>
+
+<% if @resources.respond_to?(:to_sql) %>
+  <pre><%=@resources.to_sql%></pre>
+<% end %>
 

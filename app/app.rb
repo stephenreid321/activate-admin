@@ -49,7 +49,7 @@ module ActivateAdmin
       if @q
         q = []
         admin_fields(model).each { |fieldname, options|
-          if string_types.include?(options[:type])
+          if string_types.include?(options[:type]) and persisted_field?(model, fieldname)
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
               q << ["#{fieldname} ilike ?", "%#{@q}%"]
             else # Mongoid
@@ -57,7 +57,7 @@ module ActivateAdmin
             end
           elsif options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
-            if persisted_field?(model, lookup_method(assoc_name.constantize))
+            if persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))
               if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
                 q << ["#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{@q}%"]).select(:id)]
               else # Mongoid
@@ -66,27 +66,33 @@ module ActivateAdmin
             end
           end          
         }
-        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-          @resources = @resources.where.any_of(*q)
+        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL          
+          @resources = @resources.where.any_of(*q) if !q.empty?
         else # Mongoid
           @resources = @resources.or(q)          
         end
       end
       @f.each { |fieldname,q|      
-        options = admin_fields(model)[fieldname.to_sym]
-        if string_types.include?(options[:type])          
-          if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-            @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
-          else # Mongoid
-            @resources = @resources.where(fieldname => /#{q}/i)
-          end                    
-        elsif options[:type] == :lookup
-          assoc_name = assoc_name(model, fieldname)
-          if persisted_field?(model, lookup_method(assoc_name.constantize))
+        if q
+          options = admin_fields(model)[fieldname.to_sym]
+          if string_types.include?(options[:type])          
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-              @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
+              @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
             else # Mongoid
-              @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
+              @resources = @resources.where(fieldname => /#{q}/i)
+            end                    
+          elsif options[:type] == :lookup
+            assoc_name = assoc_name(model, fieldname)
+            if persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))
+              if q.starts_with?('id:')
+                @resources = @resources.where("#{assoc_name.underscore}_id".to_sym => q.split('id:').last)
+              else
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
+                else # Mongoid
+                  @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
+                end
+              end
             end
           end
         end
@@ -95,7 +101,7 @@ module ActivateAdmin
         @resources = @resources.order("#{@o} #{@d}")
       else # Mongoid
         @resources = @resources.order(@o.to_sym.send(@d)) if @o and @d
-      end               
+      end
       case content_type
       when :html
         @resources = @resources.paginate(:page => params[:page], :per_page => 25)
