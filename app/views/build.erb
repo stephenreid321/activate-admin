@@ -23,9 +23,9 @@
           }
         if @resource.send(fieldname).count > l
           content << %Q{<li>⋮</li>}
-          content << %Q{<li><a href="#{url(:index, :model => assoc.class_name, :f => {"#{assoc.inverse_of.class_name.underscore}_id" => "id:#{@resource.id}"})}">See all #{pluralize(@resource.send(fieldname).count, fieldname.to_s.singularize.humanize.downcase)}</a>}
+          content << %Q{<li><a href="#{url(:index, :model => assoc.class_name, :f => {"#{(assoc.inverse_of.class_name || model.to_s).underscore}_id" => "id:#{@resource.id}"})}">See all #{pluralize(@resource.send(fieldname).count, fieldname.to_s.singularize.humanize.downcase)}</a>}
           end
-        content << %Q{<li><a class="btn btn-default popup" href="#{url(:new, :popup => true, :model => assoc.class_name, :"#{assoc.inverse_of.class_name.underscore}_id" => @resource.id)}"><i class="fa fa-pencil"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>}
+        content << %Q{<li><a class="btn btn-default popup" href="#{url(:new, :popup => true, :model => assoc.class_name, :"#{(assoc.inverse_of.class_name || model.to_s).underscore}_id" => @resource.id)}"><i class="fa fa-pencil"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>}
         content << %Q{</ul>} 
         f.block_layout(fieldname, content, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) 
       %>
