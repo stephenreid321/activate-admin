@@ -53,11 +53,13 @@ module ActivateAdmin
             end
           elsif options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
-            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-              q << ["#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{@q}%"]).select(:id)]
-            else # Mongoid
-              q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{@q}/i).only(:id).map(&:id) }
-            end                                   
+            if persisted_field?(model, lookup_method(assoc_name.constantize))
+              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                q << ["#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{@q}%"]).select(:id)]
+              else # Mongoid
+                q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{@q}/i).only(:id).map(&:id) }
+              end                                   
+            end
           end          
         }
         if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
@@ -76,11 +78,13 @@ module ActivateAdmin
           end                    
         elsif options[:type] == :lookup
           assoc_name = assoc_name(model, fieldname)
-          if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-            @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
-          else # Mongoid
-            @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
-          end                       
+          if persisted_field?(model, lookup_method(assoc_name.constantize))
+            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
+            else # Mongoid
+              @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
+            end
+          end
         end
       } if @f
       if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
