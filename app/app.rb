@@ -34,6 +34,10 @@ module ActivateAdmin
     end
   
     get :index, :map => '/index/:model', :provides => [:html, :csv] do
+      if persisted_field?(model, :created_at)
+        @o = :created_at
+        @d = :desc
+      end
       if model.respond_to?(:filter_options)
         @q, @f, @o, @d, = model.filter_options[:q], model.filter_options[:f], model.filter_options[:o], model.filter_options[:d]
       end
