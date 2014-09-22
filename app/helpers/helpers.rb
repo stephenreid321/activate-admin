@@ -13,10 +13,13 @@ ActivateAdmin::App.helpers do
   end  
     
   def admin_fields(model)
-    Hash[model.admin_fields.map { |fieldname, options|
+    admin_fields = model.admin_fields
+    admin_fields[:created_at] = {:type => :datetime, :edit => false} if persisted_field?(model, :created_at)
+    admin_fields[:updated_at] = {:type => :datetime, :edit => false} if persisted_field?(model, :updated_at)
+    Hash[admin_fields.map { |fieldname, options|
         options = {:type => options} if options.is_a?(Symbol)
-        options[:index] = true if !options[:index]
-        options[:edit] = true if !options[:edit]
+        options[:index] = true if !options.keys.include?(:index) and [:text, :number, :slug, :text_area, :wysiwyg, :check_box, :select, :radio_button, :date, :datetime, :lookup].include?(options[:type])
+        options[:edit] = true if !options.keys.include?(:edit)
         [fieldname, options]
       }]
   end
