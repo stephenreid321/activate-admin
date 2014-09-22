@@ -18,10 +18,13 @@
       <% when :collection; assoc = assoc(model, fieldname, relationship: :has_many) %>
         <%=
         content = %Q{<ul class="list-unstyled">}
-        @resource.send(fieldname).limit(10).each { |x|
+        @resource.send(fieldname).limit(l = 10).each { |x|
           content << %Q{<li><a class="popup" href="#{url(:edit, :popup => true, :model => assoc.class_name, :id => x.id)}">#{x.send(lookup_method(assoc.class_name.constantize))}</a></li>}
           }
-        content << %Q{<li>and <a href="#{url(:index, :model => assoc.class_name, :f => {"#{assoc.inverse_of.class_name.underscore}_id" => "id:#{@resource.id}"})}">#{pluralize(@resource.send(fieldname).count - 10,'other')}</a>} if @resource.send(fieldname).count > 10
+        if @resource.send(fieldname).count > l
+          content << %Q{<li>⋮</li>}
+          content << %Q{<li><a href="#{url(:index, :model => assoc.class_name, :f => {"#{assoc.inverse_of.class_name.underscore}_id" => "id:#{@resource.id}"})}">See all #{pluralize(@resource.send(fieldname).count, fieldname.to_s.singularize.humanize.downcase)}</a>}
+          end
         content << %Q{<li><a class="btn btn-default popup" href="#{url(:new, :popup => true, :model => assoc.class_name, :"#{assoc.inverse_of.class_name.underscore}_id" => @resource.id)}"><i class="fa fa-pencil"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>}
         content << %Q{</ul>} 
         f.block_layout(fieldname, content, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) 
