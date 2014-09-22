@@ -8,16 +8,16 @@
 
   <%= hidden_field_tag :popup, :value => true if params[:popup] %>
 
-  <% model.fields_for_form.each { |fieldname, fieldtype| %> 
-    <% unless @resource.new_record? and fieldtype == :collection %>
-      <% case fieldtype; when :lookup %>
+  <% admin_fields(model).select { |fieldname, options| options[:edit] }.each { |fieldname, options| %> 
+    <% unless @resource.new_record? and options[:type] == :collection %>
+      <% case options[:type]; when :lookup %>
         <%= f.lookup_block(fieldname, selected: params[fieldname]) %>
       <% else %>
-        <%= f.send("#{fieldtype}_block", fieldname) %>
+        <%= f.send("#{options[:type]}_block", fieldname) %>
       <% end %>
     <% end %>
   <% } %>
 
-  <%= f.submit_block(destroy_url: url(:destroy, :popup => params[:popup], :model => model.to_s, :id => @resource.id)) %>
+  <%= f.submit_block(destroy_url: (url(:destroy, :popup => params[:popup], :model => model.to_s, :id => @resource.id) if @resource.persisted?)) %>
 
 <% end %>

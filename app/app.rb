@@ -44,33 +44,56 @@ module ActivateAdmin
       @resources = model.all      
       if @q
         q = []
-        model.fields.each { |fieldstring, fieldobj|
-          if fieldobj.type == String and !fieldstring.starts_with?('_')          
-            q << {fieldstring.to_sym => /#{@q}/i }
-          elsif fieldstring.ends_with?('_id') && (assoc_name = model.fields[fieldstring].metadata.try(:class_name))          
-            q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{@q}/i).only(:_id).map(&:_id) }
+        admin_fields(model).each { |fieldname, options|
+          if [:text, :text_area, :wysiwyg].include?(options[:type])
+            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              q << ["#{fieldname} ilike ?", "%#{@q}%"]
+            else # Mongoid
+              q << {fieldname => /#{@q}/i }
+            end
+          elsif options[:type] === :lookup
+            assoc_name = assoc_name(model, fieldname)            
+            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              q << ["#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{assoc_name.constantize.send(:lookup)} ilike ?", "%#{@q}%"]).select(:id)]
+            else # Mongoid
+              q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{@q}/i).only(:id).map(&:id) }
+            end                                   
           end          
         }
-        @resources = @resources.or(q)
+        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+          @resources = @resources.where.any_of(*q)
+        else # Mongoid
+          @resources = @resources.or(q)          
+        end
       end
-      @f.each { |k,v|      
-        if model.fields[k].type == String
-          @resources = @resources.where(k.to_sym => /#{v}/i)
-        elsif k.ends_with?('_id') && (assoc_name = model.fields[k].metadata.try(:class_name))
-          @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{v}/i).only(:_id).map(&:_id) })
+      @f.each { |fieldname,q|      
+        options = admin_fields(model)[fieldname.to_sym]
+        if [:text, :text_area, :wysiwyg].include?(options[:type])          
+          if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+            @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
+          else # Mongoid
+            @resources = @resources.where(fieldname => /#{q}/i)
+          end                    
+        elsif options[:type] == :lookup
+          assoc_name = assoc_name(model, fieldname)
+          if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+            @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{assoc_name.constantize.send(:lookup)} ilike ?", "%#{q}%"]).select(:id))
+          else # Mongoid
+            @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(assoc_name.constantize.send(:lookup) => /#{q}/i).only(:id).map(&:id) })
+          end                       
         end
       } if @f
       @resources = @resources.order_by(@o.to_sym.send(@d)) if @o and @d
       case content_type
       when :html
-        @resources = @resources.per_page(25).page(params[:page])
+        @resources = @resources.paginate(:page => params[:page], :per_page => 25)
         instance_variable_set("@#{model.to_s.underscore.pluralize}", @resources)
         erb :index
       when :csv
         CSV.generate do |csv|
-          csv << model.fields_for_index
+          csv << admin_fields(model).keys
           @resources.each do |resource|
-            csv << model.fields_for_index.map { |fieldname| resource.send(fieldname) }
+            csv << admin_fields(model).map { |fieldname, options| resource.send(fieldname) }
           end
         end     
       end   
