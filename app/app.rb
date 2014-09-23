@@ -101,7 +101,7 @@ module ActivateAdmin
         if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
           @resources = @resources.order("#{@o} #{@d}")
         else # Mongoid
-          @resources = @resources.order(@o.to_sym.send(@d))
+          @resources = @resources.order_by(@o.to_sym.send(@d))
         end
       end
       case content_type
