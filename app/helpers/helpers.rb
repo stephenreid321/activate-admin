@@ -52,7 +52,7 @@ ActivateAdmin::App.helpers do
   end  
   
   def string_types
-    [:text, :slug, :text_area, :wysiwyg]
+    [:text, :slug, :text_area, :wysiwyg, :email, :url]
   end
   
   def human_model_name(model)
