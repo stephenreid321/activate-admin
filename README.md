@@ -23,61 +23,16 @@ Say you have a model User with the fields User#name and User#birthday. Then in t
 ``` ruby
 def self.admin_fields
   {
-    :name => :text,
+    :name => :text, # same as {:type => :text, :edit => true, :index => true, :new_hint => nil, :edit_hint => nil, :new_tip => nil, :edit_tip => nil, :lookup => true}
     :birthday => :date
   }
 end
 ```
+
+See [https://github.com/wordsandwriting/activate-tools/blob/master/lib/form_builder.rb](https://github.com/wordsandwriting/activate-tools/blob/master/lib/form_builder.rb)
+for field types.
+
 Start your app and navigate to /admin. Voila!
-
-Environment variables
------
-* Include only certain models: `ENV['ADMIN_MODELS']`
-* Set site name: `ENV['ADMIN_SITE_NAME']`
-* Inline uploads: `ENV['INLINE_UPLOAD_MODEL']` and `ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']`
-* Review and modify configuration variables: `ENV['HEROKU_OAUTH_TOKEN']` and `ENV['APP_NAME']`
-
-Available field types
------
-``` ruby
-def self.admin_fields
-  {
-    :field => :text,
-    :field => :password,
-    :field => :slug,
-    :field => :text_area,
-    :field => :wysiwyg, 
-    :field => :check_box,
-    :field => :select, # define self.options
-    :field => :file,
-    :field => :image, # define self#rotate_fieldname_by for rotation  
-    :field => :time,
-    :field => :date,
-    :field => :datetime,
-    :field => :lookup, # for belongs_to relationships; define self.lookup on associated model
-    :field => :collection, # for has_many relationships; define self.lookup on associated model
-  }
-end
-```
-
-Hints and tips
------
-
-``` ruby
-def self.new_hints
-  {
-    :field1 => 'Hint text shown by field1 when creating a record'      
-  }
-end 
-
-def self.edit_hints
-  {
-    :field2 => 'Hint text shown by field2 when editing a record'      
-  }
-end 
-```
-
-Same for `self.new_tips` and `self.edit_tips`
 
 filter_options
 -----
@@ -92,3 +47,11 @@ def self.filter_options
   }
 end
 ```
+
+Environment variables
+-----
+* Include only certain models: `ENV['ADMIN_MODELS']`
+* Set site name: `ENV['ADMIN_SITE_NAME']`
+* Inline uploads: `ENV['INLINE_UPLOAD_MODEL']` and `ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']`
+* Review and modify configuration variables: `ENV['HEROKU_OAUTH_TOKEN']` and `ENV['APP_NAME']`
+
