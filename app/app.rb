@@ -14,7 +14,7 @@ module ActivateAdmin
        
     before do
       redirect url(:login) unless [url(:login), url(:logout)].any? { |p| p == request.path } or ['stylesheets','javascripts','fonts'].any? { |p| request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}" } or (current_account and current_account.admin?)
-      Time.zone = current_account.time_zone if current_account and current_account.time_zone     
+      Time.zone = current_account.time_zone if current_account and current_account.respond_to?(:time_zone) and current_account.time_zone
       fix_params!
     end 
             
@@ -98,11 +98,7 @@ module ActivateAdmin
         end
       } if @f
       if @o and @d
-        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-          @resources = @resources.order("#{@o} #{@d}")
-        else # Mongoid
-          @resources = @resources.order_by(@o.to_sym.send(@d))
-        end
+        @resources = @resources.order("#{@o} #{@d}")
       end
       case content_type
       when :html

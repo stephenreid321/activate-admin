@@ -15,11 +15,7 @@
         assoc = assoc(model, fieldname)
         resources = assoc.class_name.constantize.all
         if persisted_field?(model, lookup_method(assoc.class_name.constantize))
-          if model.respond_to?(:column_names)
-            resources = resources.order("#{lookup_method(assoc.class_name.constantize)} asc")
-            else
-            resources = resources.order_by(lookup_method(assoc.class_name.constantize).to_sym.asc)
-          end
+          resources = resources.order("#{lookup_method(assoc.class_name.constantize)} asc")
           end
         f.select_block(fieldname, options: ['']+resources.map { |x| [x.send(lookup_method(assoc.class_name.constantize)), x.id] }, selected: (params[fieldname] || @resource.send(fieldname)), tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint])
       %>
