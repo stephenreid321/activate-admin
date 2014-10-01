@@ -18,7 +18,7 @@ ActivateAdmin::App.helpers do
     admin_fields[:updated_at] = {:type => :datetime, :edit => false} if persisted_field?(model, :updated_at)
     admin_fields = Hash[admin_fields.map { |fieldname, options|
         options = {:type => options} if options.is_a?(Symbol)
-        options[:index] = true if !options.keys.include?(:index) and [:text, :number, :slug, :text_area, :wysiwyg, :check_box, :select, :radio_button, :date, :datetime, :lookup].include?(options[:type])
+        options[:index] = true if !options.keys.include?(:index) and index_types.include?(options[:type])
         options[:edit] = true if !options.keys.include?(:edit)
         [fieldname, options]
       }]
@@ -50,10 +50,14 @@ ActivateAdmin::App.helpers do
       model.fields[fieldname.to_s]
     end
   end  
-  
+    
   def string_types
     [:text, :slug, :text_area, :wysiwyg, :email, :url]
   end
+  
+  def index_types
+    string_types + [:number, :check_box, :select, :radio_button, :date, :datetime, :lookup]
+  end  
   
   def human_model_name(model)
     model.to_s.underscore.humanize
