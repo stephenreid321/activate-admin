@@ -32,8 +32,8 @@ module ActivateAdmin
       flash[:notice] = "Your config vars were updated. You may have to refresh the page for your changes to take effect."
       redirect url(:config)
     end
-  
-    get :index, :map => '/index/:model', :provides => [:html, :csv] do
+          
+    get :index, :map => '/index/:model', :provides => [:html, :json, :csv] do
       if persisted_field?(model, :created_at)
         @o = :created_at
         @d = :desc
@@ -105,6 +105,15 @@ module ActivateAdmin
         @resources = @resources.paginate(:page => params[:page], :per_page => 25)
         instance_variable_set("@#{model.to_s.underscore.pluralize}", @resources)
         erb :index
+      when :json
+        if params[:id]
+          resource = @resources.find(params[:id])
+          {id: resource.id.to_s, text: resource.send(lookup_method(resource.class))}
+        else
+          {
+            results: @resources.map { |resource| {id: resource.id.to_s, text: resource.send(lookup_method(resource.class))} }
+          }
+        end.to_json        
       when :csv
         CSV.generate do |csv|
           csv << admin_fields(model).keys
