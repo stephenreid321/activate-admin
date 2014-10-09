@@ -10,9 +10,7 @@
 
   <% admin_fields(model).select { |fieldname, options| options[:edit] }.each { |fieldname, options| %> 
     <% unless @resource.new_record? and options[:type] == :collection %>
-      <% case options[:type]; when :lookup; %>
-        <%= f.send("#{options[:type]}_block", fieldname, url: url(:index, :model => assoc(model, fieldname).class_name, :format => :json), tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
-      <% when :collection; assoc = assoc(model, fieldname, relationship: :has_many) %>
+      <% case options[:type]; when :collection; assoc = assoc(model, fieldname, relationship: :has_many) %>
         <%=
         content = %Q{<ul class="list-unstyled">}
         @resource.send(fieldname).limit(l = 10).each { |x|
@@ -26,6 +24,8 @@
         content << %Q{</ul>} 
         f.block_layout(fieldname, content, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) 
       %>
+      <%  when :lookup%>
+        <%= f.send("#{options[:type]}_block", fieldname, url: url(:index, :model => assoc(model, fieldname).class_name, :format => :json), tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
       <% else %>
         <%= f.send("#{options[:type]}_block", fieldname, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
       <% end %>
