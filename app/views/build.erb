@@ -1,7 +1,7 @@
 
 <div class="page-header"> 
   <h1><%= @resource.new_record? ? "New #{human_model_name(model).downcase}" : "Edit #{human_model_name(model).downcase}"%></h1>
-  <% unless params[:popup] %><a href="<%=url(:index, :model => model.to_s)%>" class="btn btn-default"><i class="fa fa-backward"></i>&nbsp;Back</a><% end %>
+  <% unless params[:popup] %><a href="<%=url(:index, :model => model.to_s)%>" class="btn btn-default"><i class="fa fa-th-list"></i>&nbsp;All <%=human_model_name(model).downcase.pluralize%></a><% end %>
 </div>
 
 <% form_for model.to_s.underscore.to_sym, (@resource.new_record? ? url(:new, :model => model.to_s) : url(:edit, :model => model.to_s, :id => @resource.id)), :multipart => true, :class => 'form-horizontal' do |f| %>
@@ -25,9 +25,9 @@
         f.block_layout(fieldname, content, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) 
       %>
       <%  when :lookup%>
-        <%= f.send("#{options[:type]}_block", fieldname, url: url(:index, :model => assoc(model, fieldname).class_name, :format => :json), tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
+        <%= f.send("#{options[:type]}_block", fieldname, lookup_url: url(:index, :model => assoc(model, fieldname).class_name, :format => :json), selected_link: %Q{<a class="popup" href="#{url(:edit, :model => assoc(model, fieldname).class_name, :id => @resource.send(fieldname), :popup => true)}">View record</a>}, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
       <% else %>
-        <%= f.send("#{options[:type]}_block", fieldname, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
+        <%= f.send("#{options[:type]}_block", fieldname, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint], disabled: options[:disabled]) %>
       <% end %>
     <% end %>
   <% } %>

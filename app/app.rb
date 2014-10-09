@@ -49,12 +49,14 @@ module ActivateAdmin
       if @q
         q = []
         admin_fields(model).each { |fieldname, options|
-          if string_types.include?(options[:type]) and persisted_field?(model, fieldname)
+          if matchable_regex.include?(options[:type]) and persisted_field?(model, fieldname)
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
               q << ["#{fieldname} ilike ?", "%#{@q}%"]
             else # Mongoid
               q << {fieldname => /#{@q}/i }
-            end
+            end            
+          elsif matchable_exact.include?(options[:type]) and persisted_field?(model, fieldname)
+            q << {fieldname => @q}
           elsif options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
             if persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))
@@ -75,13 +77,15 @@ module ActivateAdmin
       @f.each { |fieldname,q|      
         if q
           options = admin_fields(model)[fieldname.to_sym]
-          if string_types.include?(options[:type]) and persisted_field?(model, fieldname)
+          if matchable_regex.include?(options[:type]) and persisted_field?(model, fieldname)
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
               @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
             else # Mongoid
               @resources = @resources.where(fieldname => /#{q}/i)
             end                    
-          elsif options[:type] == :lookup
+          elsif matchable_exact.include?(options[:type]) and persisted_field?(model, fieldname)
+            @resources = @resources.where(fieldname => q)
+          else options[:type] == :lookup
             assoc_name = assoc_name(model, fieldname)
             if persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))
               if q.starts_with?('id:')

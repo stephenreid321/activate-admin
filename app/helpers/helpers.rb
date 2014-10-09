@@ -20,6 +20,7 @@ ActivateAdmin::App.helpers do
         options = {:type => options} if options.is_a?(Symbol)
         options[:index] = true if !options.keys.include?(:index) and index_types.include?(options[:type])
         options[:edit] = true if !options.keys.include?(:edit)
+        options[:disabled] = true if fieldname == :id
         [fieldname, options]
       }]
     admin_fields[admin_fields.first.first][:lookup] = true if !admin_fields.find { |fieldname, options| options[:lookup] }
@@ -51,12 +52,20 @@ ActivateAdmin::App.helpers do
     end
   end  
     
-  def string_types
+  def matchable_regex
     [:text, :slug, :text_area, :wysiwyg, :email, :url]
   end
   
+  def matchable_exact
+    [:number]
+  end
+  
+  def queryable
+    matchable_regex + matchable_exact + [:lookup]
+  end
+  
   def index_types
-    string_types + [:number, :check_box, :select, :radio_button, :date, :datetime, :lookup]
+    matchable_regex + matchable_exact + [:check_box, :select, :radio_button, :date, :datetime, :lookup]
   end  
   
   def human_model_name(model)
