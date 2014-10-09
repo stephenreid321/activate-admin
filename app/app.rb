@@ -108,10 +108,10 @@ module ActivateAdmin
       when :json
         if params[:id]
           resource = @resources.find(params[:id])
-          {id: resource.id.to_s, text: resource.send(lookup_method(resource.class))}
+          {id: resource.id.to_s, text: resource.send(lookup_method(resource.class)).to_s}
         else
           {
-            results: @resources.map { |resource| {id: resource.id.to_s, text: resource.send(lookup_method(resource.class))} }
+            results: @resources.map { |resource| {id: resource.id.to_s, text: resource.send(lookup_method(resource.class)).to_s} }
           }
         end.to_json        
       when :csv
