@@ -23,7 +23,7 @@ Say you have a model User with the fields User#name and User#birthday. Then in t
 ``` ruby
 def self.admin_fields
   {
-    :name => :text, # same as {:type => :text, :edit => true, :index => true, :new_hint => nil, :edit_hint => nil, :new_tip => nil, :edit_tip => nil, :lookup => true}
+    :name => :text, # same as {:type => :text, :edit => true, :index => true, :new_hint => nil, :edit_hint => nil, :new_tip => nil, :edit_tip => nil, :lookup => true, :full => false}
     :birthday => :date
   }
 end

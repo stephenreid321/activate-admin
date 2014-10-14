@@ -99,6 +99,8 @@
               <%= resource.send(fieldname) %>
             <% elsif options[:type] == :check_box %>
               <%= case resource.send(fieldname); when true; '<i class="fa fa-check"></i>'; when false;  '<i class="fa fa-times"></i>'; end %>
+            <% elsif options[:full] %>
+              <%= strip_tags(resource.send(fieldname).to_s) %>
             <% else %>
               <%= truncate(strip_tags(resource.send(fieldname).to_s), :length => 30) %>
             <% end %>
