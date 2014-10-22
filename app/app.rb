@@ -110,10 +110,6 @@ module ActivateAdmin
         instance_variable_set("@#{model.to_s.underscore.pluralize}", @resources)
         erb :index
       when :json
-        @resources = model.all
-        if @o and @d
-          @resources = @resources.order("#{@o} #{@d}")
-        end        
         if params[:id]
           resource = @resources.find(params[:id])
           {id: resource.id.to_s, text: "#{resource.send(lookup_method(resource.class))} (id:#{resource.id})"}
