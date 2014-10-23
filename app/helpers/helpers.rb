@@ -56,16 +56,16 @@ ActivateAdmin::App.helpers do
     [:text, :slug, :text_area, :wysiwyg, :email, :url]
   end
   
-  def matchable_exact
+  def matchable_number
     [:number]
   end
   
   def queryable
-    matchable_regex + matchable_exact + [:lookup]
+    matchable_regex + matchable_number + [:lookup]
   end
   
   def index_types
-    matchable_regex + matchable_exact + [:check_box, :select, :radio_button, :date, :datetime, :lookup]
+    matchable_regex + matchable_number + [:check_box, :select, :radio_button, :date, :datetime, :lookup]
   end  
   
   def human_model_name(model)

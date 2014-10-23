@@ -55,7 +55,7 @@ module ActivateAdmin
             else # Mongoid
               q << {fieldname => /#{@q}/i }
             end            
-          elsif matchable_exact.include?(options[:type]) and persisted_field?(model, fieldname)
+          elsif matchable_number.include?(options[:type]) and persisted_field?(model, fieldname) and (begin; Float(@q) and true; rescue; false; end)
             q << {fieldname => @q}
           elsif options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
@@ -83,7 +83,7 @@ module ActivateAdmin
             else # Mongoid
               @resources = @resources.where(fieldname => /#{q}/i)
             end                    
-          elsif matchable_exact.include?(options[:type]) and persisted_field?(model, fieldname)
+          elsif matchable_number.include?(options[:type]) and persisted_field?(model, fieldname) and (begin; Float(q) and true; rescue; false; end)
             @resources = @resources.where(fieldname => q)
           else options[:type] == :lookup
             assoc_name = assoc_name(model, fieldname)
