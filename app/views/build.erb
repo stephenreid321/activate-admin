@@ -25,7 +25,7 @@
         f.block_layout(fieldname, content, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) 
       %>
       <%  when :lookup%>
-        <% @resource.send("#{fieldname}_id=", params["#{fieldname}_id"]) if !@resource.send(fieldname) %>
+        <% @resource.send("#{fieldname}=", params[fieldname]) if !@resource.send(fieldname) %>
         <%= f.send("#{options[:type]}_block", fieldname, lookup_url: url(:index, :model => assoc(model, fieldname).class_name, :format => :json), selected_link: (%Q{<a class="popup" href="#{url(:edit, :model => assoc(model, fieldname).class_name, :id => @resource.send(fieldname), :popup => true)}">View record</a>} if @resource.send(fieldname)), tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
       <% else %>
         <%= f.send("#{options[:type]}_block", fieldname, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint], disabled: options[:disabled]) %>
