@@ -27,9 +27,14 @@
       <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
     <% } %>
 
+    <script src="<%=ActivateAdmin::App.uri_root%>/webshim/polyfiller.js"></script> 
+    <script>
+      webshims.polyfill();
+    </script>      
+
     <script src="<%=ActivateAdmin::App.uri_root%>/select2/select2.js"></script>
     <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/select2/select2.css" />    
-    
+
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>      
 
     <%= partial :summernote %>
