@@ -49,15 +49,7 @@ module ActivateAdmin
       if @q
         q = []
         admin_fields(model).each { |fieldname, options|
-          if matchable_regex.include?(options[:type]) and persisted_field?(model, fieldname)
-            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-              q << ["#{fieldname} ilike ?", "%#{@q}%"]
-            else # Mongoid
-              q << {fieldname => /#{@q}/i }
-            end            
-          elsif matchable_number.include?(options[:type]) and persisted_field?(model, fieldname) and (begin; Float(@q) and true; rescue; false; end)
-            q << {fieldname => @q}
-          elsif options[:type] === :lookup
+          if options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
             if persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))
               if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
@@ -66,7 +58,15 @@ module ActivateAdmin
                 q << {"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{@q}/i).only(:id).map(&:id) }
               end                                   
             end
-          end          
+          elsif matchable_regex.include?(options[:type]) and persisted_field?(model, fieldname)
+            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              q << ["#{fieldname} ilike ?", "%#{@q}%"]
+            else # Mongoid
+              q << {fieldname => /#{@q}/i }
+            end            
+          elsif matchable_number.include?(options[:type]) and persisted_field?(model, fieldname) and (begin; Float(@q) and true; rescue; false; end)
+            q << {fieldname => @q}
+          end        
         }
         if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL          
           @resources = @resources.where.any_of(*q) if !q.empty?
@@ -77,7 +77,18 @@ module ActivateAdmin
       @f.each { |fieldname,q|      
         if q
           options = admin_fields(model)[fieldname.to_sym]
-          if matchable_regex.include?(options[:type]) and persisted_field?(model, fieldname)
+          if options[:type] == :lookup            
+            assoc_name = assoc_name(model, fieldname)            
+            if q.starts_with?('id:')
+              @resources = @resources.where("#{assoc_name.underscore}_id".to_sym => q.split('id:').last)
+            elsif persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))              
+              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
+              else # Mongoid
+                @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
+              end
+            end
+          elsif matchable_regex.include?(options[:type]) and persisted_field?(model, fieldname)
             if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
               @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
             else # Mongoid
@@ -85,19 +96,6 @@ module ActivateAdmin
             end                    
           elsif matchable_number.include?(options[:type]) and persisted_field?(model, fieldname) and (begin; Float(q) and true; rescue; false; end)
             @resources = @resources.where(fieldname => q)
-          else options[:type] == :lookup
-            assoc_name = assoc_name(model, fieldname)
-            if persisted_field?(assoc_name.constantize, lookup_method(assoc_name.constantize))
-              if q.starts_with?('id:')
-                @resources = @resources.where("#{assoc_name.underscore}_id".to_sym => q.split('id:').last)
-              else
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                  @resources = @resources.where("#{assoc_name.underscore}_id in (?)", assoc_name.constantize.where(["#{lookup_method(assoc_name.constantize)} ilike ?", "%#{q}%"]).select(:id))
-                else # Mongoid
-                  @resources = @resources.where({"#{assoc_name.underscore}_id".to_sym.in => assoc_name.constantize.where(lookup_method(assoc_name.constantize) => /#{q}/i).only(:id).map(&:id) })
-                end
-              end
-            end
           end
         end
       } if @f
