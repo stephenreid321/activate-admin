@@ -29,8 +29,9 @@
       <button class="btn btn-primary" type="submit">Sign in</button>
       <% if Account.method_defined?(:reset_password!) %>
         &middot; <a href="javascript:;" onclick="$('form[action$=login]').hide();
-                $('form[action$=forgot_password]').show();">Forgot your password?</a>
-      <% end %>
+                $('form[action$=forgot_password]').show();
+                $('form[action$=forgot_password] input').focus();">Forgot your password?</a>
+                  <% end %>
     </div>
   </div>
 
