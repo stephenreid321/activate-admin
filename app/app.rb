@@ -13,7 +13,7 @@ module ActivateAdmin
     set :default_builder, 'ActivateFormBuilder'
        
     before do
-      redirect url(:login) unless [url(:login), url(:logout)].any? { |p| p == request.path } or ['stylesheets','javascripts','fonts'].any? { |p| request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}" } or (current_account and current_account.admin?)
+      redirect url(:login) unless [url(:login), url(:logout), url(:forgot_password)].any? { |p| p == request.path } or ['stylesheets','javascripts','fonts'].any? { |p| request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}" } or Account.count == 0 or (current_account and current_account.admin?)
       Time.zone = current_account.time_zone if current_account and current_account.respond_to?(:time_zone) and current_account.time_zone
       fix_params!
     end 
@@ -183,7 +183,7 @@ module ActivateAdmin
     end
     
     get :login, :map => '/login' do
-      erb :login_page
+      erb :login
     end
 
     post :login, :map => '/login' do
@@ -197,8 +197,7 @@ module ActivateAdmin
         flash[:notice] = "Logged in successfully."
         redirect url(:home)
       else
-        params[:email], params[:password] = h(params[:email]), h(params[:password])
-        flash[:warning] = "Login or password wrong."
+        flash[:error] = "Login or password wrong."
         redirect url(:login)
       end
     end
@@ -207,5 +206,19 @@ module ActivateAdmin
       session.clear
       redirect url(:login)
     end  
+    
+    post :forgot_password, :map => '/forgot_password' do
+      if account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/)
+        if account.reset_password!
+          flash[:notice] = "A new password was sent to #{account.email}"
+        else
+          flash[:error] = "There was a problem resetting your password."
+        end
+      else        
+        flash[:error] = "There's no account registered under that email address."
+      end
+      redirect url(:login)      
+    end
+    
   end
 end
