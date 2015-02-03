@@ -207,8 +207,13 @@ module ActivateAdmin
       redirect url(:login)
     end  
     
-    post :forgot_password, :map => '/forgot_password' do
-      if account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/)
+    post :forgot_password, :map => '/forgot_password' do      
+      if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+        account = Account.where('email ilike ?', params[:email]).first
+      else # Mongoid
+        account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/)
+      end      
+      if account
         if account.reset_password!
           flash[:notice] = "A new password was sent to #{account.email}"
         else

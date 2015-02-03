@@ -1,7 +1,7 @@
 <script>
-  $(function() {
+  $(function () {
 
-    $('textarea.wysiwyg').each(function() {
+    $('textarea.wysiwyg').each(function () {
       var textarea = this;
       var summernote = $('<div class="summernote"></div>');
       $(summernote).insertAfter(this);
@@ -18,15 +18,16 @@
       ],
               height: 300,
 <% if ENV['INLINE_UPLOAD_MODEL'] %>
-        onImageUpload: function(files, editor, welEditable) {
+        onImageUpload: function (files, editor, welEditable) {
           sendFile(files[0], editor, welEditable);
         }
 <% end %>
     });
+    $(textarea).prop('required', false);
     $(summernote).code($(textarea).val());
     $('button[data-event=codeview]', summernote.next()).click();
     $(textarea).hide();
-    $(textarea.form).submit(function() {
+    $(textarea.form).submit(function () {
       $(textarea).val($(summernote).code());
     });
     });
@@ -43,7 +44,7 @@
           dataType: 'json',
           processData: false, // Don't process the files
           contentType: false, // Set content type to false as jQuery will tell the server its a query string request      
-          success: function(data) {
+          success: function (data) {
             editor.insertImage(welEditable, data.url);
           }
         });
