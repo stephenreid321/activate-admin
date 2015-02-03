@@ -208,7 +208,7 @@ module ActivateAdmin
     end  
     
     post :forgot_password, :map => '/forgot_password' do      
-      if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+      if Account.respond_to?(:column_names) # ActiveRecord/PostgreSQL
         account = Account.where('email ilike ?', params[:email]).first
       else # Mongoid
         account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/)
