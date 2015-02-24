@@ -126,7 +126,7 @@ module ActivateAdmin
             csv << admin_fields(model).map { |fieldname, options|
               if options[:type] === :lookup
                 assoc_name = assoc_name(model, fieldname)
-                "#{assoc_name.constanize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
+                "#{assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
               else
                 resource.send(fieldname)
               end
