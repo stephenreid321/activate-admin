@@ -123,7 +123,15 @@ module ActivateAdmin
         CSV.generate do |csv|
           csv << admin_fields(model).keys
           @resources.each do |resource|
-            csv << admin_fields(model).map { |fieldname, options| resource.send(fieldname) }
+            csv << admin_fields(model).map { |fieldname, options|
+              if options[:type] === :lookup
+                assoc_name = assoc_name(model, fieldname)
+                "#{assoc_name.constanize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
+                else
+                  resource.send(fieldname)
+              end
+              end
+            }
           end
         end     
       end   
