@@ -6,6 +6,12 @@
 
     <title><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></title> 
 
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/codemirror.min.css" />
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/theme/monokai.min.css" />
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/codemirror.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/mode/xml/xml.min.js"></script>      
+
+
     <%
     [
       'bootstrap.min.css',
@@ -26,11 +32,6 @@
       ].each { |file| %>
       <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
     <% } %>
-      
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/codemirror.min.css" />
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/theme/monokai.min.css" />
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/codemirror.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/mode/xml/xml.min.js"></script>      
 
     <script src="<%=ActivateAdmin::App.uri_root%>/webshim/polyfiller.js"></script> 
     <script>
