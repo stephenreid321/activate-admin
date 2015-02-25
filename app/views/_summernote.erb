@@ -17,6 +17,7 @@
               ['insert', ['link', 'picture', 'video']],
       ],
               height: 300,
+              codemirror: { theme: 'monokai' },
 <% if ENV['INLINE_UPLOAD_MODEL'] %>
         onImageUpload: function (files, editor, welEditable) {
           sendFile(files[0], editor, welEditable);
