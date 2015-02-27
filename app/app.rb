@@ -44,11 +44,13 @@ module ActivateAdmin
       if model.respond_to?(:filter_options)
         @q, @f, @o, @d, = model.filter_options[:q], model.filter_options[:f], model.filter_options[:o], model.filter_options[:d]
       end
+      @id = params[:id] if params[:id]
       @q = params[:q] if params[:q]
       @f = params[:f] if params[:f]
       @o = params[:o].to_sym if params[:o]
       @d = params[:d].to_sym if params[:d]        
-      @resources = model.all      
+      @resources = model.all
+      @resources = @resources.where(id: @id) if @id
       if @q
         q = []
         admin_fields(model).each { |fieldname, options|
@@ -111,14 +113,9 @@ module ActivateAdmin
         instance_variable_set("@#{model.to_s.underscore.pluralize}", @resources)
         erb :index
       when :json
-        if params[:id]
-          resource = @resources.find(params[:id])
-          {id: resource.id.to_s, text: "#{resource.send(lookup_method(resource.class))} (id:#{resource.id})"}
-        else
-          {
-            results: @resources.map { |resource| {id: resource.id.to_s, text: "#{resource.send(lookup_method(resource.class))} (id:#{resource.id})"} }
-          }
-        end.to_json        
+        {
+          results: @resources.map { |resource| {id: resource.id.to_s, text: "#{resource.send(lookup_method(resource.class))} (id:#{resource.id})"} }
+        }.to_json        
       when :csv
         CSV.generate do |csv|
           csv << admin_fields(model).keys

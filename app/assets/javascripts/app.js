@@ -43,32 +43,10 @@ $(function () {
   });
 
   $('input[type=hidden].lookup').each(function () {
-    var lookup_url = $(this).attr('data-lookup-url');
-    $(this).select2({
+    $(this).lookup({
+      lookup_url: $(this).attr('data-lookup-url'),
       placeholder: $(this).attr('placeholder'),
-      allowClear: true,
-      minimumInputLength: 1,
-      width: '100%',
-      ajax: {
-        url: lookup_url,
-        dataType: 'json',
-        data: function (term) {
-          return {
-            q: term
-          };
-        },
-        results: function (data) {
-          return {results: data.results};
-        }
-      },
-      initSelection: function (element, callback) {
-        var id = $(element).val();
-        if (id !== '') {
-          $.get(lookup_url, {id: id}, function (data) {
-            callback(data);
-          });
-        }
-      }
+      id_param: 'id'
     });
   });
 
