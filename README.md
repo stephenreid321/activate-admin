@@ -51,6 +51,7 @@ end
 Environment variables
 -----
 * Include only certain models: `ENV['ADMIN_MODELS']`
+* Feature certain models: `ENV['FEATURED_MODELS']`
 * Set site name: `ENV['ADMIN_SITE_NAME']`
 * Inline uploads: `ENV['INLINE_UPLOAD_MODEL']` and `ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']`
 * Review and modify configuration variables: `ENV['HEROKU_OAUTH_TOKEN']` and `ENV['APP_NAME']`
