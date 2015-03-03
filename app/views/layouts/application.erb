@@ -6,42 +6,42 @@
 
     <title><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></title> 
 
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/codemirror.min.css" />
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/theme/monokai.min.css" />
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/codemirror.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.0.0/mode/xml/xml.min.js"></script>      
+    <% {            
+      'jquery/1.11.2' => 'jquery.min.js',
+      'webshim/1.15.7' => 'minified/polyfiller.js',
+      'bootswatch/3.3.2' => 'lumen/bootstrap.min.css',      
+      'twitter-bootstrap/3.3.2' => 'js/bootstrap.min.js',
+      'font-awesome/4.3.0' => 'css/font-awesome.min.css',
+      'select2/3.5.2' => 'select2.min.js select2.min.css',  
+      'codemirror/5.0.0' => 'codemirror.min.css theme/monokai.min.css codemirror.min.js mode/xml/xml.min.js',      
+      'summernote/0.6.1' => 'summernote.min.css summernote.min.js'      
+      }.each { |k,v| %>    
+      <% v.split(' ').each { |f| u = "https://cdnjs.cloudflare.com/ajax/libs/#{k}/#{f}" %>
+        <% case f.split('.').last.to_sym; when :js %>
+          <script type="text/javascript" src="<%=u%>"></script>      
+        <% when :css %>
+          <link rel="stylesheet" href="<%=u%>" />
+        <% end %>
+      <% } %>
+    <% } %>
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>      
 
     <%
     [
-      'bootstrap.min.css',
-      'font-awesome.min.css',
-      'summernote.css',
-      'app.css'
+      'app.css'        
       ].each { |file| %> 
       <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/stylesheets/<%=file%>" />    
     <% } %>
 
     <% [
-      'jquery-1.11.2.min.js',
-      'bootstrap.min.js',
-      'summernote.min.js',
       'jquery.deparam.js',
       'jquery.geopicker.js',
       'jquery.lookup.js',
       'app.js'
       ].each { |file| %>
       <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
-    <% } %>
-
-    <script src="<%=ActivateAdmin::App.uri_root%>/webshim/polyfiller.js"></script> 
-    <script>
-      webshims.polyfill();
-    </script>      
-
-    <script src="<%=ActivateAdmin::App.uri_root%>/select2/select2.js"></script>
-    <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/select2/select2.css" />    
-
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>      
+    <% } %>    
 
     <%= partial :summernote %>
 
