@@ -18,29 +18,28 @@
       }.each { |k,v| %>    
       <% v.split(' ').each { |f| u = "https://cdnjs.cloudflare.com/ajax/libs/#{k}/#{f}" %>
         <% case f.split('.').last.to_sym; when :js %>
-          <script type="text/javascript" src="<%=u%>"></script>      
+          <script src="<%=u%>"></script>      
         <% when :css %>
           <link rel="stylesheet" href="<%=u%>" />
         <% end %>
       <% } %>
     <% } %>
 
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
 
-    <%
-    [
-      'app.css'        
-      ].each { |file| %> 
-      <link rel="stylesheet" href="<%=ActivateAdmin::App.uri_root%>/stylesheets/<%=file%>" />    
+    <% [
+      "#{ActivateAdmin::App.uri_root}/stylesheets/app.css"
+      ].each { |f| %> 
+      <link rel="stylesheet" href="<%=f%>" />    
     <% } %>
 
     <% [
-      'jquery.deparam.js',
-      'jquery.geopicker.js',
-      'jquery.lookup.js',
-      'app.js'
-      ].each { |file| %>
-      <script src="<%=ActivateAdmin::App.uri_root%>/javascripts/<%=file%>"></script>
+      'https://cdn.rawgit.com/wordsandwriting/activate-tools/72fe3fc8f38067c084d4278d1cf6d6f5af546a42/js/jquery.deparam.js',
+      'https://cdn.rawgit.com/wordsandwriting/activate-tools/72fe3fc8f38067c084d4278d1cf6d6f5af546a42/js/jquery.geopicker.js',
+      'https://cdn.rawgit.com/wordsandwriting/activate-tools/72fe3fc8f38067c084d4278d1cf6d6f5af546a42/js/jquery.lookup.js',
+      "#{ActivateAdmin::App.uri_root}/javascripts/app.js"
+      ].each { |f| %>
+      <script src="<%=f%>"></script>
     <% } %>    
 
     <%= partial :summernote %>
