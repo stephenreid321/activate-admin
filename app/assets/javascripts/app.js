@@ -1,6 +1,7 @@
+
+webshims.polyfill();
+
 $(function () {
-  
-  webshims.polyfill();
 
   $('input[type=text].slug').each(function () {
     var slug = $(this);
