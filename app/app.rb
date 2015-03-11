@@ -65,7 +65,7 @@ module ActivateAdmin
                 if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
                   q << ["#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{@q}%"]).select(:id)]
                 else # Mongoid
-                  q << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{@q}/i).only(:id).map(&:id) }
+                  q << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).only(:id).map(&:id) }
                 end                                   
               elsif matchable_number.include?(assoc_options[:type]) and (begin; Float(@q) and true; rescue; false; end)
                 if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
@@ -80,7 +80,7 @@ module ActivateAdmin
               if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
                 q << ["#{fieldname} ilike ?", "%#{@q}%"]
               else # Mongoid
-                q << {fieldname => /#{@q}/i }
+                q << {fieldname => /#{Regexp.escape(@q)}/i }
               end            
             elsif matchable_number.include?(options[:type]) and (begin; Float(@q) and true; rescue; false; end)
               q << {fieldname => @q}
@@ -109,7 +109,7 @@ module ActivateAdmin
                 if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
                   @resources = @resources.where("#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{q}%"]).select(:id))
                 else # Mongoid
-                  @resources = @resources.where({fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{q}/i).only(:id).map(&:id)})
+                  @resources = @resources.where({fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(q)}/i).only(:id).map(&:id)})
                 end                                   
               elsif matchable_number.include?(assoc_options[:type]) and (begin; Float(q) and true; rescue; false; end)
                 if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
@@ -124,7 +124,7 @@ module ActivateAdmin
               if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
                 @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
               else # Mongoid
-                @resources = @resources.where(fieldname => /#{q}/i)
+                @resources = @resources.where(fieldname => /#{Regexp.escape(q)}/i)
               end                    
             elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
               @resources = @resources.where(fieldname => q)
