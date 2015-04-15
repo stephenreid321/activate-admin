@@ -246,7 +246,7 @@ module ActivateAdmin
       if Account.respond_to?(:column_names) # ActiveRecord/PostgreSQL
         account = Account.where('email ilike ?', params[:email]).first
       else # Mongoid
-        account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/)
+        account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/i)
       end      
       if account
         if account.reset_password!
