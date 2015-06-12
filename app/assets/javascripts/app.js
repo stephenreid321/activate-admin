@@ -31,18 +31,25 @@ $(function () {
   });
 
 
-  $('.geopicker').geopicker({
-    width: '100%',
-    getLatLng: function (container) {
-      var lat = $('input[name$="[lat]"]', container).val()
-      var lng = $('input[name$="[lng]"]', container).val()
-      if (lat.length && lng.length)
-        return new google.maps.LatLng(lat, lng)
-    },
-    set: function (container, latLng) {
-      $('input[name$="[lat]"]', container).val(latLng.lat());
-      $('input[name$="[lng]"]', container).val(latLng.lng());
-    }
+  $('.geopicker').each(function () {
+    var g = this;
+    $(g).geopicker({
+      width: '100%',
+      getLatLng: function (container) {
+        var lat = $('input[name$="[lat]"]', container).val()
+        var lng = $('input[name$="[lng]"]', container).val()
+        if (lat.length && lng.length)
+          return new google.maps.LatLng(lat, lng)
+      },
+      set: function (container, latLng) {
+        $('input[name$="[lat]"]', container).val(latLng.lat());
+        $('input[name$="[lng]"]', container).val(latLng.lng());
+      },
+      address: function (container) {
+        return $(container).prev().children().first().val()
+      },
+      guessElement: $(g).prev().children().last()
+    });
   });
 
   $('input[type=hidden].lookup').each(function () {
