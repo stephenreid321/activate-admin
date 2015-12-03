@@ -1,0 +1,85 @@
+
+<style>
+  .criterion .select2-container { width: auto !important }
+</style>
+<% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search' do %>
+  <div id="criteria"></div>
+  <i id="addCriterion" class="fa fa-plus-square"></i>
+  <%= submit_tag 'Search' %>
+<% end %>
+
+<script>
+  $(function () {
+
+    var fields = <%= admin_fields(model, recursive: true).to_json %>
+
+    function addCriterion(selected, inputValue) {
+      var criterion = $('<div class="criterion"></div>')
+
+      var select = $('<select><option></option></select>')
+      var input = $('<input type="text">')
+
+      select.appendTo(criterion)
+      $('<span> is </span>').appendTo(criterion)
+      input.appendTo(criterion)
+
+      select.change(function () {
+        if ($(this).val()) {
+          input.attr('name', 'f[' + select.val() + ']')
+          if (select.val().indexOf('.') == -1) {
+            var fieldname = select.val()
+            if (fields[fieldname].class_name) {
+              input.attr('type', 'hidden').lookup({
+                lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[fieldname].class_name + '.json',
+                placeholder: 'Search ' + fieldname,
+                id_param: 'id'
+              })
+            }
+          } else {
+            var collection = select.val().split('.')[0]
+            var fieldname = select.val().split('.')[1]
+            if (fields[collection][fieldname].class_name) {
+              input.attr('type', 'hidden').lookup({
+                lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[collection][fieldname].class_name + '.json',
+                placeholder: 'Search ' + fieldname,
+                id_param: 'id'
+              })
+            }
+          }
+        }
+      })
+
+      $.each(fields, function (fieldname, options) {
+        if (options.type) {
+          var option = $("<option></option>")
+          option.attr("value", fieldname).text(fieldname)
+          option.appendTo(select)
+        } else { // collection
+          $.each(options, function (f2, o2) {
+            var option = $("<option></option>")
+            option.attr("value", fieldname + '.' + f2).text(fieldname + '.' + f2)
+            option.appendTo(select)
+          })
+        }
+      })
+      select.val(selected)
+      input.val(inputValue)
+      select.change()
+
+      criterion.appendTo('#criteria')
+    }
+
+    $('#addCriterion').click(function () {
+      addCriterion()
+    })
+    
+    $('#search').submit(function() {
+      
+    })
+
+<% params[:f].each { |k,v| %>
+      addCriterion('<%=k%>', '<%=v%>')
+<%  } if params[:f] %>
+
+  })
+</script>
