@@ -42,11 +42,10 @@ module ActivateAdmin
         @d = :desc
       end
       if model.respond_to?(:filter_options)
-        @q, @f, @o, @d, = model.filter_options[:q], model.filter_options[:f], model.filter_options[:o], model.filter_options[:d]
+        @o, @d = model.filter_options[:o], model.filter_options[:d]
       end
       @id = params[:id] if params[:id]
       @q = params[:q] if params[:q]
-      @f = params[:f] if params[:f]
       @o = params[:o].to_sym if params[:o]
       @d = params[:d].to_sym if params[:d]        
       @resources = model.all
@@ -93,70 +92,48 @@ module ActivateAdmin
           @resources = @resources.or(q)          
         end
       end
-      @f.each { |fieldname,q|
-        if q
-          if fieldname.include?('.')  
-            # TODO: ActiveRecord/PostgreSQL
-            collection, fieldname = fieldname.split('.')
-            collection_assoc = assoc(model, collection, relationship: :has_many)
-            collection_model = collection_assoc.class_name.constantize
-            options = admin_fields(collection_model)[fieldname.to_sym]            
-            if options[:type] == :lookup              
+      params[:qk].each_with_index { |fieldname,i|
+        q = params[:qv][i]
+        if fieldname.include?('.')  
+          # TODO: ActiveRecord/PostgreSQL
+          collection, fieldname = fieldname.split('.')
+          collection_assoc = assoc(model, collection, relationship: :has_many)
+          collection_model = collection_assoc.class_name.constantize
+          options = admin_fields(collection_model)[fieldname.to_sym]            
+          if options[:type] == :lookup              
+            @resources = @resources.where(:id.in => collection_model.where(fieldname => q).pluck(collection_assoc.inverse_foreign_key.to_sym))
+          elsif persisted_field?(collection_model, fieldname)
+            if matchable_regex.include?(options[:type]) 
+              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                @resources = @resources.where(:id.in => collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).pluck(collection_assoc.inverse_foreign_key.to_sym))
+              else # Mongoid
+                @resources = @resources.where(:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_assoc.inverse_foreign_key.to_sym))
+              end                    
+            elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
               @resources = @resources.where(:id.in => collection_model.where(fieldname => q).pluck(collection_assoc.inverse_foreign_key.to_sym))
-            elsif persisted_field?(collection_model, fieldname)
-              if matchable_regex.include?(options[:type]) 
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                  @resources = @resources.where(:id.in => collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).pluck(collection_assoc.inverse_foreign_key.to_sym))
-                else # Mongoid
-                  @resources = @resources.where(:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_assoc.inverse_foreign_key.to_sym))
-                end                    
-              elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-                @resources = @resources.where(:id.in => collection_model.where(fieldname => q).pluck(collection_assoc.inverse_foreign_key.to_sym))
-              elsif options[:type] == :geopicker
-                @resources = @resources.where(:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_assoc.inverse_foreign_key.to_sym))
-              end
-            end                       
-          else
-            options = admin_fields(model)[fieldname.to_sym]
-            if options[:type] == :lookup            
-              assoc_name = assoc_name(model, fieldname)
-              assoc_model = assoc_name.constantize
-              assoc_fields = admin_fields(assoc_model)
-              assoc_fieldname = lookup_method(assoc_model)
-              assoc_options = assoc_fields[assoc_fieldname]         
-              if q.starts_with?('id:') or (q.length == 24 and q[0] =~ /\d/) # Mongo ObjectId
-                @resources = @resources.where(fieldname.to_sym => q.split('id:').last)
-              elsif persisted_field?(assoc_model, assoc_fieldname)
-                if matchable_regex.include?(assoc_options[:type])
-                  if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                    @resources = @resources.where("#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{q}%"]).select(:id))
-                  else # Mongoid
-                    @resources = @resources.where({fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(q)}/i).only(:id).map(&:id)})
-                  end                                   
-                elsif matchable_number.include?(assoc_options[:type]) and (begin; Float(q) and true; rescue; false; end)
-                  if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                    @resources = @resources.where("#{fieldname} in (?)", assoc_model.where(assoc_fieldname => q).select(:id))
-                  else # Mongoid
-                    @resources = @resources.where({fieldname.to_sym.in => assoc_model.where(assoc_fieldname => q).only(:id).map(&:id)})
-                  end                 
-                end
-              end
-            elsif persisted_field?(model, fieldname)
-              if matchable_regex.include?(options[:type]) 
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                  @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
-                else # Mongoid
-                  @resources = @resources.where(fieldname => /#{Regexp.escape(q)}/i)
-                end                    
-              elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-                @resources = @resources.where(fieldname => q)
-              elsif options[:type] == :geopicker
-                @resources = @resources.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}})
-              end
+            elsif options[:type] == :geopicker
+              @resources = @resources.where(:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_assoc.inverse_foreign_key.to_sym))
+            end
+          end                       
+        else
+          options = admin_fields(model)[fieldname.to_sym]
+          if options[:type] == :lookup            
+            @resources = @resources.where(fieldname => q)
+          elsif persisted_field?(model, fieldname)
+            if matchable_regex.include?(options[:type]) 
+              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
+              else # Mongoid
+                @resources = @resources.where(fieldname => /#{Regexp.escape(q)}/i)
+              end                    
+            elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
+              @resources = @resources.where(fieldname => q)
+            elsif options[:type] == :geopicker
+              @resources = @resources.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}})
             end
           end
         end
-      } if @f
+      } if params[:qk]
       if @o and @d
         @resources = @resources.order("#{@o} #{@d}")
       end

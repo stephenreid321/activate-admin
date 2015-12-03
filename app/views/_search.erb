@@ -26,9 +26,9 @@
       function addCriterion(selected, inputValue) {
         var criterion = $('<div class="criterion form-group"></div>')
 
-        var select = $('<select class="form-control" style="display: inline-block; width: auto"><option></option></select>')
+        var select = $('<select name="qk[]" class="form-control" style="display: inline-block; width: auto"><option></option></select>')
         var span = $('<span> is </span>')
-        var input = $('<input class="form-control" style="display: inline-block; width: auto" type="text">')
+        var input = $('<input name="qv[]" class="form-control" style="display: inline-block; width: auto" type="text">')
         var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
 
         select.appendTo(criterion)
@@ -38,7 +38,6 @@
 
         select.change(function () {
           if ($(this).val()) {
-            input.attr('name', 'f[' + select.val() + ']')
             if (select.val().indexOf('.') == -1) {
               var fieldname = select.val()
               if (fields[fieldname].class_name) {
@@ -94,9 +93,9 @@
 
       })
 
-  <% params[:f].each { |k,v| %>
-        addCriterion('<%=k%>', '<%=v%>')
-  <%  } if params[:f] %>
+  <% params[:qk].each_with_index { |fieldname,i| %>
+        addCriterion('<%=params[:qk][i]%>', '<%=params[:qv][i]%>')
+  <%  } if params[:qk] %>
 
     })
   </script>
