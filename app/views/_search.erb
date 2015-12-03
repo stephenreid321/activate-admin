@@ -11,17 +11,27 @@
 <script>
   $(function () {
 
-    var fields = <%= admin_fields(model, recursive: true).to_json %>
+<%
+fields = admin_fields(model)
+fields = Hash[fields.select { |fieldname, options| persisted_field?(model, fieldname) or options[:type] == :collection }.map { |fieldname, options|
+  [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| persisted_field?(submodel, fieldname) }) : options]
+  }]
+%>
+    var fields = <%= fields.to_json %>
+
 
     function addCriterion(selected, inputValue) {
       var criterion = $('<div class="criterion"></div>')
 
       var select = $('<select><option></option></select>')
+      var span = $('<span> is </span>')
       var input = $('<input type="text">')
+      var cross = $('<i class="fa fa-times"></i>')
 
       select.appendTo(criterion)
-      $('<span> is </span>').appendTo(criterion)
+      span.appendTo(criterion)
       input.appendTo(criterion)
+      cross.appendTo(criterion)
 
       select.change(function () {
         if ($(this).val()) {
@@ -49,6 +59,10 @@
         }
       })
 
+      cross.click(function () {
+        $(this).parent().remove()
+      })
+
       $.each(fields, function (fieldname, options) {
         if (options.type) {
           var option = $("<option></option>")
@@ -72,9 +86,9 @@
     $('#addCriterion').click(function () {
       addCriterion()
     })
-    
-    $('#search').submit(function() {
-      
+
+    $('#search').submit(function () {
+
     })
 
 <% params[:f].each { |k,v| %>
