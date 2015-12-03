@@ -111,7 +111,9 @@ module ActivateAdmin
                   @resources = @resources.where(:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_assoc.inverse_foreign_key.to_sym))
                 end                    
               elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-                @resources = @resources.where(fieldname => q)
+                @resources = @resources.where(:id.in => collection_model.where(fieldname => q).pluck(collection_assoc.inverse_foreign_key.to_sym))
+              elsif options[:type] == :geopicker
+                @resources = @resources.where(:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_assoc.inverse_foreign_key.to_sym))
               end
             end                       
           else
@@ -148,6 +150,8 @@ module ActivateAdmin
                 end                    
               elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
                 @resources = @resources.where(fieldname => q)
+              elsif options[:type] == :geopicker
+                @resources = @resources.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}})
               end
             end
           end

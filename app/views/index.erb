@@ -4,7 +4,9 @@
   <a href="<%=url(:new, :model => model.to_s)%>" class="btn btn-primary"><i class="fa fa-pencil"></i>&nbsp;New</a>
 </div>
 
-<%= partial :search %>
+<% if !model.respond_to?(:column_names) %>
+  <%= partial :search %>
+<% end %>
 
 <div class="row">
   <div class="col-md-6">
