@@ -2,98 +2,101 @@
 <style>
   .criterion .select2-container { width: auto !important }
 </style>
+
 <% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search' do %>
-  <div id="criteria"></div>
-  <i id="addCriterion" class="fa fa-plus-square"></i>
-  <%= submit_tag 'Search' %>
-<% end %>
+  <div class="well">
+    <div id="criteria"></div>
+    <i id="addCriterion" class="fa fa-plus-square"></i>
+    <%= submit_tag 'Search', class: 'btn btn-default' %>
+    </div>
+  <% end %>
 
-<script>
-  $(function () {
 
-<%
-fields = admin_fields(model)
-fields = Hash[fields.select { |fieldname, options| persisted_field?(model, fieldname) or options[:type] == :collection }.map { |fieldname, options|
-  [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| persisted_field?(submodel, fieldname) }) : options]
-  }]
+  <script>
+    $(function () {
+
+  <%
+  fields = admin_fields(model)
+  fields = Hash[fields.select { |fieldname, options| persisted_field?(model, fieldname) or options[:type] == :collection }.map { |fieldname, options|
+      [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| persisted_field?(submodel, fieldname) }) : options]
+    }]
 %>
-    var fields = <%= fields.to_json %>
+      var fields = <%= fields.to_json %>
 
+      function addCriterion(selected, inputValue) {
+        var criterion = $('<div class="criterion form-group"></div>')
 
-    function addCriterion(selected, inputValue) {
-      var criterion = $('<div class="criterion"></div>')
+        var select = $('<select class="form-control" style="display: inline-block; width: auto"><option></option></select>')
+        var span = $('<span> is </span>')
+        var input = $('<input class="form-control" style="display: inline-block; width: auto" type="text">')
+        var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
 
-      var select = $('<select><option></option></select>')
-      var span = $('<span> is </span>')
-      var input = $('<input type="text">')
-      var cross = $('<i class="fa fa-times"></i>')
+        select.appendTo(criterion)
+        span.appendTo(criterion)
+        input.appendTo(criterion)
+        cross.appendTo(criterion)
 
-      select.appendTo(criterion)
-      span.appendTo(criterion)
-      input.appendTo(criterion)
-      cross.appendTo(criterion)
-
-      select.change(function () {
-        if ($(this).val()) {
-          input.attr('name', 'f[' + select.val() + ']')
-          if (select.val().indexOf('.') == -1) {
-            var fieldname = select.val()
-            if (fields[fieldname].class_name) {
-              input.attr('type', 'hidden').lookup({
-                lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[fieldname].class_name + '.json',
-                placeholder: 'Search ' + fieldname,
-                id_param: 'id'
-              })
-            }
-          } else {
-            var collection = select.val().split('.')[0]
-            var fieldname = select.val().split('.')[1]
-            if (fields[collection][fieldname].class_name) {
-              input.attr('type', 'hidden').lookup({
-                lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[collection][fieldname].class_name + '.json',
-                placeholder: 'Search ' + fieldname,
-                id_param: 'id'
-              })
+        select.change(function () {
+          if ($(this).val()) {
+            input.attr('name', 'f[' + select.val() + ']')
+            if (select.val().indexOf('.') == -1) {
+              var fieldname = select.val()
+              if (fields[fieldname].class_name) {
+                input.attr('type', 'hidden').removeClass('form-control').lookup({
+                  lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[fieldname].class_name + '.json',
+                  placeholder: 'Search ' + fieldname + 's',
+                  id_param: 'id'
+                })
+              }
+            } else {
+              var collection = select.val().split('.')[0]
+              var fieldname = select.val().split('.')[1]
+              if (fields[collection][fieldname].class_name) {
+                input.attr('type', 'hidden').removeClass('form-control').lookup({
+                  lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[collection][fieldname].class_name + '.json',
+                  placeholder: 'Search ' + fieldname + 's',
+                  id_param: 'id'
+                })
+              }
             }
           }
-        }
-      })
+        })
 
-      cross.click(function () {
-        $(this).parent().remove()
-      })
+        cross.click(function () {
+          $(this).parent().remove()
+        })
 
-      $.each(fields, function (fieldname, options) {
-        if (options.type) {
-          var option = $("<option></option>")
-          option.attr("value", fieldname).text(fieldname)
-          option.appendTo(select)
-        } else { // collection
-          $.each(options, function (f2, o2) {
+        $.each(fields, function (fieldname, options) {
+          if (options.type) {
             var option = $("<option></option>")
-            option.attr("value", fieldname + '.' + f2).text(fieldname + '.' + f2)
+            option.attr("value", fieldname).text(fieldname)
             option.appendTo(select)
-          })
-        }
+          } else { // collection
+            $.each(options, function (f2, o2) {
+              var option = $("<option></option>")
+              option.attr("value", fieldname + '.' + f2).text(fieldname + '.' + f2)
+              option.appendTo(select)
+            })
+          }
+        })
+        select.val(selected)
+        input.val(inputValue)
+        select.change()
+
+        criterion.appendTo('#criteria')
+      }
+
+      $('#addCriterion').click(function () {
+        addCriterion()
       })
-      select.val(selected)
-      input.val(inputValue)
-      select.change()
 
-      criterion.appendTo('#criteria')
-    }
+      $('#search').submit(function () {
 
-    $('#addCriterion').click(function () {
-      addCriterion()
-    })
+      })
 
-    $('#search').submit(function () {
+  <% params[:f].each { |k,v| %>
+        addCriterion('<%=k%>', '<%=v%>')
+  <%  } if params[:f] %>
 
     })
-
-<% params[:f].each { |k,v| %>
-      addCriterion('<%=k%>', '<%=v%>')
-<%  } if params[:f] %>
-
-  })
-</script>
+  </script>
