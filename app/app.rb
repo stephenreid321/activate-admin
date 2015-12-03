@@ -93,44 +93,28 @@ module ActivateAdmin
         end
       end
       params[:qk].each_with_index { |fieldname,i|
+        # TODO: ActiveRecord/PostgreSQL        
         q = params[:qv][i]
-        if fieldname.include?('.')  
-          # TODO: ActiveRecord/PostgreSQL
+        b = (params[:qb][i].to_i == 1)
+        if !fieldname.include?('.')                      
+          collection_model = model
+          collection_key = :id
+        else
           collection, fieldname = fieldname.split('.')
           collection_assoc = assoc(model, collection, relationship: :has_many)
           collection_model = collection_assoc.class_name.constantize
-          options = admin_fields(collection_model)[fieldname.to_sym]            
-          if options[:type] == :lookup              
-            @resources = @resources.where(:id.in => collection_model.where(fieldname => q).pluck(collection_assoc.inverse_foreign_key.to_sym))
-          elsif persisted_field?(collection_model, fieldname)
-            if matchable_regex.include?(options[:type]) 
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                @resources = @resources.where(:id.in => collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).pluck(collection_assoc.inverse_foreign_key.to_sym))
-              else # Mongoid
-                @resources = @resources.where(:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_assoc.inverse_foreign_key.to_sym))
-              end                    
-            elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-              @resources = @resources.where(:id.in => collection_model.where(fieldname => q).pluck(collection_assoc.inverse_foreign_key.to_sym))
-            elsif options[:type] == :geopicker
-              @resources = @resources.where(:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_assoc.inverse_foreign_key.to_sym))
-            end
-          end                       
-        else
-          options = admin_fields(model)[fieldname.to_sym]
-          if options[:type] == :lookup            
-            @resources = @resources.where(fieldname => q)
-          elsif persisted_field?(model, fieldname)
-            if matchable_regex.include?(options[:type]) 
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                @resources = @resources.where(["#{fieldname} ilike ?", "%#{q}%"])
-              else # Mongoid
-                @resources = @resources.where(fieldname => /#{Regexp.escape(q)}/i)
-              end                    
-            elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-              @resources = @resources.where(fieldname => q)
-            elsif options[:type] == :geopicker
-              @resources = @resources.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}})
-            end
+          collection_key = collection_assoc.inverse_foreign_key.to_sym          
+        end
+        options = admin_fields(collection_model)[fieldname.to_sym]                  
+        if options[:type] == :lookup              
+          @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key))
+        elsif persisted_field?(collection_model, fieldname)
+          if matchable_regex.include?(options[:type]) 
+            @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key))
+          elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
+            @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key))
+          elsif options[:type] == :geopicker
+            @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key))
           end
         end
       } if params[:qk]

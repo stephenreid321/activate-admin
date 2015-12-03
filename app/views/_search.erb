@@ -23,16 +23,16 @@
 %>
       var fields = <%= fields.to_json %>
 
-      function addCriterion(selected, inputValue) {
+      function addCriterion(selected, bValue, inputValue) {
         var criterion = $('<div class="criterion form-group"></div>')
 
         var select = $('<select name="qk[]" class="form-control" style="display: inline-block; width: auto"><option></option></select>')
-        var span = $('<span> is </span>')
+        var b = $('<input name="qb[]" type="text">')
         var input = $('<input name="qv[]" class="form-control" style="display: inline-block; width: auto" type="text">')
         var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
 
         select.appendTo(criterion)
-        span.appendTo(criterion)
+        b.appendTo(criterion)
         input.appendTo(criterion)
         cross.appendTo(criterion)
 
@@ -80,6 +80,7 @@
         })
         select.val(selected)
         input.val(inputValue)
+        b.val(bValue)
         select.change()
 
         criterion.appendTo('#criteria')
@@ -94,7 +95,7 @@
       })
 
   <% params[:qk].each_with_index { |fieldname,i| %>
-        addCriterion('<%=params[:qk][i]%>', '<%=params[:qv][i]%>')
+        addCriterion('<%=params[:qk][i]%>', '<%=params[:qb][i]%>', '<%=params[:qv][i]%>')
   <%  } if params[:qk] %>
 
     })
