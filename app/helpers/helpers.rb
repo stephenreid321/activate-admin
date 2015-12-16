@@ -62,11 +62,11 @@ ActivateAdmin::App.helpers do
   end
   
   def queryable
-    matchable_regex + matchable_number + [:lookup]
+    matchable_regex + matchable_number + [:lookup, :geopicker]
   end
   
   def index_types
-    matchable_regex + matchable_number + [:check_box, :select, :radio_button, :date, :datetime, :lookup, :geopicker]
+    matchable_regex + matchable_number + [:lookup, :geopicker, :check_box, :select, :radio_button, :date, :datetime]
   end  
   
   def human_model_name(model)
