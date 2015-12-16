@@ -1,6 +1,7 @@
 
 <style>
   .criterion .select2-container { width: auto !important }
+  .bootstrap-switch .bootstrap-switch-handle-on, .bootstrap-switch .bootstrap-switch-handle-off, .bootstrap-switch .bootstrap-switch-label { font-size: 12px !important }
 </style>
 
 <% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search' do %>
@@ -27,15 +28,25 @@
         var criterion = $('<div class="criterion form-group"></div>')
 
         var select = $('<select name="qk[]" class="form-control" style="display: inline-block; width: auto"><option></option></select>')
-        var b = $('<input name="qb[]" type="text">')
+        var bInput = $('<input name="qb[]" type="hidden" value="1">')
+        var bCheckbox = $('<input type="checkbox" checked="checked">')
+        var b = $('<span></span>')
         var input = $('<input name="qv[]" class="form-control" style="display: inline-block; width: auto" type="text">')
         var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
 
         select.appendTo(criterion)
         b.appendTo(criterion)
+        bInput.appendTo(b)
+        bCheckbox.appendTo(b)
+        bCheckbox.bootstrapSwitch({onText: 'is', offText: 'is not', offColor: 'danger', onSwitchChange: function() {
+          if ($(this).prop('checked') == true)
+            bInput.val(1)
+          else
+            bInput.val(0)
+        }});        
         input.appendTo(criterion)
         cross.appendTo(criterion)
-
+        
         select.change(function () {
           if ($(this).val()) {
             if (select.val().indexOf('.') == -1) {
@@ -80,18 +91,14 @@
         })
         select.val(selected)
         input.val(inputValue)
-        b.val(bValue)
+        bCheckbox.bootstrapSwitch('state', bValue == 1)
         select.change()
 
         criterion.appendTo('#criteria')
       }
 
       $('#addCriterion').click(function () {
-        addCriterion()
-      })
-
-      $('#search').submit(function () {
-
+        addCriterion(null, 1, null)
       })
 
   <% params[:qk].each_with_index { |fieldname,i| %>

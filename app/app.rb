@@ -50,8 +50,9 @@ module ActivateAdmin
       @d = params[:d].to_sym if params[:d]        
       @resources = model.all
       @resources = @resources.where(id: @id) if @id
+      
       if @q
-        q = []
+        query = []
         admin_fields(model).each { |fieldname, options|
           if options[:type] === :lookup
             assoc_name = assoc_name(model, fieldname)            
@@ -62,38 +63,40 @@ module ActivateAdmin
             if persisted_field?(assoc_model, assoc_fieldname)
               if matchable_regex.include?(assoc_options[:type])
                 if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                  q << ["#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{@q}%"]).select(:id)]
+                  query << ["#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{@q}%"]).select(:id)]
                 else # Mongoid
-                  q << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).only(:id).map(&:id) }
+                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).only(:id).map(&:id) }
                 end                                   
               elsif matchable_number.include?(assoc_options[:type]) and (begin; Float(@q) and true; rescue; false; end)
                 if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                  q << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
+                  query << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
                 else # Mongoid
-                  q << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).only(:id).map(&:id) }
+                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).only(:id).map(&:id) }
                 end                 
               end
             end
           elsif persisted_field?(model, fieldname)
             if matchable_regex.include?(options[:type]) 
               if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                q << ["#{fieldname} ilike ?", "%#{@q}%"]
+                query << ["#{fieldname} ilike ?", "%#{@q}%"]
               else # Mongoid
-                q << {fieldname => /#{Regexp.escape(@q)}/i }
+                query << {fieldname => /#{Regexp.escape(@q)}/i }
               end            
             elsif matchable_number.include?(options[:type]) and (begin; Float(@q) and true; rescue; false; end)
-              q << {fieldname => @q}
+              query << {fieldname => @q}
             end
           end        
         }
         if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL          
-          @resources = @resources.where.any_of(*q) if !q.empty?
+          @resources = @resources.where.any_of(*query) if !query.empty?
         else # Mongoid
-          @resources = @resources.or(q)          
+          @resources = @resources.or(query)
         end
       end
+      
+      query = []
       params[:qk].each_with_index { |fieldname,i|
-        # TODO: ActiveRecord/PostgreSQL        
+        # TODO: ActiveRecord/PostgreSQL             
         q = params[:qv][i]
         b = (params[:qb][i].to_i == 1)
         if !fieldname.include?('.')                      
@@ -107,17 +110,19 @@ module ActivateAdmin
         end
         options = admin_fields(collection_model)[fieldname.to_sym]                  
         if options[:type] == :lookup              
-          @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key))
+          query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
         elsif persisted_field?(collection_model, fieldname)
           if matchable_regex.include?(options[:type]) 
-            @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key))
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
           elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-            @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key))
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
           elsif options[:type] == :geopicker
-            @resources = @resources.where(:id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key))
+            query << {:id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
           end
         end
       } if params[:qk]
+      @resources = @resources.all_of(query)
+      
       if @o and @d
         @resources = @resources.order("#{@o} #{@d}")
       end
