@@ -28,22 +28,12 @@
         var criterion = $('<div class="criterion form-group"></div>')
 
         var select = $('<select name="qk[]" class="form-control" style="display: inline-block; width: auto"><option></option></select>')
-        var bInput = $('<input name="qb[]" type="hidden" value="1">')
-        var bCheckbox = $('<input type="checkbox" checked="checked">')
-        var b = $('<span></span>')
+        var equality = $('<select name="qb[]" class="form-control" style="display: inline-block; width: auto"><option value="1">is</option><option value="0">is not</option></select>')
         var input = $('<input name="qv[]" class="form-control" style="display: inline-block; width: auto" type="text">')
         var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
 
         select.appendTo(criterion)
-        b.appendTo(criterion)
-        bInput.appendTo(b)
-        bCheckbox.appendTo(b)
-        bCheckbox.bootstrapSwitch({onText: 'is', offText: 'is not', offColor: 'danger', onSwitchChange: function() {
-          if ($(this).prop('checked') == true)
-            bInput.val(1)
-          else
-            bInput.val(0)
-        }});        
+        equality.appendTo(criterion)    
         input.appendTo(criterion)
         cross.appendTo(criterion)
         
@@ -91,7 +81,7 @@
         })
         select.val(selected)
         input.val(inputValue)
-        bCheckbox.bootstrapSwitch('state', bValue == 1)
+        equality.val(bValue)
         select.change()
 
         criterion.appendTo('#criteria')
