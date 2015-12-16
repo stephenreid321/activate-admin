@@ -110,24 +110,27 @@ module ActivateAdmin
         end
         options = admin_fields(collection_model)[fieldname.to_sym]                  
         if options[:type] == :lookup              
-          query << {:_id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
+          query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
         elsif persisted_field?(collection_model, fieldname)
           if matchable_regex.include?(options[:type]) 
-            query << {:_id.send(b ? :in : :nin) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
           elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-            query << {:_id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
           elsif options[:type] == :geopicker
-            query << {:_id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
+            query << {:id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
           elsif options[:type] == :check_box
-            query << {:_id.send(b ? :in : :nin) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
           elsif options[:type] == :date
-            query << {:_id.send(b ? :in : :nin) => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
           elsif options[:type] == :datetime
-            query << {:_id.send(b ? :in : :nin) => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
           end
         end
       } if params[:qk]
-      @resources = @resources.all_of(query)
+      query.each { |q|
+        @resources = @resources.intersect.where(q)  
+      }
+      
       
       if @o and @d
         @resources = @resources.order("#{@o} #{@d}")
