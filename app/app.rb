@@ -127,10 +127,7 @@ module ActivateAdmin
           end
         end
       } if params[:qk]
-      query.each { |q|
-        @resources = @resources.intersect.where(q)  
-      }
-      
+      @resources = @resources.all_of(query)
       
       if @o and @d
         @resources = @resources.order("#{@o} #{@d}")
