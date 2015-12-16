@@ -118,6 +118,12 @@ module ActivateAdmin
             query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
           elsif options[:type] == :geopicker
             query << {:id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
+          elsif options[:type] == :check_box
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+          elsif options[:type] == :date
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
+          elsif options[:type] == :datetime
+            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
           end
         end
       } if params[:qk]

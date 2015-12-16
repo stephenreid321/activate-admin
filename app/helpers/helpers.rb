@@ -18,7 +18,7 @@ ActivateAdmin::App.helpers do
     admin_fields[:updated_at] = {:type => :datetime, :edit => false} if persisted_field?(model, :updated_at)
     admin_fields = Hash[admin_fields.map { |fieldname, options|        
         options = {:type => options} if options.is_a?(Symbol)        
-        options[:index] = true if !options.keys.include?(:index) and index_types.include?(options[:type])
+        options[:index] = true if !options.keys.include?(:index) and queryable.include?(options[:type])
         options[:edit] = true if !options.keys.include?(:edit)
         options[:disabled] = true if fieldname == :id    
         options[:class_name] = assoc(model, fieldname, relationship: case options[:type]; when :lookup; :belongs_to; when :collection; :has_many; end).class_name if [:lookup, :collection].include?(options[:type])        
@@ -54,7 +54,7 @@ ActivateAdmin::App.helpers do
   end  
     
   def matchable_regex
-    [:text, :slug, :text_area, :wysiwyg, :email, :url]
+    [:text, :slug, :text_area, :wysiwyg, :email, :url, :select, :radio_button]
   end
   
   def matchable_number
@@ -62,13 +62,9 @@ ActivateAdmin::App.helpers do
   end
   
   def queryable
-    matchable_regex + matchable_number + [:lookup, :geopicker]
+    matchable_regex + matchable_number + [:lookup, :geopicker, :check_box, :date, :datetime]
   end
-  
-  def index_types
-    matchable_regex + matchable_number + [:lookup, :geopicker, :check_box, :select, :radio_button, :date, :datetime]
-  end  
-  
+    
   def human_model_name(model)
     model.to_s.underscore.humanize
   end  
