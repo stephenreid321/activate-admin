@@ -117,7 +117,7 @@ module ActivateAdmin
           elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
             query << {:id.send(b) => collection_model.where(fieldname => q).pluck(collection_key)}
           elsif options[:type] == :geopicker
-            query << {:id.send(b) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
+            query << {:id.send(b) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0]).reverse, (q.split(':')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
           elsif options[:type] == :check_box
             query << {:id.send(b) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
           elsif options[:type] == :date
