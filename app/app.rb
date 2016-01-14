@@ -98,7 +98,7 @@ module ActivateAdmin
       params[:qk].each_with_index { |fieldname,i|
         # TODO: ActiveRecord/PostgreSQL             
         q = params[:qv][i]
-        b = (params[:qb][i].to_i == 1)
+        b = params[:qb][i].to_sym
         if !fieldname.include?('.')                      
           collection_model = model
           collection_key = :id
@@ -110,20 +110,34 @@ module ActivateAdmin
         end
         options = admin_fields(collection_model)[fieldname.to_sym]                  
         if options[:type] == :lookup              
-          query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
+          query << {:id.send(b) => collection_model.where(fieldname => q).pluck(collection_key)}
         elsif persisted_field?(collection_model, fieldname)
           if matchable_regex.include?(options[:type]) 
-            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+            query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
           elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => q).pluck(collection_key)}
+            query << {:id.send(b) => collection_model.where(fieldname => q).pluck(collection_key)}
           elsif options[:type] == :geopicker
-            query << {:id.send(b ? :in : :nin) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
+            query << {:id.send(b) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(',')[0]).reverse, (q.split(',')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
           elsif options[:type] == :check_box
-            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+            query << {:id.send(b) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
           elsif options[:type] == :date
-            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
-          elsif options[:type] == :datetime
-            query << {:id.send(b ? :in : :nin) => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
+            case b
+            when :in
+              query << {:id.in => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
+            when :nin
+              query << {:id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
+            when :gt, :gte, :lt, :lte
+              query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key)}
+            end            
+          elsif options[:type] == :datetime            
+            case b
+            when :in
+              query << {:id.in => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
+            when :nin
+              query << {:id.nin => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
+            when :gt, :gte, :lt, :lte
+              query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Time.zone.parse(q)).pluck(collection_key)}
+            end
           end
         end
       } if params[:qk]
