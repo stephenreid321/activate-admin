@@ -1,4 +1,5 @@
 module ActivateAdmin
+  class OperatorNotSupported < StandardError; end
   class App < Padrino::Application
     register Padrino::Rendering
     register Padrino::Helpers
@@ -11,7 +12,7 @@ module ActivateAdmin
     set :show_exceptions, true
     set :public_folder,  ActivateAdmin.root('app', 'assets')
     set :default_builder, 'ActivateFormBuilder'
-       
+           
     before do      
       if ENV['PERMITTED_IPS'] and Padrino.env == :production
         halt 403 unless ENV['PERMITTED_IPS'].split(',').include? request.ip
@@ -20,7 +21,7 @@ module ActivateAdmin
       Time.zone = current_account.time_zone if current_account and current_account.respond_to?(:time_zone) and current_account.time_zone
       fix_params!
     end 
-            
+                    
     get :home, :map => '/' do
       erb :home
     end  
@@ -109,16 +110,27 @@ module ActivateAdmin
           collection_key = collection_assoc.inverse_foreign_key.to_sym          
         end
         options = admin_fields(collection_model)[fieldname.to_sym]                  
-        if options[:type] == :lookup              
+        if options[:type] == :lookup
+          raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
           query << {:id.send(b) => collection_model.where(fieldname => q).pluck(collection_key)}
         elsif persisted_field?(collection_model, fieldname)
           if matchable_regex.include?(options[:type]) 
-            query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
-          elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)
-            query << {:id.send(b) => collection_model.where(fieldname => q).pluck(collection_key)}
+            raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
+            query << {:id.send(b) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+          elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
+            case b
+            when :in
+              query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
+            when :nin
+              query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
+            when :gt, :gte, :lt, :lte
+              query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key)}
+            end                        
           elsif options[:type] == :geopicker
-            query << {:id.send(b) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0]).reverse, (q.split(':')[1] || 20).to_i / 3963.1676 ]}}).pluck(collection_key)}
+            raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
+            query << {:id.send(b) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
           elsif options[:type] == :check_box
+            raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
             query << {:id.send(b) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
           elsif options[:type] == :date
             case b
@@ -128,7 +140,7 @@ module ActivateAdmin
               query << {:id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
             when :gt, :gte, :lt, :lte
               query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key)}
-            end            
+            end      
           elsif options[:type] == :datetime            
             case b
             when :in
