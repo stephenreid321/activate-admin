@@ -11,3 +11,5 @@ input[name$='[lat]'], input[name$='[lng]'] { display:inline; width: auto }
 
 table a:not(.btn), .table a:not(.btn) { text-decoration: none }
 table a:not(.btn):hover, .table a:not(.btn):hover { text-decoration: underline }
+
+h1, .h1 { font-size: 48px }
