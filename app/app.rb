@@ -110,21 +110,41 @@ module ActivateAdmin
             collection_key = collection_assoc.inverse_foreign_key.to_sym          
           end
           options = admin_fields(collection_model)[fieldname.to_sym]                  
-          if options[:type] == :lookup
-            raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
-            if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-              # TODO
-            else # Mongoid        
-              query << {:id.send(b) => collection_model.where(fieldname => q).pluck(collection_key)}
+          if options[:type] == :lookup            
+            case b
+            when :in
+              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                # TODO
+              else # Mongoid        
+                query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
+              end                
+            when :nin
+              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                # TODO
+              else # Mongoid        
+                query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
+              end                
+            else
+              raise OperatorNotSupported
             end
           elsif persisted_field?(collection_model, fieldname)
             if matchable_regex.include?(options[:type]) 
-              raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                # TODO
-              else # Mongoid
-                query << {:id.send(b) => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
-              end
+              case b
+              when :in
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  # TODO
+                else # Mongoid
+                  query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+                end              
+              when :nin
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  # TODO
+                else # Mongoid
+                  query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+                end              
+              else
+                raise OperatorNotSupported
+              end              
             elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
               case b
               when :in
@@ -147,18 +167,38 @@ module ActivateAdmin
                 end
               end                        
             elsif options[:type] == :geopicker
-              raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                # TODO
-              else # Mongoid
-                query << {:id.send(b) => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
+              case b
+              when :in
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  # TODO
+                else # Mongoid
+                  query << {:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
+                end                
+              when :nin
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  # TODO
+                else # Mongoid
+                  query << {:id.nin => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
+                end
+              else
+                raise OperatorNotSupported                
               end
             elsif options[:type] == :check_box
-              raise OperatorNotSupported if [:gt, :gte, :lt, :lte].include?(b)
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
-                # TODO
-              else # Mongoid
-                query << {:id.send(b) => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+              case b
+              when :in
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  # TODO
+                else # Mongoid
+                  query << {:id.in => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+                end                
+              when :nin
+                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                  # TODO
+                else # Mongoid
+                  query << {:id.nin => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+                end   
+              else
+                raise OperatorNotSupported
               end
             elsif options[:type] == :date
               case b
