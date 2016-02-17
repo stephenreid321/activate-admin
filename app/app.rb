@@ -66,13 +66,13 @@ module ActivateAdmin
                 if active_record?
                   query << ["#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{@q}%"]).select(:id)]
                 elsif mongoid?
-                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).only(:id).map(&:id) }
+                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).pluck(:id) }
                 end                                   
               elsif matchable_number.include?(assoc_options[:type]) and (begin; Float(@q) and true; rescue; false; end)
                 if active_record?
                   query << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
                 elsif mongoid?
-                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).only(:id).map(&:id) }
+                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
                 end                 
               end
             end
