@@ -100,5 +100,18 @@ ActivateAdmin::App.helpers do
   def mongoid?
     !active_record?
   end
+  
+  def inequality(b)
+    case b
+    when :gt
+      '>'
+    when :gte
+      '>='
+    when :lt
+      '<'
+    when :lte
+      '<='
+    end
+  end
            
 end
