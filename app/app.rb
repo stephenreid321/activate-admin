@@ -95,162 +95,160 @@ module ActivateAdmin
         end
       end
       
-      if !model.respond_to?(:column_names)       
-        query = []
-        params[:qk].each_with_index { |fieldname,i|
-          q = params[:qv][i]
-          b = params[:qb][i].to_sym
-          if !fieldname.include?('.')                      
-            collection_model = model
-            collection_key = :id
-          else
-            collection, fieldname = fieldname.split('.')
-            collection_assoc = assoc(model, collection, relationship: :has_many)
-            collection_model = collection_assoc.class_name.constantize
-            collection_key = collection_assoc.inverse_foreign_key.to_sym          
+      query = []
+      params[:qk].each_with_index { |fieldname,i|
+        q = params[:qv][i]
+        b = params[:qb][i].to_sym
+        if !fieldname.include?('.')                      
+          collection_model = model
+          collection_key = :id
+        else
+          collection, fieldname = fieldname.split('.')
+          collection_assoc = assoc(model, collection, relationship: :has_many)
+          collection_model = collection_assoc.class_name.constantize
+          collection_key = collection_assoc.inverse_foreign_key.to_sym          
+        end
+        options = admin_fields(collection_model)[fieldname.to_sym]                  
+        if options[:type] == :lookup            
+          case b
+          when :in
+            if active_record?
+              # TODO
+            elsif mongoid?        
+              query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
+            end                
+          when :nin
+            if active_record?
+              # TODO
+            elsif mongoid?        
+              query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
+            end                
+          when :gt, :gte, :lt, :lte
+            raise OperatorNotSupported
           end
-          options = admin_fields(collection_model)[fieldname.to_sym]                  
-          if options[:type] == :lookup            
+        elsif persisted_field?(collection_model, fieldname)
+          if matchable_regex.include?(options[:type]) 
             case b
             when :in
               if active_record?
                 # TODO
-              elsif mongoid?        
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+              end              
+            when :nin
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+              end              
+            when :gt, :gte, :lt, :lte
+              raise OperatorNotSupported
+            end              
+          elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
+            case b
+            when :in
+              if active_record?
+                # TODO
+              elsif mongoid?
                 query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
+              end
+            when :nin
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
+              end
+            when :gt, :gte, :lt, :lte
+              if active_record?
+                # TODO
+              elsif mongoid?             
+                query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key)}
+              end
+            end                        
+          elsif options[:type] == :geopicker
+            case b
+            when :in
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
               end                
             when :nin
               if active_record?
                 # TODO
-              elsif mongoid?        
-                query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
+              end
+            when :gt, :gte, :lt, :lte
+              raise OperatorNotSupported                
+            end
+          elsif options[:type] == :check_box
+            case b
+            when :in
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
               end                
+            when :nin
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+              end   
             when :gt, :gte, :lt, :lte
               raise OperatorNotSupported
             end
-          elsif persisted_field?(collection_model, fieldname)
-            if matchable_regex.include?(options[:type]) 
-              case b
-              when :in
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
-                end              
-              when :nin
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
-                end              
-              when :gt, :gte, :lt, :lte
-                raise OperatorNotSupported
-              end              
-            elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
-              case b
-              when :in
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
-                end
-              when :nin
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
-                end
-              when :gt, :gte, :lt, :lte
-                if active_record?
-                  # TODO
-                elsif mongoid?             
-                  query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key)}
-                end
-              end                        
-            elsif options[:type] == :geopicker
-              case b
-              when :in
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
-                end                
-              when :nin
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.nin => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
-                end
-              when :gt, :gte, :lt, :lte
-                raise OperatorNotSupported                
+          elsif options[:type] == :date
+            case b
+            when :in
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
               end
-            elsif options[:type] == :check_box
-              case b
-              when :in
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
-                end                
-              when :nin
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.nin => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
-                end   
-              when :gt, :gte, :lt, :lte
-                raise OperatorNotSupported
+            when :nin
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
               end
-            elsif options[:type] == :date
-              case b
-              when :in
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
-                end
-              when :nin
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
-                end
-              when :gt, :gte, :lt, :lte
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key)}
-                end
-              end      
-            elsif options[:type] == :datetime            
-              case b
-              when :in
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
-                end
-              when :nin
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.nin => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
-                end
-              when :gt, :gte, :lt, :lte
-                if active_record?
-                  # TODO
-                elsif mongoid?
-                  query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Time.zone.parse(q)).pluck(collection_key)}
-                end
+            when :gt, :gte, :lt, :lte
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key)}
+              end
+            end      
+          elsif options[:type] == :datetime            
+            case b
+            when :in
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
+              end
+            when :nin
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
+              end
+            when :gt, :gte, :lt, :lte
+              if active_record?
+                # TODO
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Time.zone.parse(q)).pluck(collection_key)}
               end
             end
           end
-        } if params[:qk]
-        if active_record?
-          # TODO
-        elsif mongoid?
-          @resources = @resources.all_of(query)
-        end        
-      end
+        end
+      } if params[:qk]
+      if active_record?
+        # TODO
+      elsif mongoid?
+        @resources = @resources.all_of(query)
+      end        
       
       if @o and @d
         @resources = @resources.order("#{@o} #{@d}")
