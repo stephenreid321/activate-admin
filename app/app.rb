@@ -63,24 +63,24 @@ module ActivateAdmin
             assoc_options = assoc_fields[assoc_fieldname]
             if persisted_field?(assoc_model, assoc_fieldname)
               if matchable_regex.include?(assoc_options[:type])
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   query << ["#{fieldname} in (?)", assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{@q}%"]).select(:id)]
-                else # Mongoid
+                elsif mongoid?
                   query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).only(:id).map(&:id) }
                 end                                   
               elsif matchable_number.include?(assoc_options[:type]) and (begin; Float(@q) and true; rescue; false; end)
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   query << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
-                else # Mongoid
+                elsif mongoid?
                   query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).only(:id).map(&:id) }
                 end                 
               end
             end
           elsif persisted_field?(model, fieldname)
             if matchable_regex.include?(options[:type]) 
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              if active_record?
                 query << ["#{fieldname} ilike ?", "%#{@q}%"]
-              else # Mongoid
+              elsif mongoid?
                 query << {fieldname => /#{Regexp.escape(@q)}/i }
               end            
             elsif matchable_number.include?(options[:type]) and (begin; Float(@q) and true; rescue; false; end)
@@ -88,9 +88,9 @@ module ActivateAdmin
             end
           end        
         }
-        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+        if active_record?
           @resources = @resources.where.any_of(*query) if !query.empty?
-        else # Mongoid
+        elsif mongoid?
           @resources = @resources.or(query)
         end
       end
@@ -113,15 +113,15 @@ module ActivateAdmin
           if options[:type] == :lookup            
             case b
             when :in
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              if active_record?
                 # TODO
-              else # Mongoid        
+              elsif mongoid?        
                 query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
               end                
             when :nin
-              if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+              if active_record?
                 # TODO
-              else # Mongoid        
+              elsif mongoid?        
                 query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
               end                
             else
@@ -131,15 +131,15 @@ module ActivateAdmin
             if matchable_regex.include?(options[:type]) 
               case b
               when :in
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
                 end              
               when :nin
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
                 end              
               else
@@ -148,36 +148,36 @@ module ActivateAdmin
             elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
               case b
               when :in
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
                 end
               when :nin
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
                 end
               when :gt, :gte, :lt, :lte
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid             
+                elsif mongoid?             
                   query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key)}
                 end
               end                        
             elsif options[:type] == :geopicker
               case b
               when :in
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
                 end                
               when :nin
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.nin => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
                 end
               else
@@ -186,15 +186,15 @@ module ActivateAdmin
             elsif options[:type] == :check_box
               case b
               when :in
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
                 end                
               when :nin
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
                 end   
               else
@@ -203,51 +203,51 @@ module ActivateAdmin
             elsif options[:type] == :date
               case b
               when :in
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
                 end
               when :nin
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key)}
                 end
               when :gt, :gte, :lt, :lte
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key)}
                 end
               end      
             elsif options[:type] == :datetime            
               case b
               when :in
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
                 end
               when :nin
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key)}
                 end
               when :gt, :gte, :lt, :lte
-                if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+                if active_record?
                   # TODO
-                else # Mongoid
+                elsif mongoid?
                   query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => Time.zone.parse(q)).pluck(collection_key)}
                 end
               end
             end
           end
         } if params[:qk]
-        if model.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+        if active_record?
           # TODO
-        else # Mongoid
+        elsif mongoid?
           @resources = @resources.all_of(query)
         end        
       end
@@ -363,9 +363,9 @@ module ActivateAdmin
     end  
     
     post :forgot_password, :map => '/forgot_password' do      
-      if Account.respond_to?(:column_names) # ActiveRecord/PostgreSQL
+      if active_record?
         account = Account.where('email ilike ?', params[:email]).first
-      else # Mongoid
+      elsif mongoid?
         account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/i)
       end      
       if account

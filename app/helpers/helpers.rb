@@ -46,9 +46,9 @@ ActivateAdmin::App.helpers do
   end
   
   def persisted_field?(model, fieldname)
-    if model.respond_to?(:column_names)  # ActiveRecord/PostgreSQL     
+    if active_record?
       model.column_names.include?(fieldname.to_s)
-    else # Mongoid
+    elsif mongoid?
       model.fields[fieldname.to_s]
     end
   end  
@@ -91,6 +91,14 @@ ActivateAdmin::App.helpers do
     else
       "Displaying #{model.pluralize.downcase} <b>#{collection.offset + 1} - #{collection.offset + collection.to_a.length}</b> of <b>#{collection.count}</b> in total"
     end
-  end    
+  end  
+
+  def active_record?
+    models.first.respond_to?(:column_names)
+  end
+
+  def mongoid?
+    !active_record?
+  end
            
 end

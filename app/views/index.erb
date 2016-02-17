@@ -105,7 +105,7 @@
 
 <%= will_paginate @resources, :renderer => WillPaginate::ViewHelpers::BootstrapRenderer %>
 
-<% if @resources.respond_to?(:to_sql) # ActiveRecord/PostgreSQL %>
+<% if active_record? %>
   <pre><%=@resources.to_sql%></pre>
 <% end %>
 
