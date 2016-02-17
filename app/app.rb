@@ -8,7 +8,13 @@ module ActivateAdmin
     helpers Activate::ParamHelpers
     helpers Activate::NavigationHelpers
       
-    enable :sessions
+    if ENV['SSL']
+      use Rack::SslEnforcer
+      use Rack::Session::Cookie, :key => '_rack_session', :path => '/', :expire_after => 365*24*60*60, :secret => settings.session_secret
+    else
+      set :sessions, :expire_after => 1.year    
+    end 
+
     set :show_exceptions, true
     set :public_folder,  ActivateAdmin.root('app', 'assets')
     set :default_builder, 'ActivateFormBuilder'
@@ -247,7 +253,9 @@ module ActivateAdmin
         end
       } if params[:qk]
       if active_record?
-        # TODO
+        query.each { |q|
+          @resources = @resources.where(q)
+        }
       elsif mongoid?
         @resources = @resources.all_of(query)
       end        
