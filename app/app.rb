@@ -124,7 +124,7 @@ module ActivateAdmin
               elsif mongoid?        
                 query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
               end                
-            else
+            when :gt, :gte, :lt, :lte
               raise OperatorNotSupported
             end
           elsif persisted_field?(collection_model, fieldname)
@@ -142,7 +142,7 @@ module ActivateAdmin
                 elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
                 end              
-              else
+              when :gt, :gte, :lt, :lte
                 raise OperatorNotSupported
               end              
             elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
@@ -180,7 +180,7 @@ module ActivateAdmin
                 elsif mongoid?
                   query << {:id.nin => collection_model.where(:coordinates => { "$geoWithin" => { "$centerSphere" => [Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676 ]}}).pluck(collection_key)}
                 end
-              else
+              when :gt, :gte, :lt, :lte
                 raise OperatorNotSupported                
               end
             elsif options[:type] == :check_box
@@ -197,7 +197,7 @@ module ActivateAdmin
                 elsif mongoid?
                   query << {:id.nin => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
                 end   
-              else
+              when :gt, :gte, :lt, :lte
                 raise OperatorNotSupported
               end
             elsif options[:type] == :date
