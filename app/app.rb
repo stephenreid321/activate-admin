@@ -252,13 +252,21 @@ module ActivateAdmin
           end
         end
       } if params[:qk]
-      if active_record?
-        query.each { |q|
-          @resources = @resources.where(q)
-        }
-      elsif mongoid?
-        @resources = @resources.all_of(query)
-      end        
+      
+      case params[:all_any]
+      when 'all'
+        if active_record?
+          query.each { |q| @resources = @resources.where(q) }       
+        elsif mongoid?
+          @resources = @resources.all_of(query)
+        end
+      when 'any'
+        if active_record?
+          @resources = @resources.where.any_of(*query) if !query.empty?
+        elsif mongoid?
+          @resources = @resources.or(query)
+        end
+      end      
       
       if @o and @d
         @resources = @resources.order("#{@o} #{@d}")

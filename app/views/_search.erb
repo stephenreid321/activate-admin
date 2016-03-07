@@ -8,6 +8,7 @@
   <div class="well">
     <div id="criteria"></div>
     <i id="addCriterion" class="fa fa-plus-square"></i>
+    <%= select_tag :all_any, :class => 'form-control', :style => 'width: auto; display: inline-block', :options => [['all the above','all'],[['any of the above'],'any']], :selected => params[:all_any] %>
     <%= submit_tag 'Search', class: 'btn btn-default' %>
     </div>
   <% end %>
@@ -33,10 +34,10 @@
         var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
 
         select.appendTo(criterion)
-        equality.appendTo(criterion)    
+        equality.appendTo(criterion)
         input.appendTo(criterion)
         cross.appendTo(criterion)
-        
+
         select.change(function () {
           if ($(this).val()) {
             if (select.val().indexOf('.') == -1) {
