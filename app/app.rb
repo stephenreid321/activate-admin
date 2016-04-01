@@ -281,10 +281,11 @@ module ActivateAdmin
           results: @resources.map { |resource| {id: resource.id.to_s, text: "#{resource.send(lookup_method(resource.class))} (id:#{resource.id})"} }
         }.to_json        
       when :csv
+        fields = admin_fields(model).select { |fieldname, options| options[:index] }
         CSV.generate do |csv|
-          csv << admin_fields(model).keys
+          csv << fields.keys
           @resources.each do |resource|
-            csv << admin_fields(model).map { |fieldname, options|
+            csv << fields.map { |fieldname, options|
               if options[:type] === :lookup and resource.send(fieldname)
                 assoc_name = assoc_name(model, fieldname)
                 "#{assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
