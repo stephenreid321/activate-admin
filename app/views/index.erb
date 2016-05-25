@@ -7,13 +7,13 @@
 <%= partial :search %>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-sm-6">
     <p>
       <%= page_entries_info(@resources, :model => model.to_s) %>
       <a class="btn btn-default" title="Download results as csv" target="_blank" href="<%=url(:index, params.merge(:model => model.to_s, :format => :csv))%>"><i class="fa fa-download"></i></a>
     </p>    
   </div>
-  <div class="col-md-6" style="text-align: right">
+  <div class="col-sm-6" style="text-align: right">
     <form style="display: inline">      
       <%= search_field_tag :q, :class => 'form-control', :value => @q, :style => 'width: 200px; display: inline' %>
       <%= hidden_field_tag :o, :value => @o %>
