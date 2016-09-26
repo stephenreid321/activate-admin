@@ -51,7 +51,7 @@ module ActivateAdmin
       @d = params[:d].to_sym if params[:d]        
       @resources = model.all
       @resources = @resources.where(id: @id) if @id
-      
+            
       if @q
         query = []
         admin_fields(model).each { |fieldname, options|
@@ -277,7 +277,7 @@ module ActivateAdmin
       when :csv
         fields = admin_fields(model).select { |fieldname, options| options[:index] }
         CSV.generate do |csv|
-          csv << fields.keys
+          csv << fields.keys          
           @resources.each do |resource|
             csv << fields.map { |fieldname, options|
               if options[:type] === :lookup and resource.send(fieldname)
