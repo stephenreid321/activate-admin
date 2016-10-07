@@ -25,15 +25,14 @@
       <% } %>
     <% } %>
 
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-
-    <% [
+    <% [      
       "#{ActivateAdmin::App.uri_root}/stylesheets/app.css"
       ].each { |f| %> 
       <link rel="stylesheet" href="<%=f%>" />    
     <% } %>
 
     <% [
+      "//maps.googleapis.com/maps/api/js?libraries=places&key=#{ENV['GOOGLE_MAPS_API_KEY']}",
       'https://cdn.rawgit.com/chrissrogers/jquery-deparam/05018fe327c3675250f91f6ead6e83ef90dab1d0/jquery-deparam.min.js',
       'https://cdn.rawgit.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.geopicker.js',
       'https://cdn.rawgit.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.lookup.js',
