@@ -6,7 +6,10 @@ body { padding-top: 60px; }
 .page-header h1 { display: inline }
 .page-header a { margin-left: 10px; position: relative; top: -6px }
 
-input[name$='[day]'], input[name$='[month]'], input[name$='[year]'], select[name$='[hour]'], select[name$='[min]'] { display:inline; width: 6em } 
+input[name$='[day]'], input[name$='[month]'], input[name$='[year]'], select[name$='[hour]'], select[name$='[min]'] { display:inline; } 
+input[name$='[day]'], input[name$='[year]'] { width: 4em }
+input[name$='[month]'] { width: 8em }
+select[name$='[hour]'], select[name$='[min]'] { width: 6em }
 input[name$='[lat]'], input[name$='[lng]'] { display:inline; width: auto } 
 
 table a:not(.btn), .table a:not(.btn) { text-decoration: none }
