@@ -161,7 +161,7 @@ module ActivateAdmin
             when :gt, :gte, :lt, :lte
               raise OperatorNotSupported
             end              
-          elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end)            
+          elsif matchable_number.include?(options[:type]) and (begin; Float(q) and true; rescue; false; end or q.nil?)
             case b
             when :in
               if active_record?
