@@ -98,6 +98,7 @@ module ActivateAdmin
       query = []
       params[:qk].each_with_index { |fieldname,i|
         q = params[:qv][i]
+        q = nil if q == 'nil'
         b = params[:qb][i].to_sym
         if !fieldname.include?('.')                      
           collection_model = model
@@ -130,17 +131,33 @@ module ActivateAdmin
           if matchable_regex.include?(options[:type]) 
             case b
             when :in
-              if active_record?
-                query << ["id in (?)", collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).select(collection_key)]
-              elsif mongoid?
-                query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
-              end              
+              if q.nil?
+                if active_record?
+                  query << ["id in (?)", collection_model.where(fieldname => nil).select(collection_key)]
+                elsif mongoid?
+                  query << {:id.in => collection_model.where(fieldname => nil).pluck(collection_key)}
+                end                 
+              else
+                if active_record?
+                  query << ["id in (?)", collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).select(collection_key)]
+                elsif mongoid?
+                  query << {:id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+                end                 
+              end             
             when :nin
-              if active_record?
-                query << ["id not in (?)", collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).select(collection_key)]
-              elsif mongoid?
-                query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
-              end              
+              if q.nil?
+                if active_record?
+                  query << ["id not in (?)", collection_model.where(fieldname => nil).select(collection_key)]
+                elsif mongoid?
+                  query << {:id.nin => collection_model.where(fieldname => nil).pluck(collection_key)}
+                end                  
+              else
+                if active_record?
+                  query << ["id not in (?)", collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).select(collection_key)]
+                elsif mongoid?
+                  query << {:id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key)}
+                end   
+              end
             when :gt, :gte, :lt, :lte
               raise OperatorNotSupported
             end              
