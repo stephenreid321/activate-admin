@@ -14,6 +14,8 @@ $(function () {
         slug.val(title.val().toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, ''));
     });
   });
+  
+  $('input[type=text].colorpicker').colorpicker();
 
   $(document).on('click', 'a[data-confirm]', function (e) {
     var message = $(this).data('confirm');
