@@ -7,7 +7,7 @@
 <% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search' do %>
   <div class="well">
     <div id="criteria"></div>
-    <i id="addCriterion" class="fa fa-plus-square"></i>
+    <i id="addCriterion" class="fa fa-plus-square" style="cursor: pointer"></i>
     <%= select_tag :all_any, :class => 'form-control', :style => 'width: auto; display: inline-block', :options => [['all the above','all'],[['any of the above'],'any']], :selected => params[:all_any] %>
     <%= submit_tag 'Search', class: 'btn btn-default' %>
     </div>

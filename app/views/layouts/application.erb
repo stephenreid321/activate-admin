@@ -34,9 +34,9 @@
 
     <% [
       "//maps.googleapis.com/maps/api/js?libraries=places&key=#{ENV['GOOGLE_MAPS_API_KEY']}",
-      'https://cdn.rawgit.com/chrissrogers/jquery-deparam/05018fe327c3675250f91f6ead6e83ef90dab1d0/jquery-deparam.min.js',
-      'https://cdn.rawgit.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.geopicker.js',
-      'https://cdn.rawgit.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.lookup.js',
+      'https://raw.githack.com/chrissrogers/jquery-deparam/05018fe327c3675250f91f6ead6e83ef90dab1d0/jquery-deparam.min.js',
+      'https://raw.githack.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.geopicker.js',
+      'https://raw.githack.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.lookup.js',
       "#{ActivateAdmin::App.uri_root}/javascripts/app.js"
       ].each { |f| %>
       <script src="<%=f%>"></script>

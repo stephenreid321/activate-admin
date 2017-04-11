@@ -371,12 +371,12 @@ module ActivateAdmin
 
     post :login, :map => '/login' do
       if account = Account.authenticate(params[:email], params[:password])
-        session[:account_id] = account.id
+        session[:account_id] = account.id.to_s
         flash[:notice] = "Logged in successfully."
         redirect url(:home)
       elsif Padrino.env == :development && params[:bypass]
         account = Account.first
-        session[:account_id] = account.id
+        session[:account_id] = account.id.to_s
         flash[:notice] = "Logged in successfully."
         redirect url(:home)
       else
