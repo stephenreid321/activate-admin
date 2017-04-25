@@ -205,15 +205,15 @@ module ActivateAdmin
             case b
             when :in
               if active_record?
-                query << ["id in (?)", collection_model.where(fieldname => (q == 'true')).select(collection_key)]
+                query << ["id in (?)", collection_model.where(fieldname => eval(q)).select(collection_key)]
               elsif mongoid?
-                query << {:id.in => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+                query << {:id.in => collection_model.where(fieldname => eval(q)).pluck(collection_key)}
               end                
             when :nin
               if active_record?
-                query << ["id not in (?)", collection_model.where(fieldname => (q == 'true')).select(collection_key)]
+                query << ["id not in (?)", collection_model.where(fieldname => eval(q)).select(collection_key)]
               elsif mongoid?
-                query << {:id.nin => collection_model.where(fieldname => (q == 'true')).pluck(collection_key)}
+                query << {:id.nin => collection_model.where(fieldname => eval(q)).pluck(collection_key)}
               end   
             when :gt, :gte, :lt, :lte
               raise OperatorNotSupported
