@@ -1,6 +1,9 @@
 
 $(function () {
 
+  $(".datepicker").flatpickr({altInput: true, altFormat: 'J F Y'});
+  $(".datetimepicker").flatpickr({altInput: true, altFormat: 'J F Y, H:i', enableTime: true, time_24hr: true});
+
   $('input[type=text].slug').each(function () {
     var slug = $(this);
     var start_length = slug.val().length;
@@ -14,7 +17,7 @@ $(function () {
         slug.val(title.val().toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, ''));
     });
   });
-  
+
   $('input[type=text].colorpicker').colorpicker();
 
   $(document).on('click', 'a[data-confirm]', function (e) {
