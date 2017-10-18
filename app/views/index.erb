@@ -8,7 +8,7 @@
 
 <nav class="navbar justify-content-between px-0">
   <span class="navbar-text">
-    <%= page_entries_info(@resources, :model => model.to_s) %>
+    <%= page_entries_info(@resources, model) %>
     <a class="btn btn-secondary" title="Download results as csv" target="_blank" href="<%=url(:index, params.merge(:format => :csv))%>"><i class="fa fa-download"></i></a>
   </span>
   <form class="form-inline ml-auto">   

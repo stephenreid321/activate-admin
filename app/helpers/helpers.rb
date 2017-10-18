@@ -78,18 +78,18 @@ ActivateAdmin::App.helpers do
     }
   end
   
-  def page_entries_info(collection, model: nil)
+  def page_entries_info(collection, model)
     if collection.total_pages < 2
       case collection.to_a.length
       when 0
-        "No #{model.pluralize.downcase} found"
+        "No #{human_model_name(model).pluralize.downcase} found"
       when 1
-        "Displaying <b>1</b> #{model.downcase}"
+        "Displaying <b>1</b> #{human_model_name(model).downcase}"
       else
-        "Displaying <b>all #{collection.count}</b> #{model.pluralize.downcase}"
+        "Displaying <b>all #{collection.count}</b> #{human_model_name(model).pluralize.downcase}"
       end
     else
-      "Displaying #{model.pluralize.downcase} <b>#{collection.offset + 1} - #{collection.offset + collection.to_a.length}</b> of <b>#{collection.count}</b> in total"
+      "Displaying #{human_model_name(model).pluralize.downcase} <b>#{collection.offset + 1} - #{collection.offset + collection.to_a.length}</b> of <b>#{collection.count}</b> in total"
     end
   end  
 

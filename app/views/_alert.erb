@@ -1,18 +1,22 @@
-<div id="alert-wrap">
-  <% {:error => 'alert-danger', :warning => 'alert-warning', :notice => 'alert-info'}.each { |k,v| %>
+
+<div id="alert-wrap" style="z-index: 1040; width: 40%; margin-left: -20%; left: 50%; position: absolute; top: 5rem">
+  <% {:error => 'alert-danger', :warning => 'alert-warning', :notice => 'alert-primary'}.each { |k,v| %>
     <% if flash[k] %>
-      <div class="fade in alert <%=v%> alert-dismissable">
+      <div class="alert fade show <%=v%> alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <%= flash[k] %>
       </div>
     <% end %>        
   <% } %>       
 </div>
+
 <script>
-  $(function() {
-    $(".alert").alert()
-    window.setTimeout(function() {
+  $(function () {
+    window.setTimeout(function () {
       $("#alert-wrap .alert").alert('close');
     }, 3000);
   });
 </script>
+
+
+
