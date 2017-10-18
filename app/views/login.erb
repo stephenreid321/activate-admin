@@ -1,31 +1,25 @@
 
-<% form_tag url(:login), :class => 'form-horizontal' do %>
+<div class="col-sm-8 mx-auto">
+  <% form_tag url(:login), :class => 'form-horizontal' do %>
 
-  <div class="form-group">
-    <label class="control-label col-sm-3">Email</label>
-    <div class="col-sm-3">
+    <div class="form-group">
+      <label>Email</label>
       <%= text_field_tag :email, :value => params[:email], :class => 'form-control' %>
     </div>
-  </div>
 
-  <div class="form-group">
-    <label class="control-label col-sm-3">Password</label>
-    <div class="col-sm-3">
+    <div class="form-group">
+      <label>Password</label>
       <%= password_field_tag :password, :value => params[:password], :class => 'form-control' %>
     </div>
-  </div>
 
-  <% if Padrino.env == :development %>
-    <div class="form-group">
-      <label class="control-label col-sm-3">Bypass login?</label>
-      <div class="col-sm-3">
+    <% if Padrino.env == :development %>
+      <div class="form-group">
+        <label>Bypass login?</label>
         <%= check_box_tag :bypass %>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-3">
+    <div class="form-group">
       <button class="btn btn-primary" type="submit">Sign in</button>
       <% if Account.method_defined?(:reset_password!) %>
         &middot; <a href="javascript:;" onclick="$('form[action$=login]').hide();
@@ -33,23 +27,17 @@
                 $('form[action$=forgot_password] input').focus();">Forgot your password?</a>
                   <% end %>
     </div>
-  </div>
 
-<% end %>
+  <% end %>
 
-<% form_tag url(:forgot_password), :class => 'form-horizontal', :style => 'display: none' do %>
+  <% form_tag url(:forgot_password), :class => 'form-horizontal', :style => 'display: none' do %>
 
-  <div class="form-group">
-    <label class="control-label col-sm-3">Email</label>
-    <div class="col-sm-3">
+    <div class="form-group">
+      <label>Email</label>
       <%= text_field_tag :email, :value => params[:email], :class => 'form-control' %>
     </div>
-  </div>
 
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-3">
-      <button class="btn btn-primary" type="submit">Reset password</button>
-    </div>
-  </div>
+    <button class="btn btn-primary" type="submit">Reset password</button>
 
-<% end %>
+  <% end %>
+</div>

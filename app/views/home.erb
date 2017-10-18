@@ -9,7 +9,6 @@
       <th></th>
       <th>#</th>
       <th></th>
-      <th></th>
     </tr>
   </thead>
   <% (featured_models = (ENV['FEATURED_MODELS'] ? ENV['FEATURED_MODELS'].split(',').map(&:constantize) : [])).each { |model| %>

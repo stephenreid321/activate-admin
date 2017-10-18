@@ -3,7 +3,7 @@
 
     $('textarea.wysiwyg').each(function () {
       var textarea = this;
-      var enableButton = $('<a class="btn btn-default btn-sm" style="margin-bottom: 5px" href="javascript:;"><i class="fa fa-font"></i> Enable rich text editor</a>')
+      var enableButton = $('<a class="btn btn-secondary btn-sm" style="margin-bottom: 5px" href="javascript:;"><i class="fa fa-font"></i> Enable rich text editor</a>')
       $(enableButton).insertBefore(textarea).click(function () {
         var summernote = $('<div class="summernote"></div>');
         $(summernote).insertAfter(this);

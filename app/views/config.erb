@@ -6,17 +6,11 @@
 <% form_tag url(:config), :class => 'form-horizontal' do %>
   <% PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN']).config_var.info(ENV['APP_NAME']).sort_by { |k,v| k }.each { |k,v| %>
     <div class="form-group">
-      <label class="control-label col-sm-3">
+      <label>
         <%=k%>
       </label>
-      <div class="col-sm-6">
-        <%= text_field_tag k, :value => v, :class => 'form-control' %>
-      </div>
+      <%= text_field_tag k, :value => v, :class => 'form-control' %>
     </div>
   <% } %>
-  <div class="form-group">
-    <div class="col-sm-offset-3 col-sm-6">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
 <% end %>

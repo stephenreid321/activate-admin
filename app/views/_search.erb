@@ -1,15 +1,16 @@
 
 <style>
   .criterion .select2-container { width: auto !important }
-  .bootstrap-switch .bootstrap-switch-handle-on, .bootstrap-switch .bootstrap-switch-handle-off, .bootstrap-switch .bootstrap-switch-label { font-size: 12px !important }
 </style>
 
-<% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search' do %>
+<% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search', class: 'form-inline' do %>
   <div class="well">
     <div id="criteria"></div>
-    <i id="addCriterion" class="fa fa-plus-square" style="cursor: pointer"></i>
+    <a class="btn btn-secondary" href="javascript:;" id="addCriterion">
+      <i class="fa fa-plus-square"></i> Add criteria
+    </a>
     <%= select_tag :all_any, :class => 'form-control', :style => 'width: auto; display: inline-block', :options => [['all the above','all'],[['any of the above'],'any']], :selected => params[:all_any] %>
-    <%= submit_tag 'Search', class: 'btn btn-default' %>
+    <%= submit_tag 'Search', class: 'btn btn-primary' %>
     </div>
   <% end %>
 
@@ -26,12 +27,12 @@
       var fields = <%= fields.to_json %>
 
       function addCriterion(selected, bValue, inputValue) {
-        var criterion = $('<div class="criterion form-group"></div>')
+        var criterion = $('<div class="criterion form-group mb-2"></div>')
 
-        var select = $('<select name="qk[]" class="form-control" style="display: inline-block; width: auto"><option></option></select>')
-        var equality = $('<select name="qb[]" class="form-control" style="display: inline-block; width: auto"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
-        var input = $('<input name="qv[]" class="form-control" style="display: inline-block; width: auto" type="text">')
-        var cross = $('<i style="margin-left: 5px" class="fa fa-times"></i>')
+        var select = $('<select name="qk[]" class="form-control mr-1" style="display: inline-block; width: auto"><option></option></select>')
+        var equality = $('<select name="qb[]" class="form-control mr-1" style="display: inline-block; width: auto"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
+        var input = $('<input name="qv[]" class="form-control mr-1" style="display: inline-block; width: auto" type="text">')
+        var cross = $('<i class="fa fa-times"></i>')
 
         select.appendTo(criterion)
         equality.appendTo(criterion)
