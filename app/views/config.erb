@@ -3,7 +3,7 @@
   <h1>Configuration variables</h1>
 </div>
 
-<% form_tag url(:config), :class => 'form-horizontal' do %>
+<% form_tag url(:config) do %>
   <% PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN']).config_var.info(ENV['APP_NAME']).sort_by { |k,v| k }.each { |k,v| %>
     <div class="form-group">
       <label>

@@ -1,6 +1,6 @@
 
 <div class="col-sm-8 mx-auto">
-  <% form_tag url(:login), :class => 'form-horizontal' do %>
+  <% form_tag url(:login) do %>
 
     <div class="form-group">
       <label>Email</label>
@@ -30,7 +30,7 @@
 
   <% end %>
 
-  <% form_tag url(:forgot_password), :class => 'form-horizontal', :style => 'display: none' do %>
+  <% form_tag url(:forgot_password), :style => 'display: none' do %>
 
     <div class="form-group">
       <label>Email</label>
