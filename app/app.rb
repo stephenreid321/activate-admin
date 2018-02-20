@@ -315,25 +315,15 @@ module ActivateAdmin
       erb :build
     end
   
-    post :new, :map => '/new/:model', :provides => [:html, :json] do
+    post :new, :map => '/new/:model' do
       @resource = model.new(params[model.to_s.underscore])
       instance_variable_set("@#{model.to_s.underscore}", @resource)
       if @resource.save
-        case content_type
-        when :html        
-          flash[:notice] = "<strong>Awesome!</strong> The #{human_model_name(model).downcase} was created successfully."
-          params[:popup] ? refreshParent : redirect(url(:index, :model => model.to_s))
-        when :json
-          {url: @resource.send(ENV['INLINE_UPLOAD_MODEL_FILE_FIELD']).url}.to_json
-        end
-      else
-        case content_type
-        when :html              
-          flash.now[:error] = "<strong>Oops.</strong> Some errors prevented the #{human_model_name(model).downcase} from being saved."
-          erb :build
-        when :json
-          error
-        end
+        flash[:notice] = "<strong>Awesome!</strong> The #{human_model_name(model).downcase} was created successfully."
+        params[:popup] ? refreshParent : redirect(url(:index, :model => model.to_s))
+      else         
+        flash.now[:error] = "<strong>Oops.</strong> Some errors prevented the #{human_model_name(model).downcase} from being saved."
+        erb :build
       end
     end
   
