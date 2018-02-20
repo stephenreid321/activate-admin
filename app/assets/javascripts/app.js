@@ -64,14 +64,20 @@ $(function () {
   });
 
   $('textarea.wysiwyg').each(function () {
-    textboxio.replace(this, {
-      css: {
-        stylesheets: ['/stylesheets/app.css']
-      },
-      images: {
-        allowLocal: false
-      }
-    });
+    var textarea = this;
+    var enableButton = $('<a class="btn btn-secondary btn-sm" style="margin-bottom: 5px" href="javascript:;"><i class="fa fa-font"></i> Enable rich text editor</a>')
+    $(enableButton).insertBefore(textarea).click(function () {
+      textboxio.replace(this, {
+        css: {
+          stylesheets: ['/stylesheets/app.css']
+        },
+        images: {
+          allowLocal: false
+        }
+      });
+      $(enableButton).hide();
+    })
   });
+
 
 });
