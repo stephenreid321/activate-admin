@@ -69,7 +69,7 @@ $(function () {
     $(enableButton).insertBefore(textarea).click(function () {
       textboxio.replace(textarea, {
         css: {
-          stylesheets: ['/stylesheets/app.css']
+          stylesheets: ['https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css']
         },
         images: {
           allowLocal: false
