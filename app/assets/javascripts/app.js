@@ -63,6 +63,15 @@ $(function () {
     });
   });
 
-
+  $('textarea.wysiwyg').each(function () {
+    textboxio.replace(this, {
+      css: {
+        stylesheets: ['/stylesheets/app.css']
+      },
+      images: {
+        allowLocal: false
+      }
+    });
+  });
 
 });
