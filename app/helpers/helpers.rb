@@ -54,7 +54,7 @@ ActivateAdmin::App.helpers do
   end  
     
   def matchable_regex
-    [:text, :slug, :text_area, :wysiwyg, :email, :url, :select, :radio_button]
+    [:text, :slug, :text_area, :wysiwyg, :email, :url, :select, :radio]
   end
   
   def matchable_number
