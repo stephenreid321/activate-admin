@@ -67,17 +67,25 @@ $(function () {
     var textarea = this;
     var enableButton = $('<a class="btn btn-secondary btn-sm" style="margin-bottom: 5px" href="javascript:;"><i class="fa fa-font"></i> Enable rich text editor</a>')
     $(enableButton).insertBefore(textarea).click(function () {
-      textboxio.replace(textarea, {
+      var editor = textboxio.replace(textarea, {
         css: {
           stylesheets: ['https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css']
+        },
+        paste: {
+          style: 'plain'
         },
         images: {
           allowLocal: false
         }
       });
+      if (textarea.form)
+        $(textarea.form).submit(function () {
+          alert($(editor.content.get()).text().trim() == '')
+          if ($(editor.content.get()).text().trim() == '')
+            editor.content.set(' ')
+        })
       $(enableButton).hide();
     })
   });
-
 
 });
