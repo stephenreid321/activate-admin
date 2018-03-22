@@ -66,7 +66,7 @@ ActivateAdmin::App.helpers do
   end
     
   def human_model_name(model)
-    model.to_s.underscore.humanize
+    model.to_s.underscore.gsub('/','_').humanize
   end  
   
   def refreshParent

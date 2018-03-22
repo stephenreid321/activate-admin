@@ -285,7 +285,7 @@ module ActivateAdmin
       case content_type
       when :html
         @resources = @resources.paginate(:page => params[:page], :per_page => 25)
-        instance_variable_set("@#{model.to_s.underscore.pluralize}", @resources)
+        instance_variable_set("@#{model.to_s.underscore.gsub('/','_').pluralize}", @resources)
         erb :index
       when :json
         {
@@ -311,13 +311,13 @@ module ActivateAdmin
     
     get :new, :map => '/new/:model' do
       @resource = model.new
-      instance_variable_set("@#{model.to_s.underscore}", @resource)
+      instance_variable_set("@#{model.to_s.underscore.gsub('/','_')}", @resource)
       erb :build
     end
   
     post :new, :map => '/new/:model' do
-      @resource = model.new(params[model.to_s.underscore])
-      instance_variable_set("@#{model.to_s.underscore}", @resource)
+      @resource = model.new(params[model.to_s.underscore.gsub('/','_')])
+      instance_variable_set("@#{model.to_s.underscore.gsub('/','_')}", @resource)
       if @resource.save
         flash[:notice] = "<strong>Awesome!</strong> The #{human_model_name(model).downcase} was created successfully."
         params[:popup] ? refreshParent : redirect(url(:index, :model => model.to_s))
@@ -329,14 +329,14 @@ module ActivateAdmin
   
     get :edit, :map => '/edit/:model/:id' do
       @resource = model.find(params[:id])
-      instance_variable_set("@#{model.to_s.underscore}", @resource)
+      instance_variable_set("@#{model.to_s.underscore.gsub('/','_')}", @resource)
       erb :build
     end
 
     post :edit, :map => '/edit/:model/:id' do
       @resource = model.find(params[:id])
-      instance_variable_set("@#{model.to_s.underscore}", @resource)
-      if @resource.update_attributes(params[model.to_s.underscore])
+      instance_variable_set("@#{model.to_s.underscore.gsub('/','_')}", @resource)
+      if @resource.update_attributes(params[model.to_s.underscore.gsub('/','_')])
         flash[:notice] = "<strong>Sweet!</strong> The #{human_model_name(model).downcase} was updated successfully."      
         params[:popup] ? refreshParent : redirect(url(:edit, :model => model.to_s, :id => @resource.id))
       else
