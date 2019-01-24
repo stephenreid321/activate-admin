@@ -301,7 +301,7 @@ module ActivateAdmin
                 assoc_name = assoc_name(model, fieldname)
                 "#{assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
               elsif [:date, :datetime].include?(options[:type])
-                resource.send(fieldname).iso8601
+                resource.send(fieldname).try(:iso8601)
               end
             }
           end
