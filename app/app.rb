@@ -300,8 +300,8 @@ module ActivateAdmin
               if options[:type] === :lookup and resource.send(fieldname)
                 assoc_name = assoc_name(model, fieldname)
                 "#{assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
-              else
-                resource.send(fieldname)
+              elsif [:date, :datetime].include?(options[:type])
+                resource.send(fieldname).to_s(:db)
               end
             }
           end
