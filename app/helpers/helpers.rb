@@ -46,7 +46,7 @@ ActivateAdmin::App.helpers do
   end
   
   def persisted_field?(model, fieldname)
-    if active_record?
+    fieldname.to_s == 'id' or if active_record?
       model.column_names.include?(fieldname.to_s)
     elsif mongoid?
       model.fields[fieldname.to_s]
@@ -61,8 +61,12 @@ ActivateAdmin::App.helpers do
     [:number]
   end
   
+  def matchable_id
+    [:id]
+  end  
+  
   def queryable
-    matchable_regex + matchable_number + [:lookup, :geopicker, :check_box, :date, :datetime]
+    matchable_regex + matchable_number + matchable_id + [:lookup, :geopicker, :check_box, :date, :datetime]
   end
     
   def human_model_name(model)

@@ -74,6 +74,12 @@ module ActivateAdmin
                 elsif mongoid?
                   query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
                 end                 
+              elsif matchable_id.include?(assoc_options[:type])
+                if active_record?
+                  query << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
+                elsif mongoid?
+                  query << {fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
+                end                 
               end
             end
           elsif persisted_field?(model, fieldname)
@@ -84,6 +90,8 @@ module ActivateAdmin
                 query << {fieldname => /#{Regexp.escape(@q)}/i }
               end            
             elsif matchable_number.include?(options[:type]) and (begin; Float(@q) and true; rescue; false; end)
+              query << {fieldname => @q}
+            elsif matchable_id.include?(options[:type])
               query << {fieldname => @q}
             end
           end        
@@ -181,7 +189,22 @@ module ActivateAdmin
               elsif mongoid?             
                 query << {:id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key)}
               end
-            end                        
+            end     
+          elsif matchable_id.include?(options[:type])
+            case b
+            when :in
+              if active_record?
+                query << ["id in (?)", collection_model.where(fieldname => q).select(collection_key)]
+              elsif mongoid?
+                query << {:id.in => collection_model.where(fieldname => q).pluck(collection_key)}
+              end
+            when :nin
+              if active_record?
+                query << ["id not in (?)", collection_model.where(fieldname => q).select(collection_key)]
+              elsif mongoid?
+                query << {:id.nin => collection_model.where(fieldname => q).pluck(collection_key)}
+              end
+            end
           elsif options[:type] == :geopicker
             case b
             when :in
