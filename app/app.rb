@@ -4,7 +4,6 @@ module ActivateAdmin
     register Padrino::Rendering
     register Padrino::Helpers
     register WillPaginate::Sinatra    
-    helpers Activate::DatetimeHelpers
     helpers Activate::ParamHelpers
     helpers Activate::NavigationHelpers
       
