@@ -1,5 +1,5 @@
 
-<div class="page-header"> 
+<div class="page-header">
   <h1><%=human_model_name(model).pluralize%></h1>
   <a href="<%=url(:new, :model => model.to_s)%>" class="btn btn-primary"><i class="fa fa-pencil"></i>&nbsp;New</a>
 </div>
@@ -8,19 +8,19 @@
 
 <nav class="navbar justify-content-between px-0">
   <span class="navbar-text">
-    <%= page_entries_info(@resources, model) %>
+    <%= page_entries_info(@resources, model: model.to_s) %>
     <a class="btn btn-secondary" title="Download results as csv" target="_blank" href="<%=url(:index, params.merge(:format => :csv))%>"><i class="fa fa-download"></i></a>
   </span>
-  <form class="form-inline ml-auto">   
+  <form class="form-inline ml-auto">
     <%= hidden_field_tag :o, :value => @o %>
-    <%= hidden_field_tag :d, :value => @d %>                
+    <%= hidden_field_tag :d, :value => @d %>
     <div class="input-group">
-      <%= search_field_tag :q, :class => 'form-control', :value => @q %>      
+      <%= search_field_tag :q, :class => 'form-control', :value => @q %>
       <span class="input-group-btn">
         <button class="btn btn-secondary"><i class="fa fa-search"></i></button>
       </span>
     </div>
-  </form> 
+  </form>
 </nav>
 
 <style>
@@ -58,7 +58,7 @@
                 <i class="fa fa-caret-up"></i>
               <% end %>
             </a>
-          <% elsif persisted_field?(model, fieldname) %>     
+          <% elsif persisted_field?(model, fieldname) %>
             <a title="Order by <%=fieldname%>" href="javascript:;" class="od odn">
               <i class="fa fa-caret-right"></i>
             </a>
@@ -77,10 +77,10 @@
         </td>
         <% admin_fields(model).select { |fieldname, options| options[:index] }.each { |fieldname, options| %>
           <td>
-            <% if options[:type] == :lookup && resource.send(fieldname); assoc_name = assoc_name(model, fieldname) %>            
+            <% if options[:type] == :lookup && resource.send(fieldname); assoc_name = assoc_name(model, fieldname) %>
               <a href="<%=url(:edit, :model => assoc_name, :id => resource.send(fieldname))%>"><%= assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize)) %></a>
             <% elsif fieldname.to_s.ends_with?('_url') %>
-              <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>              
+              <a href="<%=resource.send(fieldname)%>"><%=resource.send(fieldname)%></a>
             <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
               <%= resource.send(fieldname) %>
             <% elsif options[:type] == :check_box %>
@@ -105,4 +105,3 @@
 <% if active_record? %>
   <pre><%=@resources.to_sql%></pre>
 <% end %>
-
