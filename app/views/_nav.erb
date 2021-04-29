@@ -1,22 +1,21 @@
 <nav class="navbar fixed-top navbar-dark bg-dark navbar-expand-lg" role="navigation">
-  <a class="navbar-brand" href="<%=url(:home)%>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
+  <a class="navbar-brand" href="<%= url(:home) %>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbar-collapse"> 
+  <div class="collapse navbar-collapse" id="navbar-collapse">
 
     <% if (current_account and current_account.admin?) %>
       <%= ul_nav [
-        ['Models', models.sort_by { |model| model.to_s }.map { |model|
-            [human_model_name(model).pluralize, url(:index, :model => model.to_s)]
-          }],
-        (['Configuration variables', url(:config)] if ENV['HEROKU_OAUTH_TOKEN']),
-        ]
-    %>
+            ['Models', models.sort_by(&:to_s).map do |model|
+                         [human_model_name(model).pluralize, url(:index, model: model.to_s)]
+                       end],
+            (['Configuration variables', url(:config)] if ENV['HEROKU_OAUTH_TOKEN'])
+          ] %>
       <%= ul_nav [
-        ['Sign out', url(:logout)]
-        ], ul_class: 'navbar-nav ml-auto' %>
+            ['Sign out', url(:logout)]
+          ], ul_class: 'navbar-nav ml-auto' %>
     <% end %>
 
   </div>
-</nav> 
+</nav>

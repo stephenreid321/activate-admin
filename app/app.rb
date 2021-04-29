@@ -14,17 +14,13 @@ module ActivateAdmin
     set :default_builder, 'ActivateFormBuilder'
 
     before do
-      if ENV['PERMITTED_IPS'] && (Padrino.env == :production) && !(ENV['PERMITTED_IPS'].split(',').include? request.ip)
-        halt 403
-      end
+      halt 403 if ENV['PERMITTED_IPS'] && (Padrino.env == :production) && !(ENV['PERMITTED_IPS'].split(',').include? request.ip)
       redirect url(:login) unless [url(:login), url(:logout), url(:forgot_password)].any? do |p|
                                     p == request.path
                                   end || %w[stylesheets javascripts].any? do |p|
                                            request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}"
                                          end || (Account.count == 0) || (current_account && current_account.admin?)
-      if current_account && current_account.respond_to?(:time_zone) && current_account.time_zone
-        Time.zone = current_account.time_zone
-      end
+      Time.zone = current_account.time_zone if current_account && current_account.respond_to?(:time_zone) && current_account.time_zone
       fix_params!
     end
 

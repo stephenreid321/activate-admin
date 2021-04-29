@@ -1,15 +1,15 @@
 
-<div class="page-header"> 
+<div class="page-header">
   <h1>Configuration variables</h1>
 </div>
 
 <% form_tag url(:config) do %>
-  <% PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN']).config_var.info(ENV['APP_NAME']).sort_by { |k,v| k }.each { |k,v| %>
+  <% PlatformAPI.connect_oauth(ENV['HEROKU_OAUTH_TOKEN']).config_var.info(ENV['APP_NAME']).sort_by { |k, _v| k }.each { |k,v| %>
     <div class="form-group">
       <label>
-        <%=k%>
+        <%= k %>
       </label>
-      <%= text_field_tag k, :value => v, :class => 'form-control' %>
+      <%= text_field_tag k, value: v, class: 'form-control' %>
     </div>
   <% } %>
   <button type="submit" class="btn btn-primary">Submit</button>

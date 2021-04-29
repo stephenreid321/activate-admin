@@ -3,27 +3,24 @@
   .criterion .select2-container { width: auto !important }
 </style>
 
-<% form_tag url(:index, :model => model.to_s), method: 'get', id: 'search', class: 'form-inline' do %>
+<% form_tag url(:index, model: model.to_s), method: 'get', id: 'search', class: 'form-inline' do %>
   <div class="well">
     <div id="criteria"></div>
     <a class="btn btn-secondary" href="javascript:;" id="addCriterion">
       <i class="fa fa-plus-square"></i> Add criteria
     </a>
-    <%= select_tag :all_any, :class => 'form-control', :style => 'width: auto; display: inline-block', :options => [['all the above','all'],[['any of the above'],'any']], :selected => params[:all_any] %>
+    <%= select_tag :all_any, class: 'form-control', style: 'width: auto; display: inline-block', options: [['all the above', 'all'], [['any of the above'], 'any']], selected: params[:all_any] %>
     <%= submit_tag 'Search', class: 'btn btn-primary' %>
     </div>
   <% end %>
 
-
   <script>
     $(function () {
 
-  <%
-  fields = admin_fields(model)
-  fields = Hash[fields.select { |fieldname, options| (persisted_field?(model, fieldname) and queryable.include?(options[:type])) or options[:type] == :collection }.map { |fieldname, options|
-      [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| (persisted_field?(submodel, fieldname) and queryable.include?(options[:type])) }) : options]
-    }]
-%>
+  <% fields = admin_fields(model)
+     fields = Hash[fields.select { |fieldname, options| (persisted_field?(model, fieldname) and queryable.include?(options[:type])) or options[:type] == :collection }.map do |fieldname, options|
+                     [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| (persisted_field?(submodel, fieldname) and queryable.include?(options[:type])) }) : options]
+                   end] %>
       var fields = <%= fields.to_json %>
 
       function addCriterion(selected, bValue, inputValue) {
@@ -45,7 +42,7 @@
               var fieldname = select.val()
               if (fields[fieldname].class_name) {
                 input.attr('type', 'hidden').removeClass('form-control').lookup({
-                  lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[fieldname].class_name + '.json',
+                  lookup_url: '<%= ActivateAdmin::App.uri_root %>/index/' + fields[fieldname].class_name + '.json',
                   placeholder: 'Search ' + fieldname + 's',
                   id_param: 'id'
                 })
@@ -55,7 +52,7 @@
               var fieldname = select.val().split('.')[1]
               if (fields[collection][fieldname].class_name) {
                 input.attr('type', 'hidden').removeClass('form-control').lookup({
-                  lookup_url: '<%=ActivateAdmin::App.uri_root%>/index/' + fields[collection][fieldname].class_name + '.json',
+                  lookup_url: '<%= ActivateAdmin::App.uri_root %>/index/' + fields[collection][fieldname].class_name + '.json',
                   placeholder: 'Search ' + fieldname + 's',
                   id_param: 'id'
                 })
@@ -94,8 +91,8 @@
       })
 
   <% params[:qk].each_with_index { |fieldname,i| %>
-        addCriterion('<%=params[:qk][i]%>', '<%=params[:qb][i]%>', '<%=params[:qv][i]%>')
-  <%  } if params[:qk] %>
+        addCriterion('<%= params[:qk][i] %>', '<%= params[:qb][i] %>', '<%= params[:qv][i] %>')
+  <% } if params[:qk] %>
 
     })
   </script>
