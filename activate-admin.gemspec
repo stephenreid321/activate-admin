@@ -2,7 +2,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'activate-admin'
   gem.description   = 'A powerful, lightweight admin gem for Padrino/Mongoid with support for a variety of different field types'
   gem.summary       = 'A powerful, lightweight admin gem for Padrino/Mongoid with support for a variety of different field types'
-  gem.version       = '0.0.6'
+  gem.version       = '0.0.7'
   gem.authors       = ['Stephen Reid']
   gem.email         = ['stephen@stephenreid.net']
   gem.require_paths = ['lib']
