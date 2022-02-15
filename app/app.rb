@@ -8,7 +8,7 @@ module ActivateAdmin
     helpers Activate::ParamHelpers
     helpers Activate::NavigationHelpers
 
-    set :sessions, expire_after: 1.year
+    use Rack::Session::Cookie, expire_after: 1.year.to_i
     set :show_exceptions, true
     set :public_folder, ActivateAdmin.root('app', 'assets')
     set :default_builder, 'ActivateFormBuilder'
