@@ -19,7 +19,7 @@ module ActivateAdmin
                                     p == request.path
                                   end || %w[stylesheets javascripts].any? do |p|
                                            request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}"
-                                         end || (Account.count == 0) || (current_account && current_account.admin?)
+                                         end || (Account.first.nil?) || (current_account && current_account.admin?)
       Time.zone = current_account.time_zone if current_account && current_account.respond_to?(:time_zone) && current_account.time_zone
       fix_params!
     end

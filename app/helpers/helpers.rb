@@ -3,15 +3,6 @@ ActivateAdmin::App.helpers do
     @current_account ||= Account.find(session[:account_id]) if session[:account_id]
   end
 
-  def partial(*args)
-    t1 = Time.now
-    output = super(*args)
-    t2 = Time.now
-    ms = ((t2 - t1) * 1000).round
-    t = "<script>console.log('PARTIAL #{ms.times.map { '=' }.join} #{args.first} #{ms}ms')</script>".html_safe
-    output + t
-  end  
-
   def models
     if ENV['ADMIN_MODELS']
       (ENV['ADMIN_MODELS'].split(',').map do |x|
