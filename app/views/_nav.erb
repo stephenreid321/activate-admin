@@ -9,8 +9,7 @@
       <%= ul_nav [
             ['Models', models.sort_by(&:to_s).map do |model|
                          [human_model_name(model).pluralize, url(:index, model: model.to_s)]
-                       end],
-            (['Configuration variables', url(:config)] if ENV['HEROKU_OAUTH_TOKEN'])
+                       end]
           ] %>
       <%= ul_nav [
             ['Sign out', url(:logout)]

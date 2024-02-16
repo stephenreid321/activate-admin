@@ -53,5 +53,4 @@ Environment variables
 * Set site name: `ENV['ADMIN_SITE_NAME']`
 * Include only certain models: `ENV['ADMIN_MODELS']`
 * Feature certain models: `ENV['FEATURED_MODELS']`
-* Review and modify configuration variables: `ENV['HEROKU_OAUTH_TOKEN']` and `ENV['APP_NAME']`
 * Permit only certain IPs: `ENV['PERMITTED_IPS']` (comma separated)
