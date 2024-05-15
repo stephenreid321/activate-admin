@@ -77,7 +77,11 @@
       <% admin_fields(model).select { |_fieldname, options| options[:index] }.each { |fieldname, options| %>
       <td>
         <% if options[:type] == :lookup && resource.send(fieldname); assoc_name = assoc_name(model, fieldname) %>
-          <a href="<%= url(:edit, model: assoc_name, id: resource.send(fieldname)) %>"><%= r = assoc_name.constantize.find(resource.send(fieldname)); r ? r.send(lookup_method(assoc_name.constantize)) : resource.send(fieldname) %></a>
+          <% if r = assoc_name.constantize.find(resource.send(fieldname)) %>
+            <a href="<%= url(:edit, model: assoc_name, id: resource.send(fieldname)) %>"><%= r.send(lookup_method(assoc_name.constantize)) %></a>
+          <% else %>
+            <%= resource.send(fieldname) %>
+          <% end %>
         <% elsif fieldname.to_s.ends_with?('_url') %>
           <a href="<%= resource.send(fieldname) %>"><%= resource.send(fieldname) %></a>
         <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
