@@ -333,7 +333,7 @@ module ActivateAdmin
             csv << fields.map do |fieldname, options|
               if (options[:type] === :lookup) && resource.send(fieldname)
                 assoc_name = assoc_name(model, fieldname)
-                "#{assoc_name.constantize.find(resource.send(fieldname)).send(lookup_method(assoc_name.constantize))} (id:#{resource.send(fieldname)})"
+                "#{r = assoc_name.constantize.find(resource.send(fieldname)); r ? r.send(lookup_method(assoc_name.constantize)) : resource.send(fieldname)} (id:#{resource.send(fieldname)})"
               elsif %i[date datetime].include?(options[:type])
                 resource.send(fieldname).try(:iso8601)
               else
