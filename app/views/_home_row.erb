@@ -1,6 +1,6 @@
 <tr>
   <td><a href="<%= url(:index, model: model.to_s) %>"><%= human_model_name(model).pluralize %></a></td>
-  <td><%= model.respond_to?(:estimated_count) ? model.estimated_count : model.count %></td>
+  <td><%= model.respond_to?(:estimated_count) ? model.unscoped.estimated_count : model.count %></td>
   <td>
     <a href="<%= url(:index, model: model.to_s) %>" class="btn btn-secondary"><i class="fa fa-list"></i>&nbsp;List</a>
     <a href="<%= url(:new, model: model.to_s) %>" class="btn btn-primary"><i class="fa fa-pencil"></i>&nbsp;New</a>
