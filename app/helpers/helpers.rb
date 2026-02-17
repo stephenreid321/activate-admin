@@ -18,6 +18,8 @@ ActivateAdmin::App.helpers do
   end
 
   def model
+    allowed = models.map(&:to_s)
+    redirect('/') unless allowed.include?(params[:model])
     params[:model].constantize
   end
 
