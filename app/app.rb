@@ -155,11 +155,16 @@ module ActivateAdmin
                 raise OperatorNotSupported
               end
             elsif options[:type] == :check_box
+              checkbox_value = case q.to_s.downcase
+                              when 'true', '1' then true
+                              when 'false', '0', '' then false
+                              else false
+                              end
               case b
               when :in
-                query << { :id.in => collection_model.where(fieldname => eval(q)).pluck(collection_key) }
+                query << { :id.in => collection_model.where(fieldname => checkbox_value).pluck(collection_key) }
               when :nin
-                query << { :id.nin => collection_model.where(fieldname => eval(q)).pluck(collection_key) }
+                query << { :id.nin => collection_model.where(fieldname => checkbox_value).pluck(collection_key) }
               when :gt, :gte, :lt, :lte
                 raise OperatorNotSupported
               end
