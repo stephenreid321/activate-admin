@@ -1,8 +1,8 @@
 
 $(function () {
 
-  $(".datepicker").flatpickr({altInput: true, altFormat: 'J F Y'});
-  $(".datetimepicker").flatpickr({altInput: true, altFormat: 'J F Y, H:i', enableTime: true, time_24hr: true});
+  $(".datepicker").flatpickr({ altInput: true, altFormat: 'J F Y' });
+  $(".datetimepicker").flatpickr({ altInput: true, altFormat: 'J F Y, H:i', enableTime: true, time_24hr: true });
 
   $('input[type=text].slug').each(function () {
     var slug = $(this);
@@ -55,7 +55,7 @@ $(function () {
     });
   });
 
-  $('input[type=hidden].lookup').each(function () {
+  $('select.lookup').each(function () {
     $(this).lookup({
       lookup_url: $(this).attr('data-lookup-url'),
       placeholder: $(this).attr('placeholder'),
