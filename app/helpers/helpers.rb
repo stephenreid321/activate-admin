@@ -63,11 +63,7 @@ ActivateAdmin::App.helpers do
   end
 
   def persisted_field?(model, fieldname)
-    fieldname.to_s == 'id' or if active_record?
-                                model.column_names.include?(fieldname.to_s)
-                              elsif mongoid?
-                                model.fields[fieldname.to_s]
-                              end
+    fieldname.to_s == 'id' || model.fields[fieldname.to_s]
   end
 
   def matchable_regex
@@ -99,24 +95,4 @@ ActivateAdmin::App.helpers do
     '
   end
 
-  def active_record?
-    models.first.respond_to?(:column_names)
-  end
-
-  def mongoid?
-    !active_record?
-  end
-
-  def inequality(b)
-    case b
-    when :gt
-      '>'
-    when :gte
-      '>='
-    when :lt
-      '<'
-    when :lte
-      '<='
-    end
-  end
 end

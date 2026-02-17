@@ -59,34 +59,17 @@ module ActivateAdmin
             assoc_options = assoc_fields[assoc_fieldname]
             if persisted_field?(assoc_model, assoc_fieldname)
               if matchable_regex.include?(assoc_options[:type])
-                if active_record?
-                  query << ["#{fieldname} in (?)",
-                            assoc_model.where(["#{assoc_fieldname} ilike ?", "%#{@q}%"]).select(:id)]
-                elsif mongoid?
-                  query << { fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).pluck(:id) }
-                end
+                query << { fieldname.to_sym.in => assoc_model.where(assoc_fieldname => /#{Regexp.escape(@q)}/i).pluck(:id) }
               elsif matchable_number.include?(assoc_options[:type]) && (begin
  Float(@q) && true; rescue StandardError; false; end)
-                if active_record?
-                  query << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
-                elsif mongoid?
-                  query << { fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
-                end
+                query << { fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
               elsif matchable_id.include?(assoc_options[:type])
-                if active_record?
-                  query << ["#{fieldname} in (?)", assoc_model.where(assoc_fieldname => @q).select(:id)]
-                elsif mongoid?
-                  query << { fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
-                end
+                query << { fieldname.to_sym.in => assoc_model.where(assoc_fieldname => @q).pluck(:id) }
               end
             end
           elsif persisted_field?(model, fieldname)
             if matchable_regex.include?(options[:type])
-              if active_record?
-                query << ["#{fieldname} ilike ?", "%#{@q}%"]
-              elsif mongoid?
-                query << { fieldname => /#{Regexp.escape(@q)}/i }
-              end
+              query << { fieldname => /#{Regexp.escape(@q)}/i }
             elsif matchable_number.include?(options[:type]) && (begin
  Float(@q) && true; rescue StandardError; false; end)
               query << { fieldname => @q }
@@ -95,11 +78,7 @@ module ActivateAdmin
             end
           end
         end
-        if active_record?
-          @resources = @resources.where.any_of(*query) unless query.empty?
-        elsif mongoid?
-          @resources = @resources.or(query)
-        end
+        @resources = @resources.or(query)
       end
 
       query = []
@@ -121,17 +100,9 @@ module ActivateAdmin
           if options[:type] == :lookup
             case b
             when :in
-              if active_record?
-                query << ['id in (?)', collection_model.where(fieldname => q).select(collection_key)]
-              elsif mongoid?
-                query << { :id.in => collection_model.where(fieldname => q).pluck(collection_key) }
-              end
+              query << { :id.in => collection_model.where(fieldname => q).pluck(collection_key) }
             when :nin
-              if active_record?
-                query << ['id not in (?)', collection_model.where(fieldname => q).select(collection_key)]
-              elsif mongoid?
-                query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
-              end
+              query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
             when :gt, :gte, :lt, :lte
               raise OperatorNotSupported
             end
@@ -140,28 +111,14 @@ module ActivateAdmin
               case b
               when :in
                 if q.nil?
-                  if active_record?
-                    query << ['id in (?)', collection_model.where(fieldname => nil).select(collection_key)]
-                  elsif mongoid?
-                    query << { :id.in => collection_model.where(fieldname => nil).pluck(collection_key) }
-                  end
-                elsif active_record?
-                  query << ['id in (?)',
-                            collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).select(collection_key)]
-                elsif mongoid?
+                  query << { :id.in => collection_model.where(fieldname => nil).pluck(collection_key) }
+                else
                   query << { :id.in => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key) }
                 end
               when :nin
                 if q.nil?
-                  if active_record?
-                    query << ['id not in (?)', collection_model.where(fieldname => nil).select(collection_key)]
-                  elsif mongoid?
-                    query << { :id.nin => collection_model.where(fieldname => nil).pluck(collection_key) }
-                  end
-                elsif active_record?
-                  query << ['id not in (?)',
-                            collection_model.where(["#{fieldname} ilike ?", "%#{q}%"]).select(collection_key)]
-                elsif mongoid?
+                  query << { :id.nin => collection_model.where(fieldname => nil).pluck(collection_key) }
+                else
                   query << { :id.nin => collection_model.where(fieldname => /#{Regexp.escape(q)}/i).pluck(collection_key) }
                 end
               when :gt, :gte, :lt, :lte
@@ -171,126 +128,58 @@ module ActivateAdmin
  Float(q) && true; rescue StandardError; false; end || q.nil?)
               case b
               when :in
-                if active_record?
-                  query << ['id in (?)', collection_model.where(fieldname => q).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname => q).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname => q).pluck(collection_key) }
               when :nin
-                if active_record?
-                  query << ['id not in (?)', collection_model.where(fieldname => q).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
-                end
+                query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
               when :gt, :gte, :lt, :lte
-                if active_record?
-                  query << ['id in (?)',
-                            collection_model.where(["#{fieldname} #{inequality(b)} ?", q]).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname.to_sym.send(b) => q).pluck(collection_key) }
               end
             elsif matchable_id.include?(options[:type])
               case b
               when :in
-                if active_record?
-                  query << ['id in (?)', collection_model.where(fieldname => q).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname => q).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname => q).pluck(collection_key) }
               when :nin
-                if active_record?
-                  query << ['id not in (?)', collection_model.where(fieldname => q).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
-                end
+                query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
               end
             elsif options[:type] == :geopicker
               case b
               when :in
-                if active_record?
-                  # TODO
-                  raise OperatorNotSupported
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(coordinates: { '$geoWithin' => { '$centerSphere' => [
-                                                                Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676
-                                                              ] } }).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(coordinates: { '$geoWithin' => { '$centerSphere' => [
+                                                              Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676
+                                                            ] } }).pluck(collection_key) }
               when :nin
-                if active_record?
-                  # TODO
-                  raise OperatorNotSupported
-                elsif mongoid?
-                  query << { :id.nin => collection_model.where(coordinates: { '$geoWithin' => { '$centerSphere' => [
-                                                                 Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676
-                                                               ] } }).pluck(collection_key) }
-                end
+                query << { :id.nin => collection_model.where(coordinates: { '$geoWithin' => { '$centerSphere' => [
+                                                               Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676
+                                                             ] } }).pluck(collection_key) }
               when :gt, :gte, :lt, :lte
                 raise OperatorNotSupported
               end
             elsif options[:type] == :check_box
               case b
               when :in
-                if active_record?
-                  query << ['id in (?)', collection_model.where(fieldname => eval(q)).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname => eval(q)).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname => eval(q)).pluck(collection_key) }
               when :nin
-                if active_record?
-                  query << ['id not in (?)', collection_model.where(fieldname => eval(q)).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.nin => collection_model.where(fieldname => eval(q)).pluck(collection_key) }
-                end
+                query << { :id.nin => collection_model.where(fieldname => eval(q)).pluck(collection_key) }
               when :gt, :gte, :lt, :lte
                 raise OperatorNotSupported
               end
             elsif options[:type] == :date
               case b
               when :in
-                if active_record?
-                  query << ['id in (?)', collection_model.where(fieldname => Date.parse(q)).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key) }
               when :nin
-                if active_record?
-                  query << ['id not in (?)', collection_model.where(fieldname => Date.parse(q)).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key) }
-                end
+                query << { :id.nin => collection_model.where(fieldname => Date.parse(q)).pluck(collection_key) }
               when :gt, :gte, :lt, :lte
-                if active_record?
-                  query << ['id in (?)',
-                            collection_model.where(["#{fieldname} #{inequality(b)} ?",
-                                                    Date.parse(q)]).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname.to_sym.send(b) => Date.parse(q)).pluck(collection_key) }
               end
             elsif options[:type] == :datetime
               case b
               when :in
-                if active_record?
-                  query << ['id in (?)', collection_model.where(fieldname => Time.zone.parse(q)).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key) }
               when :nin
-                if active_record?
-                  query << ['id not in (?)',
-                            collection_model.where(fieldname => Time.zone.parse(q)).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.nin => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key) }
-                end
+                query << { :id.nin => collection_model.where(fieldname => Time.zone.parse(q)).pluck(collection_key) }
               when :gt, :gte, :lt, :lte
-                if active_record?
-                  query << ['id in (?)',
-                            collection_model.where(["#{fieldname} #{inequality(b)} ?",
-                                                    Time.zone.parse(q)]).select(collection_key)]
-                elsif mongoid?
-                  query << { :id.in => collection_model.where(fieldname.to_sym.send(b) => Time.zone.parse(q)).pluck(collection_key) }
-                end
+                query << { :id.in => collection_model.where(fieldname.to_sym.send(b) => Time.zone.parse(q)).pluck(collection_key) }
               end
             end
           end
@@ -299,20 +188,12 @@ module ActivateAdmin
 
       case params[:all_any]
       when 'all'
-        if active_record?
-          query.each { |q| @resources = @resources.where(q) }
-        elsif mongoid?
-          @resources = @resources.all_of(query)
-        end
+        @resources = @resources.all_of(query)
       when 'any'
-        if active_record?
-          @resources = @resources.where.any_of(*query) unless query.empty?
-        elsif mongoid?
-          @resources = @resources.or(query)
-        end
+        @resources = @resources.or(query)
       end
 
-      @resources = @resources.order("#{@o} #{@d}") if @o && @d
+      @resources = @resources.order_by(@o => @d) if @o && @d
       case content_type
       when :html
         @resources = @resources.paginate(page: params[:page], per_page: 25)
@@ -420,11 +301,7 @@ module ActivateAdmin
     end
 
     post :forgot_password, map: '/forgot_password' do
-      if active_record?
-        account = Account.where('email ilike ?', params[:email]).first
-      elsif mongoid?
-        account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/i)
-      end
+      account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/i)
       if account
         if account.reset_password!
           flash[:notice] = "A new password was sent to #{account.email}"

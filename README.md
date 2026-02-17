@@ -1,7 +1,7 @@
 activate-admin
 =================
 
-A powerful, lightweight admin gem for Padrino with support for Mongoid and ActiveRecord and a variety of different field types
+A powerful, lightweight admin gem for Padrino with Mongoid and a variety of different field types
 
 Setup
 ---
@@ -9,7 +9,6 @@ Setup
 In the Gemfile of your application:
 ```
 gem 'will_paginate', github: 'mislav/will_paginate'
-gem 'activerecord_any_of', github: 'oelmekki/activerecord_any_of' # if using ActiveRecord
 gem 'activate-tools', github: 'wordsandwriting/activate-tools'
 gem 'activate-admin', github: 'wordsandwriting/activate-admin'
 ```

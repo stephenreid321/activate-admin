@@ -104,7 +104,3 @@
 </table>
 
 <%= will_paginate @resources, renderer: WillPaginate::ViewHelpers::BootstrapRenderer %>
-
-<% if active_record? %>
-  <pre><%= @resources.to_sql %></pre>
-<% end %>
