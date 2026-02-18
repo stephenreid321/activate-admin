@@ -78,7 +78,7 @@ module ActivateAdmin
             end
           end
         end
-        @resources = @resources.or(query)
+        @resources = @resources.and('$or' => query)
       end
 
       query = []
@@ -180,9 +180,9 @@ module ActivateAdmin
 
       case params[:all_any]
       when 'all'
-        @resources = @resources.all_of(query)
+        @resources = @resources.and(query)
       when 'any'
-        @resources = @resources.or(query)
+        @resources = @resources.and('$or' => query)
       end
 
       @resources = @resources.order_by(@o => @d) if @o && @d

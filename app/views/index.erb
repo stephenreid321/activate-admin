@@ -22,6 +22,14 @@
   </form>
 </nav>
 
+<% if @resources.selector.any? %>
+  <div class="card mb-3">
+    <div class="card-body" style="overflow-x: auto;">
+      <code style="white-space: nowrap;"><%= @resources.selector.inspect %></code>
+    </div>
+  </div>
+<% end %>
+
 <style>
   th[data-fieldname] a { color:black; text-decoration: none !important }
   a.odn { visibility:hidden; }

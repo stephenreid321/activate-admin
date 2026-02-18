@@ -1,6 +1,8 @@
-
 <style>
-  .criterion .select2-container { width: auto !important }
+  #search .form-control,
+  #search .select2-container { width: 20em !important }
+  #search .criterion .search-equality { width: 6em !important }
+  #search select[name="all_any"] { width: 12em !important }
 </style>
 
 <% form_tag url(:index, model: model.to_s), method: 'get', id: 'search', class: 'form-inline' do %>
@@ -9,90 +11,94 @@
     <a class="btn btn-secondary" href="javascript:;" id="addCriterion">
       <i class="bi bi-plus-square"></i> Add criteria
     </a>
-    <%= select_tag :all_any, class: 'form-control', style: 'width: auto; display: inline-block', options: [['all the above', 'all'], [['any of the above'], 'any']], selected: params[:all_any] %>
+    <%= select_tag :all_any, class: 'form-control', style: 'display: inline-block', options: [['all the above', 'all'], ['any of the above', 'any']], selected: params[:all_any] %>
     <%= submit_tag 'Search', class: 'btn btn-primary' %>
-    </div>
-  <% end %>
+  </div>
+<% end %>
 
-  <script>
-    $(function () {
+<script>
+  $(function () {
 
-  <% fields = admin_fields(model)
-     fields = Hash[fields.select { |fieldname, options| (persisted_field?(model, fieldname) and queryable.include?(options[:type])) or options[:type] == :collection }.map do |fieldname, options|
-                     [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| (persisted_field?(submodel, fieldname) and queryable.include?(options[:type])) }) : options]
-                   end] %>
-      var fields = <%== fields.to_json %>
+    <% fields = admin_fields(model)
+   fields = Hash[fields.select { |fieldname, options| (persisted_field?(model, fieldname) and queryable.include?(options[:type])) or options[:type] == :collection }.map do |fieldname, options|
+                   [fieldname, options[:type] == :collection ? (submodel = options[:class_name].constantize; admin_fields(submodel).select { |fieldname, options| (persisted_field?(submodel, fieldname) and queryable.include?(options[:type])) }) : options]
+                 end] %>
+    var fields = <%== fields.to_json %>
 
-      function addCriterion(selected, bValue, inputValue) {
-        var criterion = $('<div class="criterion form-group mb-2"></div>')
+    var textInput = '<input name="qv[]" class="form-control mr-1" style="display: inline-block" type="text">'
+    function addCriterion(selected, bValue, inputValue) {
+      var criterion = $('<div class="criterion form-group mb-2"></div>')
 
-        var select = $('<select name="qk[]" class="form-control mr-1" style="display: inline-block; width: auto"><option></option></select>')
-        var equality = $('<select name="qb[]" class="form-control mr-1" style="display: inline-block; width: auto"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
-        var input = $('<input name="qv[]" class="form-control mr-1" style="display: inline-block; width: auto" type="text">')
-        var cross = $('<i class="bi bi-x"></i>')
+      var select = $('<select name="qk[]" class="form-control mr-1" style="display: inline-block"><option></option></select>')
+      var equality = $('<select name="qb[]" class="form-control mr-1 search-equality" style="display: inline-block"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
+      var input = $(textInput)
+      var cross = $('<i class="bi bi-x"></i>')
 
-        select.appendTo(criterion)
-        equality.appendTo(criterion)
-        input.appendTo(criterion)
-        cross.appendTo(criterion)
+      select.appendTo(criterion)
+      equality.appendTo(criterion)
+      input.appendTo(criterion)
+      cross.appendTo(criterion)
 
-        select.change(function () {
-          if ($(this).val()) {
-            if (select.val().indexOf('.') == -1) {
-              var fieldname = select.val()
-              if (fields[fieldname].class_name) {
-                input.attr('type', 'hidden').removeClass('form-control').lookup({
-                  lookup_url: '<%= ActivateAdmin::App.uri_root %>/index/' + fields[fieldname].class_name + '.json',
-                  placeholder: 'Search ' + fieldname + 's',
-                  id_param: 'id'
-                })
-              }
-            } else {
-              var collection = select.val().split('.')[0]
-              var fieldname = select.val().split('.')[1]
-              if (fields[collection][fieldname].class_name) {
-                input.attr('type', 'hidden').removeClass('form-control').lookup({
-                  lookup_url: '<%= ActivateAdmin::App.uri_root %>/index/' + fields[collection][fieldname].class_name + '.json',
-                  placeholder: 'Search ' + fieldname + 's',
-                  id_param: 'id'
-                })
-              }
-            }
+      select.change(function () {
+        var valueEl = criterion.children().eq(2)
+        var valToUse = inputValue != null ? inputValue : (valueEl.is('select') ? valueEl.find('option:selected').val() : valueEl.val())
+        var parts = select.val().split('.')
+        var fieldOpts = parts.length === 1 ? fields[parts[0]] : (fields[parts[0]] && fields[parts[0]][parts[1]])
+        var fieldName = parts[0] && (parts.length === 1 ? parts[0] : parts[1])
+
+        if (fieldOpts && fieldOpts.class_name) {
+          var lookupSelect = $('<select name="qv[]" class="form-control mr-1" style="display: inline-block"></select>')
+          lookupSelect.append($('<option value=""></option>'))
+          if (valToUse) lookupSelect.append($('<option></option>').attr('value', valToUse).prop('selected', true).text('Loading...'))
+          if (valueEl.hasClass('select2-hidden-accessible')) {
+            valueEl.select2('destroy')
           }
-        })
-
-        cross.click(function () {
-          $(this).parent().remove()
-        })
-
-        $.each(fields, function (fieldname, options) {
-          if (options.type) {
-            var option = $("<option></option>")
-            option.attr("value", fieldname).text(fieldname)
-            option.appendTo(select)
-          } else { // collection
-            $.each(options, function (f2, o2) {
-              var option = $("<option></option>")
-              option.attr("value", fieldname + '.' + f2).text(fieldname + '.' + f2)
-              option.appendTo(select)
-            })
+          valueEl.replaceWith(lookupSelect)
+          lookupSelect.lookup({
+            lookup_url: '<%= ActivateAdmin::App.uri_root %>/index/' + fieldOpts.class_name + '.json',
+            placeholder: 'Search ' + fieldName + 's',
+            id_param: 'id'
+          })
+        } else if (valueEl.is('select')) {
+          if (valueEl.hasClass('select2-hidden-accessible')) {
+            valueEl.select2('destroy')
           }
-        })
-        select.val(selected)
-        input.val(inputValue)
-        equality.val(bValue)
-        select.change()
-
-        criterion.appendTo('#criteria')
-      }
-
-      $('#addCriterion').click(function () {
-        addCriterion(null, 1, null)
+          valueEl.replaceWith($(textInput))
+        }
       })
 
-  <% params[:qk].each_with_index { |fieldname,i| %>
-        addCriterion('<%= params[:qk][i] %>', '<%= params[:qb][i] %>', '<%= params[:qv][i] %>')
-  <% } if params[:qk] %>
+      cross.click(function () {
+        $(this).parent().remove()
+      })
 
+      $.each(fields, function (fieldname, options) {
+        if (options.type) {
+          var option = $("<option></option>")
+          option.attr("value", fieldname).text(fieldname)
+          option.appendTo(select)
+        } else { // collection
+          $.each(options, function (f2, o2) {
+            var option = $("<option></option>")
+            option.attr("value", fieldname + '.' + f2).text(fieldname + '.' + f2)
+            option.appendTo(select)
+          })
+        }
+      })
+      select.val(selected)
+      input.val(inputValue)
+      equality.val(bValue)
+      select.change()
+
+      criterion.appendTo('#criteria')
+    }
+
+    $('#addCriterion').click(function () {
+      addCriterion(null, 'in', null)
     })
-  </script>
+
+    <% params[:qk].each_with_index { |fieldname,i| %>
+      addCriterion('<%= params[:qk][i] %>', '<%= params[:qb][i] %>', '<%= params[:qv][i] %>')
+    <% } if params[:qk] %>
+
+  })
+</script>
