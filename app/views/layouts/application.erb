@@ -9,10 +9,9 @@
     <% {
          'jquery/1.11.2' => 'jquery.min.js',
          'popper.js/1.11.0' => 'umd/popper.min.js',
-         'twitter-bootstrap/4.0.0-beta' => 'css/bootstrap.min.css js/bootstrap.min.js', #  referred to by textboxio in app.js too!
+         'twitter-bootstrap/4.0.0-beta' => 'css/bootstrap.min.css js/bootstrap.min.js',
          'font-awesome/4.7.0' => 'css/font-awesome.min.css',
          'select2/4.0.13' => 'js/select2.full.min.js css/select2.min.css',
-         'bootstrap-colorpicker/2.5.1' => 'js/bootstrap-colorpicker.min.js css/bootstrap-colorpicker.min.css',
          'flatpickr/3.0.7' => 'flatpickr.min.js flatpickr.min.css'
        }.each { |k,v| %>
     <% v.split(' ').each { |f| u = "https://cdnjs.cloudflare.com/ajax/libs/#{k}/#{f}" %>
@@ -32,11 +31,8 @@
     <% } %>
 
     <% [
-         "//maps.googleapis.com/maps/api/js?libraries=places&key=#{ENV['GOOGLE_MAPS_API_KEY']}",
-         '//cdn.rawgit.com/chrissrogers/jquery-deparam/05018fe327c3675250f91f6ead6e83ef90dab1d0/jquery-deparam.min.js',
-         '//cdn.rawgit.com/wordsandwriting/activate-tools/b0876ce31f64eb41549e449371dd6b34d0fdff8b/js/jquery.geopicker.js',
-         '//cdn.rawgit.com/symbiota-coop/dandelion/1fe32d9b028ba6b19ea22141497c61b8a7440a1b/app/assets/javascripts/jquery.lookup.js',         
-         '//cdn.rawgit.com/wordsandwriting/activate-tools/7a73525b76c8234a4803e3196b4403ec6fd6ded7/js/textboxio/textboxio.js',
+         '//cdn.rawgit.com/symbiota-coop/dandelion/1fe32d9b028ba6b19ea22141497c61b8a7440a1b/app/assets/javascripts/ext/jquery-deparam.js',
+         '//cdn.rawgit.com/symbiota-coop/dandelion/1fe32d9b028ba6b19ea22141497c61b8a7440a1b/app/assets/javascripts/jquery.lookup.js',
          "#{ActivateAdmin::App.uri_root}/javascripts/app.js"
        ].each { |f| %>
     <script src="<%= f %>"></script>

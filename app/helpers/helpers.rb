@@ -69,7 +69,7 @@ ActivateAdmin::App.helpers do
   end
 
   def matchable_regex
-    %i[text slug text_area wysiwyg email url select radio]
+    %i[text slug text_area email url select radio]
   end
 
   def matchable_number
@@ -81,7 +81,7 @@ ActivateAdmin::App.helpers do
   end
 
   def queryable
-    matchable_regex + matchable_number + matchable_id + %i[lookup geopicker check_box date datetime]
+    matchable_regex + matchable_number + matchable_id + %i[lookup check_box date datetime]
   end
 
   def human_model_name(model)

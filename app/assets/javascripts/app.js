@@ -18,8 +18,6 @@ $(function () {
     });
   });
 
-  $('input[type=text].colorpicker').colorpicker();
-
   $(document).on('click', 'a[data-confirm]', function (e) {
     var message = $(this).data('confirm');
     if (!confirm(message)) {
@@ -34,57 +32,12 @@ $(function () {
   });
 
 
-  $('.geopicker').each(function () {
-    var g = this;
-    $(g).geopicker({
-      width: '100%',
-      getLatLng: function (container) {
-        var lat = $('input[name$="[lat]"]', container).val()
-        var lng = $('input[name$="[lng]"]', container).val()
-        if (lat.length && lng.length)
-          return new google.maps.LatLng(lat, lng)
-      },
-      set: function (container, latLng) {
-        $('input[name$="[lat]"]', container).val(latLng.lat());
-        $('input[name$="[lng]"]', container).val(latLng.lng());
-      },
-      address: function (container) {
-        return $(container).prev().children().first().val()
-      },
-      guessElement: $(g).prev().children().last()
-    });
-  });
-
   $('select.lookup').each(function () {
     $(this).lookup({
       lookup_url: $(this).attr('data-lookup-url'),
       placeholder: $(this).attr('placeholder'),
       id_param: 'id'
     });
-  });
-
-  $('textarea.wysiwyg').each(function () {
-    var textarea = this;
-    var enableButton = $('<a class="btn btn-secondary btn-sm" style="margin-bottom: 5px" href="javascript:;"><i class="fa fa-font"></i> Enable rich text editor</a>')
-    $(enableButton).insertBefore(textarea).click(function () {
-      var editor = textboxio.replace(textarea, {
-        css: {
-          stylesheets: ['https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css']
-        },
-        paste: {
-          style: 'plain'
-        },
-        images: {
-          allowLocal: false
-        }
-      });
-      if (textarea.form)
-        $(textarea.form).submit(function () {
-          if ($(editor.content.get()).text().trim() == '')
-            editor.content.set(' ')
-        })
-      $(enableButton).hide();
-    })
   });
 
 });

@@ -141,19 +141,6 @@ module ActivateAdmin
               when :nin
                 query << { :id.nin => collection_model.where(fieldname => q).pluck(collection_key) }
               end
-            elsif options[:type] == :geopicker
-              case b
-              when :in
-                query << { :id.in => collection_model.where(coordinates: { '$geoWithin' => { '$centerSphere' => [
-                                                              Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676
-                                                            ] } }).pluck(collection_key) }
-              when :nin
-                query << { :id.nin => collection_model.where(coordinates: { '$geoWithin' => { '$centerSphere' => [
-                                                               Geocoder.coordinates(q.split(':')[0].strip).reverse, ((d = q.split(':')[1]) ? d.strip.to_i : 20) / 3963.1676
-                                                             ] } }).pluck(collection_key) }
-              when :gt, :gte, :lt, :lte
-                raise OperatorNotSupported
-              end
             elsif options[:type] == :check_box
               checkbox_value = case q.to_s.downcase
                               when 'true', '1' then true
