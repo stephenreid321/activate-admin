@@ -1,7 +1,7 @@
 
 <div class="page-header">
   <h1><%= @resource.new_record? ? "New #{human_model_name(model).downcase}" : "Edit #{human_model_name(model).downcase}" %></h1>
-  <% unless params[:popup] %><a href="<%= url(:index, model: model.to_s) %>" class="btn btn-secondary"><i class="fa fa-th-list"></i>&nbsp;All <%= human_model_name(model).downcase.pluralize %></a><% end %>
+  <% unless params[:popup] %><a href="<%= url(:index, model: model.to_s) %>" class="btn btn-secondary"><i class="bi bi-list-ul"></i>&nbsp;All <%= human_model_name(model).downcase.pluralize %></a><% end %>
 </div>
 
 <div class="col-sm-8 mx-auto">
@@ -20,7 +20,7 @@
                 content << '<li>⋮</li>'
                 content << %(<li><a href="#{url(:index, model: assoc.class_name, 'qk[]': "#{(assoc.inverse_of.try(:class_name) || model.to_s).underscore}_id", 'qb[]': 'in', 'qv[]': @resource.id, 'all_any': 'all')}">See all #{pluralize(@resource.send(fieldname).count, fieldname.to_s.singularize.humanize.downcase)}</a>)
               end
-              content << %(<li><a class="btn btn-secondary popup" href="#{url(:new, popup: true, model: assoc.class_name, "#{(assoc.inverse_of.try(:class_name) || model.to_s).underscore}_id": @resource.id)}"><i class="fa fa-plus"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>)
+              content << %(<li><a class="btn btn-secondary popup" href="#{url(:new, popup: true, model: assoc.class_name, "#{(assoc.inverse_of.try(:class_name) || model.to_s).underscore}_id": @resource.id)}"><i class="bi bi-plus"></i> New #{fieldname.to_s.singularize.humanize.downcase}</a></li>)
               content << '</ul>'
               f.block_layout(fieldname, content, tip: options[@resource.new_record? ? :new_tip : :edit_tip], hint: options[@resource.new_record? ? :new_hint : :edit_hint]) %>
         <% when :lookup %>

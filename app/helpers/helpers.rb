@@ -69,7 +69,7 @@ ActivateAdmin::App.helpers do
   end
 
   def matchable_regex
-    %i[text slug text_area email url select radio]
+    %i[text text_area email url slug select]
   end
 
   def matchable_number

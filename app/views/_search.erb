@@ -7,7 +7,7 @@
   <div class="well">
     <div id="criteria"></div>
     <a class="btn btn-secondary" href="javascript:;" id="addCriterion">
-      <i class="fa fa-plus-square"></i> Add criteria
+      <i class="bi bi-plus-square"></i> Add criteria
     </a>
     <%= select_tag :all_any, class: 'form-control', style: 'width: auto; display: inline-block', options: [['all the above', 'all'], [['any of the above'], 'any']], selected: params[:all_any] %>
     <%= submit_tag 'Search', class: 'btn btn-primary' %>
@@ -29,7 +29,7 @@
         var select = $('<select name="qk[]" class="form-control mr-1" style="display: inline-block; width: auto"><option></option></select>')
         var equality = $('<select name="qb[]" class="form-control mr-1" style="display: inline-block; width: auto"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
         var input = $('<input name="qv[]" class="form-control mr-1" style="display: inline-block; width: auto" type="text">')
-        var cross = $('<i class="fa fa-times"></i>')
+        var cross = $('<i class="bi bi-x"></i>')
 
         select.appendTo(criterion)
         equality.appendTo(criterion)

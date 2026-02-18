@@ -15,7 +15,7 @@ module ActivateAdmin
 
     before do
       halt 403 if ENV['PERMITTED_IPS'] && (Padrino.env == :production) && !(ENV['PERMITTED_IPS'].split(',').include? request.ip)
-      redirect url(:login) unless [url(:login), url(:logout), url(:forgot_password)].any? do |p|
+      redirect url(:login) unless [url(:login), url(:logout)].any? do |p|
                                     p == request.path
                                   end || %w[stylesheets javascripts].any? do |p|
                                            request.path.starts_with? "#{ActivateAdmin::App.uri_root}/#{p}"
@@ -292,18 +292,5 @@ module ActivateAdmin
       redirect url(:login)
     end
 
-    post :forgot_password, map: '/forgot_password' do
-      account = Account.find_by(email: /^#{Regexp.escape(params[:email])}$/i)
-      if account
-        if account.reset_password!
-          flash[:notice] = "A new password was sent to #{account.email}"
-        else
-          flash[:error] = 'There was a problem resetting your password.'
-        end
-      else
-        flash[:error] = "There's no account registered under that email address."
-      end
-      redirect url(:login)
-    end
   end
 end

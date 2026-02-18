@@ -1,6 +1,6 @@
 <div class="page-header">
   <h1><%= human_model_name(model).pluralize %></h1>
-  <a href="<%= url(:new, model: model.to_s) %>" class="btn btn-primary"><i class="fa fa-pencil"></i>&nbsp;New</a>
+  <a href="<%= url(:new, model: model.to_s) %>" class="btn btn-primary"><i class="bi bi-pencil"></i>&nbsp;New</a>
 </div>
 
 <%= partial :search %>
@@ -8,7 +8,7 @@
 <nav class="navbar justify-content-between px-0">
   <span class="navbar-text">
     <%== page_entries_info(@resources, model: model.to_s) %>
-    <a class="btn btn-secondary" title="Download results as csv" target="_blank" href="<%= url(:index, params.merge(format: :csv)) %>"><i class="fa fa-download"></i></a>
+    <a class="btn btn-secondary" title="Download results as csv" target="_blank" href="<%= url(:index, params.merge(format: :csv)) %>"><i class="bi bi-download"></i></a>
   </span>
   <form class="form-inline ml-auto">
     <%= hidden_field_tag :o, value: @o %>
@@ -16,7 +16,7 @@
     <div class="input-group">
       <%= search_field_tag :q, class: 'form-control', value: @q %>
       <span class="input-group-btn">
-        <button class="btn btn-secondary"><i class="fa fa-search"></i></button>
+        <button class="btn btn-secondary"><i class="bi bi-search"></i></button>
       </span>
     </div>
   </form>
@@ -52,14 +52,14 @@
         <% if @o == fieldname.to_sym %>
           <a title="Ordered by <%= fieldname %>; click to reverse" href="javascript:;" class="od">
             <% if @d == :asc %>
-              <i class="fa fa-caret-down"></i>
+              <i class="bi bi-caret-down"></i>
             <% elsif @d == :desc %>
-              <i class="fa fa-caret-up"></i>
+              <i class="bi bi-caret-up"></i>
             <% end %>
           </a>
         <% elsif persisted_field?(model, fieldname) %>
           <a title="Order by <%= fieldname %>" href="javascript:;" class="od odn">
-            <i class="fa fa-caret-right"></i>
+            <i class="bi bi-caret-right"></i>
           </a>
         <% end %>
 
@@ -72,7 +72,7 @@
     <% @resources.each { |resource| %>
     <tr>
       <td>
-        <a href="<%= url(:edit, model: model.to_s, id: resource.id) %>" class="btn btn-secondary"><i class="fa fa-edit"></i>&nbsp;View/Edit</a>
+        <a href="<%= url(:edit, model: model.to_s, id: resource.id) %>" class="btn btn-secondary"><i class="bi bi-pencil"></i>&nbsp;View/Edit</a>
       </td>
       <% admin_fields(model).select { |_fieldname, options| options[:index] }.each { |fieldname, options| %>
       <td>
@@ -87,7 +87,7 @@
         <% elsif resource.send(fieldname).is_a? Time or resource.send(fieldname).is_a? Date %>
           <%= resource.send(fieldname) %>
         <% elsif options[:type] == :check_box %>
-          <%== case resource.send(fieldname); when true then '<i class="fa fa-check"></i>'; when false then '<i class="fa fa-times"></i>'; else ''; end %>
+          <%== case resource.send(fieldname); when true then '<i class="bi bi-check"></i>'; when false then '<i class="bi bi-x"></i>'; else ''; end %>
         <% elsif options[:full] %>
           <%= strip_tags(resource.send(fieldname).to_s) %>
         <% else %>
@@ -96,7 +96,7 @@
       </td>
       <% } %>
       <td>
-        <a class="btn btn-danger" data-confirm="Are you sure you want to delete this <%= human_model_name(model).downcase %>?" href="<%= url(:destroy, model: model.to_s, id: resource.id) %>"><i class="fa fa-trash-o"></i>&nbsp;Delete</a>
+        <a class="btn btn-danger" data-confirm="Are you sure you want to delete this <%= human_model_name(model).downcase %>?" href="<%= url(:destroy, model: model.to_s, id: resource.id) %>"><i class="bi bi-trash"></i>&nbsp;Delete</a>
       </td>
     </tr>
     <% } %>

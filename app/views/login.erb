@@ -1,4 +1,3 @@
-
 <div class="col-sm-8 mx-auto">
   <% form_tag url(:login) do %>
 
@@ -21,23 +20,7 @@
 
     <div class="form-group">
       <button class="btn btn-primary" type="submit">Sign in</button>
-      <% if Account.method_defined?(:reset_password!) %>
-        &middot; <a href="javascript:;" onclick="$('form[action$=login]').hide();
-                $('form[action$=forgot_password]').show();
-                $('form[action$=forgot_password] input').focus();">Forgot your password?</a>
-                  <% end %>
     </div>
-
-  <% end %>
-
-  <% form_tag url(:forgot_password), style: 'display: none' do %>
-
-    <div class="form-group">
-      <label>Email</label>
-      <%= text_field_tag :email, value: params[:email], class: 'form-control' %>
-    </div>
-
-    <button class="btn btn-primary" type="submit">Reset password</button>
 
   <% end %>
 </div>

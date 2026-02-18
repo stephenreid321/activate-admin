@@ -4,20 +4,6 @@ $(function () {
   $(".datepicker").flatpickr({ altInput: true, altFormat: 'J F Y' });
   $(".datetimepicker").flatpickr({ altInput: true, altFormat: 'J F Y, H:i', enableTime: true, time_24hr: true });
 
-  $('input[type=text].slug').each(function () {
-    var slug = $(this);
-    var start_length = slug.val().length;
-    var pos = $.inArray(this, $('input', this.form)) - 1;
-    var title = $($('input', this.form).get(pos));
-    slug.focus(function () {
-      slug.data('focus', true);
-    });
-    title.keyup(function () {
-      if (start_length == 0 && slug.data('focus') != true)
-        slug.val(title.val().toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9\-]/g, ''));
-    });
-  });
-
   $(document).on('click', 'a[data-confirm]', function (e) {
     var message = $(this).data('confirm');
     if (!confirm(message)) {
