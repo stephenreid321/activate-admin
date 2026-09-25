@@ -8,7 +8,8 @@ module ActivateAdmin
     helpers Activate::ParamHelpers
     helpers Activate::NavigationHelpers
 
-    use Rack::Session::Cookie, expire_after: 1.year.to_i, secret: ENV['SESSION_SECRET']
+    set :session_secret, ENV['SESSION_SECRET']
+    set :sessions, expire_after: 1.year.to_i, same_site: :lax, secure: Padrino.env == :production
     set :show_exceptions, true
     set :public_folder, ActivateAdmin.root('app', 'assets')
     set :default_builder, 'ActivateFormBuilder'
