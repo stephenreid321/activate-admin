@@ -14,7 +14,7 @@
         <% case options[:type]; when :collection; assoc = assoc(model, fieldname, relationship: :has_many) %>
           <%= content = '<ul class="list-unstyled">'
               @resource.send(fieldname).limit(l = 10).each do |x|
-                content << %(<li><a class="popup" href="#{url(:edit, popup: true, model: assoc.class_name, id: x.id)}">#{x.send(lookup_method(assoc.class_name.constantize))}</a></li>)
+                content << %(<li><a class="popup" href="#{url(:edit, popup: true, model: assoc.class_name, id: x.id)}">#{ERB::Util.html_escape(x.send(lookup_method(assoc.class_name.constantize)))}</a></li>)
               end
               if @resource.send(fieldname).count > l
                 content << '<li>⋮</li>'

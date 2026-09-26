@@ -97,7 +97,7 @@
     })
 
     <% params[:qk].each_with_index { |fieldname,i| %>
-      addCriterion('<%= params[:qk][i] %>', '<%= params[:qb][i] %>', '<%= params[:qv][i] %>')
+      addCriterion(<%== params[:qk][i].to_json %>, <%== params[:qb][i].to_json %>, <%== params[:qv][i].to_json %>)
     <% } if params[:qk] %>
 
   })
