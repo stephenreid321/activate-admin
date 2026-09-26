@@ -12,6 +12,12 @@ $(function () {
     }
   });
 
+  $(document).on('click', 'a[data-method=post]', function (e) {
+    e.preventDefault();
+    if (e.stopped) return;
+    $('<form method="post"></form>').attr('action', this.href).appendTo('body').submit();
+  });
+
   $(document).on('click', 'a.popup', function (e) {
     window.open(this.href, null, 'scrollbars=yes,width=575,height=575,left=150,top=150').focus();
     return false;

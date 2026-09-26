@@ -258,7 +258,7 @@ module ActivateAdmin
       end
     end
 
-    get :destroy, map: '/destroy/:model/:id' do
+    post :destroy, map: '/destroy/:model/:id' do
       resource = model.find(params[:id])
       if resource.destroy
         flash[:notice] = "<strong>Boom!</strong> The #{human_model_name(model).downcase} was deleted."
