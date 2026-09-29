@@ -8,10 +8,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <% {
-         'twitter-bootstrap/4.1.1' => 'css/bootstrap.min.css js/bootstrap.bundle.min.js',
+         'bootstrap/5.3.8' => 'css/bootstrap.min.css js/bootstrap.bundle.min.js',
          'bootstrap-icons/1.13.1' => 'font/bootstrap-icons.min.css',
          'flatpickr/4.6.13' => 'flatpickr.min.js flatpickr.min.css',
-         'select2/4.0.13' => 'js/select2.full.min.js css/select2.min.css'
+         'select2/4.0.13' => 'js/select2.full.min.js css/select2.min.css',
+         'select2-bootstrap-5-theme/1.3.0' => 'select2-bootstrap-5-theme.min.css'
        }.each { |k,v| %>
     <% v.split(' ').each { |f| u = "https://cdnjs.cloudflare.com/ajax/libs/#{k}/#{f}" %>
     <% case f.split('.').last.to_sym; when :js %>
@@ -22,16 +23,11 @@
     <% } %>
     <% } %>
 
-    <% [
-         "#{ActivateAdmin::App.uri_root}/stylesheets/app.css",
-         'https://rawcdn.githack.com/ttskch/select2-bootstrap4-theme/a556a9d7cb2d7254b6e95cc8ec1ebceaa5ed8ddc/dist/select2-bootstrap4.min.css'
-       ].each { |f| %>
-    <link rel="stylesheet" href="<%= f %>">
-    <% } %>
+    <link rel="stylesheet" href="<%= ActivateAdmin::App.uri_root %>/stylesheets/app.css">
 
     <% [
-         'https://cdn.rawgit.com/symbiota-coop/dandelion/1fe32d9b028ba6b19ea22141497c61b8a7440a1b/app/assets/javascripts/ext/jquery-deparam.js',
-         'https://cdn.rawgit.com/symbiota-coop/dandelion/1fe32d9b028ba6b19ea22141497c61b8a7440a1b/app/assets/javascripts/jquery.lookup.js',
+         'https://rawcdn.githack.com/symbiota-coop/dandelion/579e0d3646ed9f043e84ff06e2b0f4f9a37977bf/app/assets/javascripts/ext/jquery-deparam.js',
+         'https://rawcdn.githack.com/symbiota-coop/dandelion/579e0d3646ed9f043e84ff06e2b0f4f9a37977bf/app/assets/javascripts/jquery.lookup.js',
          "#{ActivateAdmin::App.uri_root}/javascripts/app.js"
        ].each { |f| %>
     <script src="<%= f %>"></script>

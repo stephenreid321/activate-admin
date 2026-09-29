@@ -1,6 +1,7 @@
-<nav class="navbar fixed-top navbar-dark bg-dark navbar-expand-lg" role="navigation">
+<nav class="navbar fixed-top bg-dark navbar-expand-lg" data-bs-theme="dark" role="navigation">
+  <div class="container-fluid">
   <a class="navbar-brand" href="<%= url(:home) %>"><%= ENV['ADMIN_SITE_NAME'] || 'ActivateAdmin' %></a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-label="Menu">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -13,8 +14,9 @@
           ] %>
       <%= ul_nav [
             ['Sign out', url(:logout)]
-          ], ul_class: 'navbar-nav ml-auto' %>
+          ], ul_class: 'navbar-nav ms-auto' %>
     <% end %>
 
+  </div>
   </div>
 </nav>

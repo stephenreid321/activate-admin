@@ -27,3 +27,12 @@ body {
 .datetimepicker {
   background: white !important
 }
+
+/* Links underlined only on hover, as in Bootstrap 4 */
+a {
+  text-decoration: none
+}
+
+a:hover {
+  text-decoration: underline
+}

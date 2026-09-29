@@ -1,17 +1,18 @@
 <style>
   #search .form-control,
+  #search .form-select,
   #search .select2-container { width: 20em !important }
   #search .criterion .search-equality { width: 6em !important }
   #search select[name="all_any"] { width: 12em !important }
 </style>
 
-<% form_tag url(:index, model: model.to_s), method: 'get', id: 'search', class: 'form-inline' do %>
-  <div class="well">
+<% form_tag url(:index, model: model.to_s), method: 'get', id: 'search' do %>
+  <div>
     <div id="criteria"></div>
     <a class="btn btn-secondary" href="javascript:;" id="addCriterion">
       <i class="bi bi-plus-square"></i> Add criteria
     </a>
-    <%= select_tag :all_any, class: 'form-control', style: 'display: inline-block', options: [['all the above', 'all'], ['any of the above', 'any']], selected: params[:all_any] %>
+    <%= select_tag :all_any, class: 'form-select d-inline-block', options: [['all the above', 'all'], ['any of the above', 'any']], selected: params[:all_any] %>
     <%= submit_tag 'Search', class: 'btn btn-primary' %>
   </div>
 <% end %>
@@ -25,12 +26,12 @@
                  end] %>
     var fields = <%== fields.to_json %>
 
-    var textInput = '<input name="qv[]" class="form-control mr-1" style="display: inline-block" type="text">'
+    var textInput = '<input name="qv[]" class="form-control d-inline-block me-1" type="text">'
     function addCriterion(selected, bValue, inputValue) {
-      var criterion = $('<div class="criterion form-group mb-2"></div>')
+      var criterion = $('<div class="criterion mb-2"></div>')
 
-      var select = $('<select name="qk[]" class="form-control mr-1" style="display: inline-block"><option></option></select>')
-      var equality = $('<select name="qb[]" class="form-control mr-1 search-equality" style="display: inline-block"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
+      var select = $('<select name="qk[]" class="form-select d-inline-block me-1"><option></option></select>')
+      var equality = $('<select name="qb[]" class="form-select d-inline-block me-1 search-equality"><option value="in">is</option><option value="nin">is not</option><option value="gt">&gt;</option><option value="gte">&gt;=</option><option value="lt">&lt;</option><option value="lte">&lt;=</option></select>')
       var input = $(textInput)
       var cross = $('<i class="bi bi-x"></i>')
 
@@ -47,7 +48,7 @@
         var fieldName = parts[0] && (parts.length === 1 ? parts[0] : parts[1])
 
         if (fieldOpts && fieldOpts.class_name) {
-          var lookupSelect = $('<select name="qv[]" class="form-control mr-1" style="display: inline-block"></select>')
+          var lookupSelect = $('<select name="qv[]" class="form-select d-inline-block me-1"></select>')
           lookupSelect.append($('<option value=""></option>'))
           if (valToUse) lookupSelect.append($('<option></option>').attr('value', valToUse).prop('selected', true).text('Loading...'))
           if (valueEl.hasClass('select2-hidden-accessible')) {

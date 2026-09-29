@@ -10,14 +10,12 @@
     <%== page_entries_info(@resources, model: model.to_s) %>
     <a class="btn btn-secondary" title="Download results as csv" target="_blank" href="<%= url(:index, params.merge(format: :csv)) %>"><i class="bi bi-download"></i></a>
   </span>
-  <form class="form-inline ml-auto">
+  <form class="d-flex ms-auto">
     <%= hidden_field_tag :o, value: @o %>
     <%= hidden_field_tag :d, value: @d %>
     <div class="input-group">
       <%= search_field_tag :q, class: 'form-control', value: @q %>
-      <span class="input-group-btn">
-        <button class="btn btn-secondary"><i class="bi bi-search"></i></button>
-      </span>
+      <button class="btn btn-secondary"><i class="bi bi-search"></i></button>
     </div>
   </form>
 </nav>
